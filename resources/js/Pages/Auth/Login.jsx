@@ -16,11 +16,12 @@ export default function Login({ errors }) {
 
     const submit = (e) => {
         e.preventDefault();
-        const loginEndpoint = "/api/login";
-        console.log("Login endpoint: ", loginEndpoint);
-        const res = post(loginEndpoint);
-        console.log("response:")
-        console.log(res)
+        post(route('login'));
+        // const loginEndpoint = "/api/login";
+        // console.log("Login endpoint: ", loginEndpoint);
+        // const res = post(loginEndpoint);
+        // console.log("response:")
+        // console.log(res)
     };
 
     return (
