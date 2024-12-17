@@ -12,7 +12,7 @@ class LogRequestMiddleware
         Log::info('Request Received', [
             'method' => $request->getMethod(),
             'url' => $request->fullUrl(),
-            'headers' => $request->headers->all(),
+            // 'headers' => $request->headers->all(),
             'body' => $request->all(),
         ]);
 
