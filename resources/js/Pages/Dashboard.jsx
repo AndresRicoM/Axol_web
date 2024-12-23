@@ -3,19 +3,37 @@ import ReactApexChart from 'react-apexcharts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
-const WaterChart = ({ waterData }) => {
-    // Configuración de la gráfica
+export default function Dashboard({ auth, waterData }) {
+    // Función para determinar el color basado en el porcentaje
+    const getChartColor = (percentage) => {
+        if (percentage <= 25) return '#FF4560';      // Rojo - Nivel crítico
+        if (percentage <= 50) return '#FEB019';      // Amarillo - Nivel bajo
+        if (percentage <= 75) return '#3CADD4';      // Azul - Nivel normal
+        return '#00E396';                           // Verde - Nivel óptimo
+    };
+
     const options = {
         series: [waterData.totalFill],
         chart: {
             height: 300,
             type: 'radialBar',
         },
-        colors: ['#3CADD4'],
+        colors: [getChartColor(waterData.totalFill)], // Color dinámico
         plotOptions: {
             radialBar: {
                 hollow: {
                     size: '70%',
+                },
+                track: {
+                    background: '#f2f2f2',  // Color del fondo de la barra
+                },
+                dataLabels: {
+                    value: {
+                        fontSize: '24px',
+                        formatter: function(val) {
+                            return val + '%';
+                        }
+                    }
                 }
             },
         },
@@ -24,27 +42,13 @@ const WaterChart = ({ waterData }) => {
         },
         labels: ['Almacenamiento'],
         tooltip: {
-            enabled: false
+            enabled: true,
+            formatter: function(val) {
+                return waterData.totalMass + ' Litros';
+            }
         }
     };
 
-    return (
-        <div className="water-chart-container">
-            <h3>Agua Disponible</h3>
-            <ReactApexChart 
-                options={options} 
-                series={options.series} 
-                type="radialBar" 
-                height={300} 
-            />
-            <p className="water-total">
-                Hay un total de {waterData.totalMass} Litros de Agua en la Casa
-            </p>
-        </div>
-    );
-};
-
-export default function Dashboard({ auth, waterData }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -75,7 +79,12 @@ export default function Dashboard({ auth, waterData }) {
 
                                 {/* Gráfica circular */}
                                 <div className="h-[400px]">
-                                    <WaterChart waterData={waterData} />
+                                    <ReactApexChart
+                                        options={options}
+                                        series={options.series}
+                                        type="radialBar"
+                                        height={300}
+                                    />
                                 </div>
                             </div>
                         </div>
