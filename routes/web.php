@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
+use App\Http\Controllers\WaterTankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,13 @@ Route::get('/', function () {
 
 // Dashboard - protegido por middleware auth y verified
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $waterController = new WaterTankController();
+    $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
+    $waterData = $waterController->getWaterData($homehub_mac);
+
+    return Inertia::render('Dashboard', [
+        'waterData' => $waterData
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Grupo de rutas protegidas por middleware auth
