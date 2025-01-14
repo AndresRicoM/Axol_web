@@ -38,10 +38,10 @@ class BucketController extends Controller
         ], 201);
     }
 
-    public function getHomehub(Request $request)
+    public function getBucket(Request $request)
     {
         return response()->json([
-            'message' => 'Welcome to Homehub',
+            'message' => 'Welcome to Bucket',
         ], 200);
     }
 }
