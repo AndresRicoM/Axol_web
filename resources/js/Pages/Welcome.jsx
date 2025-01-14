@@ -4,8 +4,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
     return (
         <>
             <Head title="AXOL" />
-            <div className="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-                <div className="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
+            <div className="relative min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white overflow-hidden">
+                <nav className="relative w-full p-6 text-end pointer-events-auto z-50">
                     {auth.user ? (
                         <Link
                             href={route('dashboard')}
@@ -30,22 +30,22 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             </Link>
                         </>
                     )}
-                </div>
+                </nav>
 
-                <div className="max-w-7xl mx-auto p-6 lg:p-8">
-                    <div className="flex justify-center">
-                        <img src="/assets/Logo/Axolotito.png" alt="Mi Logo" />
-                    </div>
-
-                   
-
-                    <div className="flex justify-center mt-16 px-6 sm:items-center sm:justify-between">
-                        <div className="text-center text-sm sm:text-start">&nbsp;</div>
-
-                        <div className="text-center text-sm text-gray-500 dark:text-gray-400 sm:text-end sm:ms-0">
-                            Laravel v{laravelVersion} (PHP v{phpVersion})
-                        </div>
-                    </div>
+                <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                    <img 
+                        src="\assets\Mobile\mobile2.gif"
+                        className="w-[100vw] h-[100vh] sm:hidden 
+                                  object-cover 
+                                  transition-all duration-300"
+                    />
+                    <img 
+                        src="/assets/desktop/AxolotlMoving.gif"
+                        className="hidden sm:block 
+                                  w-[98vw] h-[98vh] 
+                                  object-contain 
+                                  transition-all duration-300"
+                    />
                 </div>
             </div>
 
