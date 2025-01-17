@@ -36,10 +36,7 @@ class AuthController extends Controller
             RateLimiter::clear($request->username);
             // $request->session()->regenerate();
             session()->regenerate();
-            return response()->json([
-                'message' => 'Inicio de sesión exitoso',
-                'user' => Auth::user(),
-            ], 200);
+            return redirect()->route('welcome');
         }
 
         RateLimiter::hit($request->username, 60);
