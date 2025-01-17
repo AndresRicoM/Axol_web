@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Auth; // Asegúrate de importar el facade Auth
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
+use App\Http\Controllers\WaterTankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,17 +28,31 @@ Route::get('/check-session', function () {
 });
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Inertia::render('Auth/Login');
+})->name('login');
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/welcome', function () {
+        return Inertia::render('Welcome', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
+    })->name('welcome');
 });
 
 // Dashboard - protegido por middleware auth y verified
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $waterController = new WaterTankController();
+    $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
+    $waterData = $waterController->getWaterData($homehub_mac);
+
+    return Inertia::render('Dashboard', [
+        'waterData' => $waterData
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Grupo de rutas protegidas por middleware auth
@@ -46,13 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-// Rutas de autenticación personalizadas
-Route::middleware('guest')->get('/login', function () {
-    return Inertia::render('LoginForm'); // Renderiza el formulario de login
-})->name('login');
-
-Route::middleware('guest')->post('/login', [AuthController::class, 'login']); // Maneja el inicio de sesión
 
 // Logout
 Route::post('/logout', function () {

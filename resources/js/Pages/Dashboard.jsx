@@ -1,7 +1,54 @@
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth, waterData }) {
+    // Función para determinar el color basado en el porcentaje
+    const getChartColor = (percentage) => {
+        if (percentage <= 25) return '#FF4560';      // Rojo - Nivel crítico
+        if (percentage <= 50) return '#FEB019';      // Amarillo - Nivel bajo
+        if (percentage <= 75) return '#3CADD4';      // Azul - Nivel normal
+        return '#00E396';                           // Verde - Nivel óptimo
+    };
+
+    const options = {
+        series: [waterData.totalFill],
+        chart: {
+            height: 300,
+            type: 'radialBar',
+        },
+        colors: [getChartColor(waterData.totalFill)], // Color dinámico
+        plotOptions: {
+            radialBar: {
+                hollow: {
+                    size: '70%',
+                },
+                track: {
+                    background: '#f2f2f2',  // Color del fondo de la barra
+                },
+                dataLabels: {
+                    value: {
+                        fontSize: '24px',
+                        formatter: function(val) {
+                            return val + '%';
+                        }
+                    }
+                }
+            },
+        },
+        stroke: {
+            lineCap: 'round'
+        },
+        labels: ['Almacenamiento'],
+        tooltip: {
+            enabled: true,
+            formatter: function(val) {
+                return waterData.totalMass + ' Litros';
+            }
+        }
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -11,6 +58,38 @@ export default function Dashboard({ auth }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-semibold mb-4">Estado del Agua</h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Información del agua */}
+                                <div className="space-y-4">
+                                    <div className="bg-blue-50 p-4 rounded-lg">
+                                        <p className="text-lg">
+                                            Total de agua: <span className="font-bold">{waterData.totalMass}</span> Litros
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <p>Tanques conectados: {waterData.tankNum}</p>
+                                        <p>Volumen total: {waterData.totalVolume} m³</p>
+                                    </div>
+                                </div>
+
+                                {/* Gráfica circular */}
+                                <div className="h-[400px]">
+                                    <ReactApexChart
+                                        options={options}
+                                        series={options.series}
+                                        type="radialBar"
+                                        height={300}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">You're logged in!</div>
                     </div>
