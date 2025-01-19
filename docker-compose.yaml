@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  axol_web:
+    container_name: axol_web
+    build:
+      context: .
+    restart: always
+    command: sh -c "npm run dev & php artisan serve --host=0.0.0.0"
+    volumes:
+      - ".:/app/axol_web" # Volumen para actualizar el código en tiempo real
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    networks:
+      - axol-network
+    env_file:
+      - .env
+
+networks:
+  axol-network:
+    driver: bridge
