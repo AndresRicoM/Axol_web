@@ -22,7 +22,9 @@ Route::post('/sensor/bucket', [BucketController::class, 'registerBucket']);
 Route::get('/sensor/bucket', [BucketController::class, 'getBucket']);
 
 // Tank
+Route::post('/sensor/tank', [TankController::class, 'registerTank']);
 Route::get('/sensor/tank', [TankController::class, 'getTank']);
 
 // Quality
 Route::get('/sensor/quality', [HomehubController::class, 'getHomehub']);
+Route::post('/sensor/quality', [QualityController::class, 'registerQuality']);

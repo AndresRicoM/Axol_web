@@ -4,10 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Models\Tank;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class TankController extends Controller
 {
+    public function registerTank(Request $request)
+    {
+
+        try {
+            $validated = $request->validate([
+                'mac_add' => 'required',
+                'paired_with' => 'required',
+                'tank_capacity' => 'required',
+                'use' => 'required',
+                'tank_area' => 'required',
+                'max_height' => 'required',
+            ]);
+            Log::info('Validated> ', ['validated' => $validated]);
+
+            $sensor = Tank::create($validated);
+            Log::info('Tank created successfully', ['sensor' => $sensor]);
+
+        } catch (\Throwable $th) {
+            Log::error('Error creating a new Tank', ['error' => $th->getMessage()]);
+
+            return response()->json([
+                'message' => 'Error creating a new Tank',
+                'Error' => $th->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Tank registered successfully',
+            'data' => $sensor
+        ], 201);
+    }
+
     public function getTank(Request $request)
     {
         $paired_with = $request->query('paired_with');
