@@ -1,5 +1,12 @@
 FROM php:8.1.31
 
+# Instalar dependencias del sistema necesarias para las extensiones de PHP
+RUN apt-get update && \
+    apt-get install -y \
+    libpq-dev && \
+    docker-php-ext-install pdo_pgsql pgsql && \
+    apt-get clean
+
 # Instalar Node.js y git
 RUN apt-get update && \
     apt-get install -y curl git && \
@@ -16,17 +23,14 @@ WORKDIR /app/axol_web
 COPY package.json package-lock.json /app/axol_web/
 COPY composer.json composer.lock /app/axol_web/
 
-# Copy the program code
+# Copiar el código del programa
 COPY . .
 
-# Installing dependencies
+# Instalar dependencias
 RUN npm install
 RUN composer install
 
-# Copy the custom php.ini
-# COPY php.ini /usr/local/etc/php/
-
-# Puerto
+# Puertos
 EXPOSE 8000
 EXPOSE 5173
 
