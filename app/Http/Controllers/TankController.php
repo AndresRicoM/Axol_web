@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tank;
+use App\Models\Homehub;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -69,11 +71,14 @@ class TankController extends Controller
     {
         $user = $request->user();
         $user_id = $user["user_id"];
-        $sensors = Tank::select('tank_capacity', 'use', 'tank_area', 'max_height')
-            ->where('user_id', $user_id)
+        $results = \DB::table('tank_sensorsdb_practice_ui AS t')
+            ->select('t.tank_capacity', 't.use', 't.tank_area', 't.max_height')
+            ->join('homehub_devices_practice AS h', 'h.mac_add', '=', 't.paired_with')
+            ->join('users_practice_ui AS u', 'u.user_id', '=', 'h.user_id')
+            ->where('u.user_id', $user_id)
             ->get();
         return response()->json([
-            'data' => "hola"
+            'data' => $results
         ], 200);
 
     }
