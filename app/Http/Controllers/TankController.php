@@ -44,15 +44,15 @@ class TankController extends Controller
     public function getTank(Request $request)
     {
         $paired_with = $request->query('paired_with');
-        if(!$paired_with){
+        if (!$paired_with) {
             return response()->json([
                 'error' => 'El parámetro paired_with es requerido'
             ], 400);
         }
 
-        $tank = Tank::select('mac_add', 'paired_with', 'tank_capacity', 'use', 'tank_area', 'max_height') 
-        ->where('paired_with',$paired_with)
-        ->get();
+        $tank = Tank::select('mac_add', 'paired_with', 'tank_capacity', 'use', 'tank_area', 'max_height')
+            ->where('paired_with', $paired_with)
+            ->get();
 
         if ($tank->isEmpty()) {
             return response()->json([
@@ -63,5 +63,18 @@ class TankController extends Controller
         return response()->json([
             'data' => $tank
         ], 200);
+    }
+
+    public function getSensors(Request $request)
+    {
+        $user = $request->user();
+        $user_id = $user["user_id"];
+        $sensors = Tank::select('tank_capacity', 'use', 'tank_area', 'max_height')
+            ->where('user_id', $user_id)
+            ->get();
+        return response()->json([
+            'data' => "hola"
+        ], 200);
+
     }
 }

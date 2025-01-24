@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
 use App\Http\Controllers\WaterTankController;
+use App\Http\Controllers\TankController;
+use Illuminate\Http\Request;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -68,4 +71,13 @@ Route::post('/logout', function () {
     return redirect('/')->with('success', 'Has cerrado sesión correctamente.');
 })->name('logout')->middleware('auth'); // Solo usuarios autenticados pueden cerrar sesión
 
+
+// Endpoints que usan la autenticacion y así obtener la sesión del usuario
+Route::prefix('api')->middleware('web')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/sensors', [TankController::class, 'getSensors']);
+});
 require __DIR__.'/auth.php';

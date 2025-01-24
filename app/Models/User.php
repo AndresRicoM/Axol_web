@@ -11,7 +11,7 @@ class User extends Authenticatable
     use Notifiable;
 
     // Cambia la tabla a tu tabla personalizada
-    protected $table = 'users_practice';
+    protected $table = 'users_practice_ui';
 
     // Define las columnas que se pueden llenar masivamente
     protected $fillable = [

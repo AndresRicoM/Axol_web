@@ -6,10 +6,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomehubController;
 use App\Http\Controllers\BucketController;
 use App\Http\Controllers\TankController;
+use App\Http\Controllers\QualityController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 // PREFIX: /api
 
@@ -24,6 +25,7 @@ Route::get('/sensor/bucket', [BucketController::class, 'getBucket']);
 // Tank
 Route::post('/sensor/tank', [TankController::class, 'registerTank']);
 Route::get('/sensor/tank', [TankController::class, 'getTank']);
+Route::get('/sensors', [TankController::class, 'getSensors']);
 
 // Quality
 Route::get('/sensor/quality', [HomehubController::class, 'getHomehub']);
