@@ -8,7 +8,7 @@ services:
     restart: always
     # command: sh -c "npm run dev & php artisan serve --host=0.0.0.0"
     volumes:
-      - ".:/app/axol_web:cached" # Volumen para actualizar el código en tiempo real
+      - ".:/app/axol_web" # Volumen para actualizar el código en tiempo real
       - /app/axol_web/node_modules
     ports:
       - "8000:8000"
@@ -17,7 +17,6 @@ services:
       - axol-network
     env_file:
       - .env
-    command: sh -c "npm run dev & php artisan serve --host=0.0.0.0"
 
 networks:
   axol-network:

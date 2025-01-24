@@ -5,7 +5,7 @@ import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 
 export default function Login({ errors }) {
     const { data, setData, post, processing } = useForm({
@@ -81,7 +81,7 @@ export default function Login({ errors }) {
 
                 <div className="flex items-end justify-between mt-4">
                     <Link
-                        href={route('login')}
+                        href={route('register')}
                         className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Don't have an account?
