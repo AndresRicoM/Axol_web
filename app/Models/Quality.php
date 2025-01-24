@@ -9,7 +9,7 @@ class Quality extends Model
 {
     use HasFactory;
 
-    protected $table = 'tank_sensorsdb';
+    protected $table = 'quality_data_practice_ui';
 
     protected $fillable = [
         'mac_add',

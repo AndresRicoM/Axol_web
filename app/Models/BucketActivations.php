@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bucket extends Model
+class BucketActivations extends Model
 {
     use HasFactory;
-
-    protected $table = 'bucket_sensorsdb_practice';
+    protected $table = 'bucket_activationsdb_practice';
 
     protected $fillable = [
+        'datetime',
         'mac_add',
-        'paired_with',
-        'buck_capacity',
-        'use'
     ];
 
-    protected $primaryKey = 'mac_add';
+    protected $primaryKey = 'datetime';
 
     public $timestamps = false;
+
 }
