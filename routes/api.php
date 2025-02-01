@@ -24,6 +24,7 @@ Route::get('/sensor/bucket', [BucketController::class, 'getBucket']);
 
 // Tank
 Route::post('/sensor/tank', [TankController::class, 'registerTank']);
+Route::post('/sensor/tankData', [TankController::class, 'registerTanKData']);
 Route::get('/sensor/tank', [TankController::class, 'getTank']);
 Route::get('/sensors', [TankController::class, 'getSensors']);
 

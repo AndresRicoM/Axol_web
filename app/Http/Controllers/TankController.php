@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tank;
+use App\Models\TankData;
 use App\Models\Homehub;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,6 +43,45 @@ class TankController extends Controller
             'data' => $sensor
         ], 201);
     }
+    public function registerTanKData(Request $request)
+    {
+        try {
+            // Validación de los datos
+            $validated = $request->validate([
+                'mac_add' => 'required',
+                'water_distance' => 'required',
+                'datetime' => 'required'
+            ]);
+            Log::info('Validated> ', ['validated' => $validated]);
+    
+            // Verificar si 'datetime' está presente; si no, usar la fecha y hora actual
+            if (!isset($validated['datetime'])) {
+                $validated['datetime'] = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
+            }
+    
+            // Crear el registro en la base de datos
+            $sensor = TankData::create($validated);
+            Log::info('Tank created successfully', ['sensor' => $sensor]);
+    
+        } catch (\Throwable $th) {
+            Log::error('Error sending Tank Data', [
+                'error_message' => $th->getMessage(),
+                'error_trace' => $th->getTraceAsString(),
+                'request_data' => $request->all(), // Para registrar los datos que se están enviando
+            ]);
+        
+            return response()->json([
+                'message' => 'Error sending Tank Data',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+        
+        return response()->json([
+            'message' => 'Data Tank registered successfully',
+            'data' => $sensor
+        ], 201);
+    }
+    
 
     public function getTank(Request $request)
     {
