@@ -53,8 +53,11 @@ Route::get('/dashboard', function () {
     $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
     $waterData = $waterController->getWaterData($homehub_mac);
 
+    $user = Auth::user()->only('id', 'username');
+
     return Inertia::render('Dashboard', [
-        'waterData' => $waterData
+        'waterData' => $waterData,
+        'user' => $user,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
