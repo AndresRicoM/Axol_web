@@ -46,6 +46,9 @@ class TankController extends Controller
     public function registerTanKData(Request $request)
     {
         try {
+            $request->merge([
+                'datetime' => $request->input('datetime', now()->format('Y-m-d H:i:s')),
+            ]);
             // Validación de los datos
             $validated = $request->validate([
                 'mac_add' => 'required',
@@ -53,11 +56,6 @@ class TankController extends Controller
                 'datetime' => 'required'
             ]);
             Log::info('Validated> ', ['validated' => $validated]);
-    
-            // Verificar si 'datetime' está presente; si no, usar la fecha y hora actual
-            if (!isset($validated['datetime'])) {
-                $validated['datetime'] = \Carbon\Carbon::now()->format('Y-m-d H:i:s');
-            }
     
             // Crear el registro en la base de datos
             $sensor = TankData::create($validated);

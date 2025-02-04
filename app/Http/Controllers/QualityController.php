@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quality;
+use App\Models\QualityData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -35,6 +36,46 @@ class QualityController extends Controller
         return response()->json([
             'message' => 'Quality registered successfully',
             'data' => $sensor
+        ], 201);
+    }
+    public function registerQualityData(Request $request)
+    {
+        try {
+            // Asegurar que el campo 'datetime' tenga un valor por defecto si no se proporciona
+            $request->merge([
+                'datetime' => $request->input('datetime', now()->format('Y-m-d H:i:s')),
+            ]);
+    
+            // Validación de los datos
+            $validated = $request->validate([
+                'mac_add' => 'required|string', // Asegurar que 'mac_add' sea un string
+                'tds' => 'required|numeric',   // Asegurar que 'tds' sea un número
+                'water_temp' => 'required|numeric', // Asegurar que 'water_temp' sea un número
+                'datetime' => 'required|date', // Asegurar que 'datetime' sea una fecha válida
+            ]);
+    
+            Log::info('Validated> ', ['validated' => $validated]);
+    
+            // Crear el registro en la base de datos usando el modelo QualityData
+            $qualityData = QualityData::create($validated);
+            Log::info('QualityData created successfully', ['qualityData' => $qualityData]);
+    
+        } catch (\Throwable $th) {
+            Log::error('Error sending Quality Data', [
+                'error_message' => $th->getMessage(),
+                'error_trace' => $th->getTraceAsString(),
+                'request_data' => $request->all(), // Para registrar los datos que se están enviando
+            ]);
+    
+            return response()->json([
+                'message' => 'Error sending Quality Data',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    
+        return response()->json([
+            'message' => 'Quality Data registered successfully',
+            'data' => $qualityData
         ], 201);
     }
 }
