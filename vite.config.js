@@ -13,10 +13,10 @@ export default defineConfig({
     ],
 
     server: {
-        host: process.env.VITECONF_HOST || '0.0.0.0',  // Permite conexiones externas
-        port: process.env.VITECONF_PORT || 5173,       // Define el puerto (puede ser cualquier puerto disponible)
+        host: '0.0.0.0',  // Permite conexiones externas
+        port: 5173,      // Define el puerto (puede ser cualquier puerto disponible)
         hmr: {
-            host: process.env.VITECONF_LOCAL || 'http://blindspot.media.mit.edu/',  // Reemplaza con la IP de tu servidor local
+            host: "192.168.56.1",  // Reemplaza con la IP de tu servidor local
         },
     },
 });

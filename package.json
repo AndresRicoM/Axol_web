@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "apexcharts": "^4.3.0",
+        "primereact": "^10.9.2",
         "react-apexcharts": "^1.7.0"
     }
 }
