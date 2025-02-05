@@ -127,14 +127,5 @@ class QualityController extends Controller
             ], 500);
         }
     }
-    public function dashboard(Request $request)
-    {
-        // Obtener los datos necesarios
-        $qualityData = QualityData::orderBy('datetime', 'desc')->get();
 
-        // Pasar los datos a la vista
-        return view('dashboard', [
-            'qualityData' => $qualityData,
-        ]);
-    }
 }
