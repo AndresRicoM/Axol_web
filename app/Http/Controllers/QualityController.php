@@ -78,4 +78,63 @@ class QualityController extends Controller
             'data' => $qualityData
         ], 201);
     }
+    public function getQualityData(Request $request)
+    {
+        try {
+            // Obtener los parámetros de la solicitud
+            $macAdd = $request->input('mac_add');
+            $latest = $request->input('latest', false); // Parámetro para obtener el último registro
+    
+            // Consulta base
+            $query = QualityData::query();
+    
+            // Filtrar por 'mac_add' si se proporciona
+            if ($macAdd) {
+                $query->where('mac_add', $macAdd);
+            }
+    
+            // Obtener el último registro si 'latest' es true
+            if ($latest) {
+                $query->orderBy('datetime', 'desc')->limit(1);
+            }
+    
+            // Obtener los datos
+            $qualityData = $query->get();
+    
+            // Verificar si se encontraron datos
+            if ($qualityData->isEmpty()) {
+                return response()->json([
+                    'message' => 'No data found',
+                ], 404);
+            }
+    
+            // Devolver los datos en formato JSON
+            return response()->json([
+                'message' => 'Data retrieved successfully',
+                'data' => $qualityData,
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            // Manejo de errores
+            Log::error('Error retrieving Quality Data', [
+                'error_message' => $th->getMessage(),
+                'error_trace' => $th->getTraceAsString(),
+            ]);
+    
+            return response()->json([
+                'message' => 'Error retrieving Quality Data',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+    public function dashboard(Request $request)
+    {
+        // Obtener los datos necesarios
+        $qualityData = QualityData::orderBy('datetime', 'desc')->get();
+
+        // Pasar los datos a la vista
+        return view('dashboard', [
+            'qualityData' => $qualityData,
+        ]);
+    }
 }

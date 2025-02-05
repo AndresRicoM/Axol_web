@@ -30,5 +30,6 @@ Route::get('/sensors', [TankController::class, 'getSensors']);
 
 // Quality
 Route::get('/sensor/quality', [HomehubController::class, 'getHomehub']);
+Route::get('/sensor/getQuality', [QualityController::class, 'getQualityData']);
 Route::post('/sensor/quality', [QualityController::class, 'registerQuality']);
 Route::post('/sensor/qualityData', [QualityController::class, 'registerQualityData']);
