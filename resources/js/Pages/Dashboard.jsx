@@ -4,12 +4,18 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Select } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGamepad } from '@fortawesome/free-solid-svg-icons'
-
+import { faCircleInfo, faGamepad } from '@fortawesome/free-solid-svg-icons'
+import RadialChart from "@/Components/RadialChart";
+import ColumnChart from "@/Components/ColumnChart";
+import { Button, Flex, Modal } from 'antd';
+import ChartCard from "@/Components/ChartCard";
 
 export default function Dashboard({ auth, waterData, user }) {
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [openResponsive, setOpenResponsive] = useState(false);
+
     const homehubList = [
         { name: "CSLab" },
         { name: "PabloHH" },
@@ -38,12 +44,12 @@ export default function Dashboard({ auth, waterData, user }) {
         }
     };
 
-    const getChartColor = (percentage) => {
-        if (percentage <= 25) return "#FF4560"; // Rojo - Nivel crítico
-        if (percentage <= 50) return "#FEB019"; // Amarillo - Nivel bajo
-        if (percentage <= 75) return "#3CADD4"; // Azul - Nivel normal
-        return "#00E396"; // Verde - Nivel óptimo
-    };
+    // const getChartColor = (percentage) => {
+    //     if (percentage <= 25) return "#FF4560"; // Rojo - Nivel crítico
+    //     if (percentage <= 50) return "#FEB019"; // Amarillo - Nivel bajo
+    //     if (percentage <= 75) return "#3CADD4"; // Azul - Nivel normal
+    //     return "#00E396"; // Verde - Nivel óptimo
+    // };
 
     // const options = {
     //     series: [waterData.totalFill],
@@ -85,158 +91,152 @@ export default function Dashboard({ auth, waterData, user }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
-
-            <div className="flex flex-col w-full items-center">
-                <div className="flex flex-col gap-10 w-[95%] py-8">
-                    <div className="flex md:flex-row flex-col gap-5 justify-between">
-                        <span className="text-text md:text-5xl text-2xl font-semibold">{getGreeting()}, {user.username}.</span>
-                        <Select
-                            placeholder={<span className="text-text">Selecciona tu homehub</span>}
-                            style={{
-                                width: 280,
-                                height: 50,
-                            }}
-                        // onChange={handleChange}
-                        >
-                            {homehubList.map((homehub) => (
-                                <Select.Option key={homehub.name} value={homehub.name}>
-                                    <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.name}</span>
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
-
-                    {/* Tanks */}
-                    <div className="">
-                        {tanks.map((tank) => (
-                            <div key={tank.id} className="flex flex-col gap-5">
-                                <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
-
-                                <div className="flex md:flex-row flex-col gap-3">
-                                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-5">
-                                        <div className="p-6">
-                                            <h2 className="text-2xl font-semibold mb-4">
-                                                Estado del Agua
-                                            </h2>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* Información del agua */}
-                                                <div className="space-y-4">
-                                                    <div className="bg-blue-50 h-64 w-64 rounded-lg flex justify-center items-center">
-                                                        <p className="text-lg text-center">
-                                                            Hay un total de:{" "}
-                                                            <span className="font-bold">
-                                                                {waterData.totalMass}
-                                                            </span>{" "}
-                                                            Litros de agua
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                {/* Gráfica circular */}
-                                                {/* <div className="h-[400px]">
-                                    <ReactApexChart
-                                        options={options}
-                                        series={options.series}
-                                        type="radialBar"
-                                        height={300}
-                                    />
-                                    </div> */}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-5">
-                                        <div className="p-6">
-                                            <h2 className="text-2xl font-semibold mb-4">
-                                                Estado del Agua
-                                            </h2>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* Información del agua */}
-                                                <div className="space-y-4">
-                                                    <div className="bg-blue-50 h-64 w-64 rounded-lg flex justify-center items-center">
-                                                        <p className="text-lg text-center">
-                                                            Hay un total de:{" "}
-                                                            <span className="font-bold">
-                                                                {waterData.totalMass}
-                                                            </span>{" "}
-                                                            Litros de agua
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                {/* Gráfica circular */}
-                                                {/* <div className="h-[400px]">
-                                    <ReactApexChart
-                                        options={options}
-                                        series={options.series}
-                                        type="radialBar"
-                                        height={300}
-                                    />
-                                    </div> */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        ))}
-
-                    </div>
-                </div>
-                {/* PopUp de info */}
-
-                {/* Map */}
-                
-
-                <div className="max-w-7xl mx-auto p-6 lg:p-8">
-                    <div className="mt-16">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                            <a
-                                href="#"
-                                className="scale-100 p-6 bg-white white:bg-gray-800/50 dark:bg-gradient-to-bl from-gray-700/50 via-transparent dark:ring-1 dark:ring-inset dark:ring-white/5 rounded-lg shadow-2xl shadow-gray-500/20 dark:shadow-none flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500"
+            <Flex vertical gap="middle" align="flex-start">
+                <div className="flex flex-col w-full items-center">
+                    <div className="flex flex-col gap-10 w-[95%] py-8">
+                        <div className="flex md:flex-row flex-col gap-5 justify-between">
+                            <span className="text-text md:text-5xl text-2xl font-semibold">{getGreeting()}, {user.username}.</span>
+                            <Select
+                                placeholder={<span className="text-text">Selecciona tu homehub</span>}
+                                style={{
+                                    width: 280,
+                                    height: 50,
+                                }}
+                            // onChange={handleChange}
                             >
-                                <div>
-                                    <div className="h-16 w-16 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full">
-                                        <img
-                                            src="/assets/AxoloteCool.gif"
-                                            alt="Mi Logo"
-                                        />
+                                {homehubList.map((homehub) => (
+                                    <Select.Option key={homehub.name} value={homehub.name}>
+                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.name}</span>
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+
+                        <div className="">
+                            {tanks.map((tank) => (
+                                <div key={tank.id} className="flex flex-col gap-5">
+                                    <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
+
+                                    <div className="flex md:flex-row flex-col gap-3">
+                                        <ChartCard title="Nivel de agua" className="w-full md:w-1/2">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* Información del agua */}
+                                                <div className="flex flex-col gap-3">
+                                                    <RadialChart waterData={waterData} />
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span>Hay un total de 0 Litros de Agua en la Casa</span>
+                                                </div>
+                                            </div>
+                                        </ChartCard>
+
+                                        <ChartCard title="Estado del Agua" className="w-full md:w-1/2 relative">
+                                            <div className="flex md:flex-row-reverse flex-col gap-3">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
+                                                    <div className="w-full">
+                                                        <ColumnChart />
+                                                    </div>
+                                                    <Button
+                                                        className="absolute top-2 right-2 p-1"
+                                                        onClick={() => setOpenResponsive(true)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faCircleInfo} />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </ChartCard>
+
                                     </div>
 
-                                    <h2 className="mt-6 text-xl font-semibold text-gray-900 dark:text-white">
-                                        Documentation
-                                    </h2>
-
-                                    <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                                        Lorem, ipsum dolor sit amet consectetur
-                                        adipisicing elit. Quisquam quae ullam
-                                        deserunt tenetur amet nulla eaque rem
-                                        quidem, dignissimos commodi molestiae
-                                        deleniti .
-                                    </p>
                                 </div>
+                            ))}
 
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    className="self-center shrink-0 stroke-red-500 w-6 h-6 mx-6"
+                        </div>
+                    </div>
+                    {/* PopUp de info */}
+
+                    {/* Map */}
+                    {/* <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[51.505, -0.09]}>
+                        <Popup>
+                            A pretty CSS3 popup. <br /> Easily customizable.
+                        </Popup>
+                    </Marker>
+                </MapContainer> */}
+
+                    <div className="max-w-7xl mx-auto p-6 lg:p-8">
+                        <div className="mt-16">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                                <a
+                                    href="#"
+                                    className="scale-100 p-6 bg-white white:bg-gray-800/50 dark:bg-gradient-to-bl from-gray-700/50 via-transparent dark:ring-1 dark:ring-inset dark:ring-white/5 rounded-lg shadow-2xl shadow-gray-500/20 dark:shadow-none flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500"
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                    />
-                                </svg>
-                            </a>
+                                    <div>
+                                        <div className="h-16 w-16 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full">
+                                            <img
+                                                src="/assets/AxoloteCool.gif"
+                                                alt="Mi Logo"
+                                            />
+                                        </div>
+
+                                        <h2 className="mt-6 text-xl font-semibold text-gray-900 dark:text-white">
+                                            Documentation
+                                        </h2>
+
+                                        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                                            Lorem, ipsum dolor sit amet consectetur
+                                            adipisicing elit. Quisquam quae ullam
+                                            deserunt tenetur amet nulla eaque rem
+                                            quidem, dignissimos commodi molestiae
+                                            deleniti .
+                                        </p>
+                                    </div>
+
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        className="self-center shrink-0 stroke-red-500 w-6 h-6 mx-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+                                        />
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <Modal
+                    title={<span className="text-text">¡Cuidado!</span>}
+                    open={openResponsive}
+                    onOk={() => setOpenResponsive(false)}
+                    cancelButtonProps={{ style: { display: 'none' } }}
+                    width={{
+                        xs: '90%',
+                        sm: '80%',
+                        md: '70%',
+                        lg: '60%',
+                        xl: '50%',
+                        xxl: '40%',
+                    }}
+                >
+                    <p>
+                        Siempre hierve el agua y toma precauciones con su consumo. La medición de calidad presentada no
+                        detecta ni toma en cuenta todos los tipos de contaminantes ni bacterias.
+                    </p>
+                    <img src="\assets\Information\tds_agua.jpeg" alt="Agua" className="w-full" />
+
+                </Modal>
+            </Flex>
             {/* Division de cuadros */}
         </AuthenticatedLayout>
     );
