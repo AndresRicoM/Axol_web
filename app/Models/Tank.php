@@ -32,4 +32,11 @@ class Tank extends Model
     protected $primaryKey = 'mac_add';
 
     public $timestamps = false;
+
+
+    // Define a relationship with the TankData model
+    public function tankData()
+    {
+        return $this->hasMany(TankData::class, 'mac_add', 'mac_add');
+    }
 }
