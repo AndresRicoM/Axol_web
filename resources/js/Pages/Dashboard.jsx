@@ -114,43 +114,50 @@ export default function Dashboard({ auth, waterData, user }) {
 
                         <div className="">
                             {tanks.map((tank) => (
-                                <div key={tank.id} className="flex flex-col gap-5">
+                                <div key={tank.id} className="flex flex-col gap-5 ">
                                     <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
 
-                                    <div className="flex md:flex-row flex-col gap-3">
-                                        <ChartCard title="Nivel de agua" className="w-full md:w-1/2">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {/* Información del agua */}
-                                                <div className="flex flex-col gap-3">
-                                                    <RadialChart waterData={waterData} />
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <span>Hay un total de 0 Litros de Agua en la Casa</span>
-                                                </div>
-                                            </div>
-                                        </ChartCard>
-
-                                        <ChartCard title="Estado del Agua" className="w-full md:w-1/2 relative">
-                                            <div className="flex md:flex-row-reverse flex-col gap-3">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
-                                                    <div className="w-full">
-                                                        <ColumnChart />
+                                    <div className="flex md:flex-row flex-col gap-3 w-full">
+                                        <div className="md:w-1/4 w-full">
+                                            <ChartCard title="Nivel de agua" className="h-full">
+                                                <div className="grid grid-cols-1 gap-6 h-full">
+                                                    <div className="flex flex-col gap-2 items-center justify-center h-full">
+                                                        <RadialChart waterData={waterData} className="h-20 w-20" />
+                                                        <div className="flex items-center text-center text-sm">
+                                                            <span>Hay un total de 0 Litros de Agua en la Casa</span>
+                                                        </div>
                                                     </div>
-                                                    <Button
-                                                        className="absolute top-2 right-2 p-1"
-                                                        onClick={() => setOpenResponsive(true)}
-                                                    >
-                                                        <FontAwesomeIcon icon={faCircleInfo} />
-                                                    </Button>
                                                 </div>
-                                            </div>
-                                        </ChartCard>
+                                            </ChartCard>
+                                        </div>
 
+                                        <div className="md:w-3/4 w-full">
+                                            <ChartCard 
+                                                title={
+                                                    <div className="flex justify-between items-center">
+                                                        <span>Estado del Agua</span>
+                                                        <Button
+                                                            className="p-1"
+                                                            onClick={() => setOpenResponsive(true)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faCircleInfo} />
+                                                        </Button>
+                                                    </div>
+                                                }
+                                                className="relative min-h-[400px] py-4"
+                                            >
+                                                <div className="flex md:flex-row-reverse flex-col gap-6">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
+                                                        <div className="w-full h-[281px]">
+                                                            <ColumnChart />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ChartCard>
+                                        </div>
                                     </div>
-
                                 </div>
                             ))}
-
                         </div>
                     </div>
                     {/* PopUp de info */}
@@ -215,26 +222,45 @@ export default function Dashboard({ auth, waterData, user }) {
                     </div>
                 </div>
 
+                {/* Modal personalizado para mostrar información importante sobre la calidad del agua */}
                 <Modal
-                    title={<span className="text-text">¡Cuidado!</span>}
+                    // Título del modal con estilo personalizado: texto grande, negrita y mayúsculas
+                    title={<span className="text-2xl font-bold">¡CUIDADO!</span>}
                     open={openResponsive}
+                    // Handler para el botón OK
                     onOk={() => setOpenResponsive(false)}
+                    // Handler para la X y click fuera del modal
+                    onCancel={() => setOpenResponsive(false)}
+                    // Ocultamos el botón de cancelar del modal
                     cancelButtonProps={{ style: { display: 'none' } }}
+                    // Configuración del ancho responsive del modal según el tamaño de pantalla
                     width={{
-                        xs: '90%',
-                        sm: '80%',
-                        md: '70%',
-                        lg: '60%',
-                        xl: '50%',
-                        xxl: '40%',
+                        xs: '90%',  // Móviles: usa 90% del ancho de la pantalla
+                        sm: '80%',  // Tablets pequeñas: usa 80% del ancho
+                        md: '70%',  // Tablets: usa 70% del ancho
+                        lg: '60%',  // Laptops: usa 60% del ancho
+                        xl: '50%',  // Monitores: usa 50% del ancho
+                        xxl: '40%', // Pantallas grandes: usa 40% del ancho
                     }}
+                    // Centramos todo el contenido del modal
+                    className="text-center"
                 >
-                    <p>
-                        Siempre hierve el agua y toma precauciones con su consumo. La medición de calidad presentada no
-                        detecta ni toma en cuenta todos los tipos de contaminantes ni bacterias.
-                    </p>
-                    <img src="\assets\Information\tds_agua.jpeg" alt="Agua" className="w-full" />
-
+                    {/* Contenedor flex para organizar el contenido en columna y centrado */}
+                    <div className="flex flex-col items-center gap-6">
+                        {/* Párrafo de advertencia con palabras clave resaltadas en negrita */}
+                        <p className="text-lg">
+                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. La medición de calidad presentada{' '}
+                            <span className="font-bold">no detecta</span> ni toma en cuenta todos los tipos de contaminantes ni bacterias.
+                        </p>
+                        
+                        {/* Imagen informativa que muestra la escala de PPM */}
+                        <img 
+                            src="/assets/Information/tds_agua.jpeg" 
+                            alt="Escala de PPM del agua" 
+                            // Ancho completo con máximo de 768px y margen superior
+                            className="w-full max-w-3xl mt-4"
+                        />
+                    </div>
                 </Modal>
             </Flex>
             {/* Division de cuadros */}

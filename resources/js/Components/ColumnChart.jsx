@@ -1,7 +1,7 @@
 import React from 'react'
 import Chart from "react-apexcharts";
 
-function ColumnChart() {
+export default function ColumnChart() {
     const value = 44;
 
     const [state, setState] = React.useState({
@@ -13,11 +13,12 @@ function ColumnChart() {
         options: {
             chart: {
                 type: 'bar',
-                height: 350,
+                height: '100%',
                 width: '100%',
                 toolbar: {
-                    show: false
-                }
+                    show: false  // Oculta la barra de herramientas
+                },
+                offsetX: 255  // Move Chart - Mueve la gráfica horizontalmente (255px a la derecha)
             },
             plotOptions: {
                 bar: {
@@ -47,17 +48,21 @@ function ColumnChart() {
                         return `${val} PPM`;
                     }
                 }
-            }
+            },
+            grid: {
+                padding: {
+                    left: 50,   // Espacio a la izquierda
+                    right: 10,  // Espacio a la derecha
+                }
+            },
         },
 
 
     });
 
     return (
-        <div style={{ width: '100%' }}> {/* Contenedor con ancho del 100% */}
-            <Chart options={state.options} series={state.series} type="bar" height={350}/>
+        <div className="h-full w-full">
+            <Chart options={state.options} series={state.series} type="bar" height="100%" width="100%"/>
         </div>
     )
 }
-
-export default ColumnChart
