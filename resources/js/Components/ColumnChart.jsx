@@ -1,22 +1,37 @@
 import React from 'react'
 import Chart from "react-apexcharts";
 
-// Función para determinar el offset basado en el ancho de la ventana
-// Esta función ya no se usa ya que centramos la gráfica en todos los dispositivos
-const getOffsetX = () => {
-    const width = window.innerWidth;
-    if (width >= 1920) return 200;      // Full HD y superior - Movido a la derecha
-    if (width >= 1440) return 180;      // Laptops grandes - Movido a la derecha
-    if (width >= 1024) return 150;      // Desktop pequeños - Movido a la derecha
-    if (width >= 768) return 0;         // Tablets - Centrado
-    if (width >= 640) return 0;         // Tablets pequeñas - Centrado
-    if (width >= 480) return 0;         // Móviles grandes - Centrado
-    return 0;                           // Móviles pequeños - Centrado
-};
-
 export default function ColumnChart() {
     // Valor inicial de la calidad del agua en PPM
     const value = 44;
+
+    // Estado para controlar la posición horizontal de la gráfica
+    // 255 es el valor inicial para desktop (mueve la gráfica hacia la derecha)
+    const [chartOffset, setChartOffset] = React.useState(255);
+
+    // Este efecto se ejecuta cuando el componente se monta y cuando la ventana cambia de tamaño
+    React.useEffect(() => {
+        // Función que determina el offset según el ancho de la pantalla
+        const handleResize = () => {
+            const width = window.innerWidth;
+            // Diferentes offsets según el breakpoint:
+            if (width >= 1024) {
+                setChartOffset(255);     // Desktop - mueve bastante a la derecha
+            } else if (width >= 768) {
+                setChartOffset(50);      // Tablets - mueve un poco a la derecha
+            } else if (width >= 480) {
+                setChartOffset(15);      // Móviles grandes - mueve muy poco (reducido de 20 a 15)
+            } else {
+                setChartOffset(-4);      // Móviles pequeños - casi centrado (reducido de 20 a 10)
+            }
+        };
+
+        // Ejecuta la función inmediatamente y añade el listener
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        // Limpia el listener cuando el componente se desmonta
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Estado que contiene la configuración y datos de la gráfica
     const [state, setState] = React.useState({
@@ -35,7 +50,7 @@ export default function ColumnChart() {
                 toolbar: {
                     show: false        // Oculta la barra de herramientas
                 },
-                offsetX: 0             // Centra la gráfica horizontalmente
+                offsetX: chartOffset  // Aquí se aplica el offset para mover la gráfica
             },
             // Configuración de las barras
             plotOptions: {
@@ -89,6 +104,20 @@ export default function ColumnChart() {
             },
         },
     });
+
+    // Este efecto actualiza las opciones de la gráfica cuando cambia el offset
+    React.useEffect(() => {
+        setState(prev => ({
+            ...prev,
+            options: {
+                ...prev.options,
+                chart: {
+                    ...prev.options.chart,
+                    offsetX: chartOffset  // Actualiza el offset en las opciones
+                }
+            }
+        }));
+    }, [chartOffset]);
 
     // Renderiza el componente Chart con todas las configuraciones
     return (
