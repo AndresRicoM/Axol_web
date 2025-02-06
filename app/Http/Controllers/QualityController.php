@@ -88,10 +88,9 @@ class QualityController extends Controller
             // Consulta base
             $query = QualityData::query();
     
-            // Filtrar por 'mac_add' si se proporciona
-            if ($macAdd) {
-                $query->where('mac_add', $macAdd);
-            }
+
+            $query->where('mac_add', $macAdd);
+            
     
             // Obtener el último registro si 'latest' es true
             if ($latest) {
