@@ -30,6 +30,7 @@
         "apexcharts": "^4.3.0",
         "leaflet": "^1.9.4",
         "primereact": "^10.9.2",
-        "react-apexcharts": "^1.7.0"
+        "react-apexcharts": "^1.7.0",
+        "react-leaflet": "^5.0.0-rc.2"
     }
 }

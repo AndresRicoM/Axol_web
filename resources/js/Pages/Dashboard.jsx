@@ -112,16 +112,16 @@ export default function Dashboard({ auth, waterData, user }) {
                             </Select>
                         </div>
 
-                        <div className="">
+                        <div className="flex flex-col gap-7">
                             {tanks.map((tank) => (
-                                <div key={tank.id} className="flex flex-col gap-5 ">
+                                <div key={tank.id} className="flex flex-col gap-3 ">
                                     <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
 
-                                    <div className="flex md:flex-row flex-col gap-3 w-full">
-                                        <div className="md:w-1/4 w-full">
-                                            <ChartCard title="Nivel de agua" className="h-full">
-                                                <div className="grid grid-cols-1 gap-6 h-full">
-                                                    <div className="flex flex-col gap-2 items-center justify-center h-full">
+                                    <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
+                                        <div className="md:w-1/4 w-full ">
+                                            <ChartCard title="Agua almacenada">
+                                                <div className="grid grid-cols-1 gap-6 h-full ">
+                                                    <div className="flex flex-col gap-2   items-center justify-center h-full">
                                                         <RadialChart waterData={waterData} className="h-20 w-20" />
                                                         <div className="flex items-center text-center text-sm">
                                                             <span>Hay un total de 0 Litros de Agua en la Casa</span>
@@ -132,16 +132,16 @@ export default function Dashboard({ auth, waterData, user }) {
                                         </div>
 
                                         <div className="md:w-3/4 w-full">
-                                            <ChartCard 
+                                            <ChartCard
                                                 title={
                                                     <div className="flex justify-between items-center">
-                                                        <span>Estado del Agua</span>
-                                                        <Button
+                                                        <span>Calidad del agua</span>
+                                                        <button
                                                             className="p-1"
                                                             onClick={() => setOpenResponsive(true)}
                                                         >
                                                             <FontAwesomeIcon icon={faCircleInfo} />
-                                                        </Button>
+                                                        </button>
                                                     </div>
                                                 }
                                                 className="relative min-h-[400px] py-4"
@@ -164,16 +164,16 @@ export default function Dashboard({ auth, waterData, user }) {
 
                     {/* Map */}
                     {/* <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Marker position={[51.505, -0.09]}>
-                        <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
-                        </Popup>
-                    </Marker>
-                </MapContainer> */}
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[51.505, -0.09]}>
+                            <Popup>
+                                A pretty CSS3 popup. <br /> Easily customizable.
+                            </Popup>
+                        </Marker>
+                    </MapContainer> */}
 
                     <div className="max-w-7xl mx-auto p-6 lg:p-8">
                         <div className="mt-16">
@@ -252,11 +252,11 @@ export default function Dashboard({ auth, waterData, user }) {
                             <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. La medición de calidad presentada{' '}
                             <span className="font-bold">no detecta</span> ni toma en cuenta todos los tipos de contaminantes ni bacterias.
                         </p>
-                        
+
                         {/* Imagen informativa que muestra la escala de PPM */}
-                        <img 
-                            src="/assets/Information/tds_agua.jpeg" 
-                            alt="Escala de PPM del agua" 
+                        <img
+                            src="/assets/Information/tds_agua.jpeg"
+                            alt="Escala de PPM del agua"
                             // Ancho completo con máximo de 768px y margen superior
                             className="w-full max-w-3xl mt-4"
                         />
