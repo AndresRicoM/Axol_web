@@ -78,39 +78,75 @@ class QualityController extends Controller
             'data' => $qualityData
         ], 201);
     }
+    // public function getQualityData(Request $request)
+    // {
+    //     try {
+    //         // Obtener los parámetros de la solicitud
+    //         $macAdd = $request->input('mac_add');
+    
+    //         // Consulta base
+    //         $query = QualityData::query();
+    
+
+    //         $query->where('mac_add', $macAdd);
+            
+    
+    //         // Obtener el último registro 
+
+    //         $query->orderBy('datetime', 'desc')->limit(1);
+
+    
+    //         // Obtener los datos
+    //         $qualityData = $query->get();
+    
+    //         // Verificar si se encontraron datos
+    //         if ($qualityData->isEmpty()) {
+    //             return response()->json([
+    //                 'message' => 'No data found',
+    //             ], 404);
+    //         }
+    
+    //         // Devolver los datos en formato JSON
+    //         return response()->json([
+    //             'message' => 'Data retrieved successfully',
+    //             'data' => $qualityData,
+    //         ], 200);
+    
+    //     } catch (\Throwable $th) {
+    //         // Manejo de errores
+    //         Log::error('Error retrieving Quality Data', [
+    //             'error_message' => $th->getMessage(),
+    //             'error_trace' => $th->getTraceAsString(),
+    //         ]);
+    
+    //         return response()->json([
+    //             'message' => 'Error retrieving Quality Data',
+    //             'error' => $th->getMessage(),
+    //         ], 500);
+    //     }
+    // }
     public function getQualityData(Request $request)
     {
         try {
             // Obtener los parámetros de la solicitud
             $macAdd = $request->input('mac_add');
-            $latest = $request->input('latest', false); // Parámetro para obtener el último registro
     
             // Consulta base
-            $query = QualityData::query();
-    
-
-            $query->where('mac_add', $macAdd);
-            
-    
-            // Obtener el último registro si 'latest' es true
-            if ($latest) {
-                $query->orderBy('datetime', 'desc')->limit(1);
-            }
-    
-            // Obtener los datos
-            $qualityData = $query->get();
+            $query = QualityData::where('mac_add', $macAdd)
+                                ->orderBy('datetime', 'desc')
+                                ->first(); // Obtener solo el último registro
     
             // Verificar si se encontraron datos
-            if ($qualityData->isEmpty()) {
+            if (!$query) {
                 return response()->json([
                     'message' => 'No data found',
                 ], 404);
             }
     
-            // Devolver los datos en formato JSON
+            // Devolver los datos en formato JSON con la estructura requerida
             return response()->json([
-                'message' => 'Data retrieved successfully',
-                'data' => $qualityData,
+                "mac_add" => $query->mac_add,
+                "tds" => $query->tds
             ], 200);
     
         } catch (\Throwable $th) {
@@ -126,5 +162,5 @@ class QualityController extends Controller
             ], 500);
         }
     }
-
+    
 }

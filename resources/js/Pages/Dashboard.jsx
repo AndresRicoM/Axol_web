@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
-export default function Dashboard({ auth, waterData }) {
+export default function Dashboard({ auth, waterData, qualityData, tankData }) {
+    useEffect(() => {
+        console.log('Water Data:', waterData);
+        console.log('Quality Data:', qualityData.mac_add);
+        console.log('Quality Data:', qualityData.tds);
+        console.log('Tank mac_add:', tankData);
+        console.log('Tank Data %:', tankData.fill_percentage);
+    }, [waterData, qualityData, tankData]);
+
     // Función para determinar el color basado en el porcentaje
     const getChartColor = (percentage) => {
         if (percentage <= 25) return '#FF4560';      // Rojo - Nivel crítico
@@ -61,7 +69,7 @@ export default function Dashboard({ auth, waterData }) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div className="p-6">
                             <h2 className="text-2xl font-semibold mb-4">Estado del Agua</h2>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Información del agua */}
                                 <div className="space-y-4">
@@ -70,7 +78,7 @@ export default function Dashboard({ auth, waterData }) {
                                             Total de agua: <span className="font-bold">{waterData.totalMass}</span> Litros
                                         </p>
                                     </div>
-                                    
+
                                     <div className="bg-gray-50 p-4 rounded-lg">
                                         <p>Tanques conectados: {waterData.tankNum}</p>
                                         <p>Volumen total: {waterData.totalVolume} m³</p>
@@ -90,56 +98,30 @@ export default function Dashboard({ auth, waterData }) {
                         </div>
                     </div>
 
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">You're logged in!</div>
+                    {/* Mostrar datos de calidad del agua */}
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div className="p-6">
+                            <h3 className="text-xl font-semibold mb-4">Calidad del Agua</h3>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <p>MAC: {qualityData.mac_add}.</p>
+                                <p>TDS: {qualityData.tds}.</p>
+    
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-{/* PopUp de info */}
-        
-            <div className="max-w-7xl mx-auto p-6 lg:p-8">
-
-                    <div className="mt-16">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                            <a
-                                href="#"
-                                className="scale-100 p-6 bg-white white:bg-gray-800/50 dark:bg-gradient-to-bl from-gray-700/50 via-transparent dark:ring-1 dark:ring-inset dark:ring-white/5 rounded-lg shadow-2xl shadow-gray-500/20 dark:shadow-none flex motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-red-500"
-                            >
-                                <div>
-                                    <div className="h-16 w-16 bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-full">
-                                    <img src="/assets/AxoloteCool.gif" alt="Mi Logo" />
-                                    </div>
-
-                                    <h2 className="mt-6 text-xl font-semibold text-gray-900 dark:text-white">
-                                        Documentation
-                                    </h2>
-
-                                    <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam quae ullam deserunt tenetur amet nulla eaque rem quidem, dignissimos commodi molestiae deleniti .
-                                    </p>
-                                </div>
-
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    className="self-center shrink-0 stroke-red-500 w-6 h-6 mx-6"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                    />
-                                </svg>
-                            </a>
+                    {/* Mostrar datos del tanque */}
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6">
+                            <h3 className="text-xl font-semibold mb-4">Nivel del Tanque</h3>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <p>MAC: {tankData.mac_add}.</p>
+                                <p>Nivel del tanque: {tankData.fill_percentage}%.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            
-{/* Division de cuadros */}
-
+            </div>
 
         </AuthenticatedLayout>
     );
