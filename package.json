@@ -14,8 +14,6 @@
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.31",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
         "tailwindcss": "^3.2.1",
         "vite": "^5.0.0"
     },
@@ -28,9 +26,9 @@
         "@fortawesome/react-fontawesome": "^0.2.2",
         "antd": "^5.23.3",
         "apexcharts": "^4.3.0",
-        "leaflet": "^1.9.4",
         "primereact": "^10.9.2",
+        "react": "^18.3.1",
         "react-apexcharts": "^1.7.0",
-        "react-leaflet": "^5.0.0-rc.2"
+        "react-dom": "^18.3.1"
     }
 }
