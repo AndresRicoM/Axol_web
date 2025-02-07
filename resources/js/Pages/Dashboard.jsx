@@ -37,8 +37,9 @@ export default function Dashboard({ auth, user, sensorsData }) {
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
+    const [homehubList, setHomehubList] = useState(sensorsData);
+    const [currentHomehub, setCurrentHomehub] = useState(sensorsData[0]);
 
-    
 
 
     // const homehubList = [
@@ -113,6 +114,10 @@ export default function Dashboard({ auth, user, sensorsData }) {
     //     }
     // };
 
+    const handleChange = (value) => {
+        setCurrentHomehub(homehubList[value]);
+    }
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
@@ -127,20 +132,21 @@ export default function Dashboard({ auth, user, sensorsData }) {
                                     width: 280,
                                     height: 50,
                                 }}
-                            // onChange={handleChange}
+                                onChange={(value) => handleChange(value)}
                             >
-                                {homehubList.map((homehub) => (
-                                    <Select.Option key={homehub.name} value={homehub.name}>
-                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.name}</span>
+                                {homehubList.map((homehub, i) => (
+                                    <Select.Option key={i} value={i} >
+                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.homehub}</span>
                                     </Select.Option>
                                 ))}
                             </Select>
                         </div>
 
+                        {/* aqui va el map que quite */}
                         <div className="flex flex-col gap-7">
-                            {tanks.map((tank) => (
+                            {currentHomehub.tank.tankData.map((tank) => (
                                 <div key={tank.id} className="flex flex-col gap-3 ">
-                                    <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
+                                    <span className="text-text font-semibold text-2xl">Tanque {tank.mac_add}</span>
 
                                     <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
                                         <div className="md:w-3/4 w-full">
@@ -150,7 +156,7 @@ export default function Dashboard({ auth, user, sensorsData }) {
                                                     <ChartCard title="Agua almacenada">
                                                         <div className="grid grid-cols-1 gap-6 h-full">
                                                             <div className="flex flex-col gap-2 items-center justify-center h-full">
-                                                                <RadialChart waterPercentage={tankData.fill_percentage} className="h-20 w-20" />
+                                                                <RadialChart waterPercentage={tank.fill_percentage} className="h-20 w-20" />
                                                                 <div className="flex items-center text-center text-sm">
                                                                     <span>Hay un total de 0 Litros de agua</span>
                                                                 </div>
@@ -178,7 +184,7 @@ export default function Dashboard({ auth, user, sensorsData }) {
                                                         <div className="flex md:flex-row-reverse flex-col gap-6">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
-                                                                    <ColumnChart tds={qualityData.tds} />
+                                                                    {/* <ColumnChart tds={tank} /> */}
                                                                 </div>
                                                             </div>
                                                         </div>
