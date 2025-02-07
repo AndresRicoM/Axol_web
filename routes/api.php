@@ -16,7 +16,7 @@ use App\Http\Controllers\QualityController;
 
 // Homehub
 Route::post('/homehub', [HomehubController::class, 'registerHomehub']);
-Route::post('/homehub', [HomehubController::class, 'getHomehub']);
+// Route::post('/homehub', [HomehubController::class, 'getHomehub']);
 
 // Bucket
 Route::post('/sensor/bucket', [BucketController::class, 'registerBucket']);

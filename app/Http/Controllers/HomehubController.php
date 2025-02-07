@@ -13,8 +13,11 @@ class HomehubController extends Controller
     public function registerHomehub(Request $request)
     {
 
-        $user = User::where('username', $request->username)->first();
+        // return response()->json([
+        //     "data" => $request->username
+        // ], 200);
 
+        $user = User::where('username', $request->username)->first();
         if (!$user) {
             Log::error('User not found');
 
