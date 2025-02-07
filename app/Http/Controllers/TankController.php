@@ -56,30 +56,30 @@ class TankController extends Controller
                 'datetime' => 'required'
             ]);
             Log::info('Validated> ', ['validated' => $validated]);
-    
+
             // Crear el registro en la base de datos
             $sensor = TankData::create($validated);
             Log::info('Tank created successfully', ['sensor' => $sensor]);
-    
+
         } catch (\Throwable $th) {
             Log::error('Error sending Tank Data', [
                 'error_message' => $th->getMessage(),
                 'error_trace' => $th->getTraceAsString(),
                 'request_data' => $request->all(), // Para registrar los datos que se están enviando
             ]);
-        
+
             return response()->json([
                 'message' => 'Error sending Tank Data',
                 'error' => $th->getMessage(),
             ], 500);
         }
-        
+
         return response()->json([
             'message' => 'Data Tank registered successfully',
             'data' => $sensor
         ], 201);
     }
-    
+
 
     public function getTank(Request $request)
     {
@@ -123,57 +123,125 @@ class TankController extends Controller
 
     public function getTankFillPercentage(Request $request)
     {
-        $macAdd = $request->input('mac_add');
-    
+        // Obtener los parámetros de la solicitud
+        $macAdd = $request->input('paired_with');
+
+        // Encontrar todos los registros de calidad con el paired_with proporcionado
+        $tanks = Tank::where('paired_with', $macAdd)
+            ->get();
+
+        // Lista de objetos
+        $tankData = $tanks->map(function ($tank) {
+            $macAdd = $tank->mac_add;
+            $query = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
+                ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
+                ->orderBy('tank_data.datetime', 'desc')
+                ->select(
+                    'tank_sensorsdb_practice_ui.use',
+                    'tank_sensorsdb_practice_ui.tank_area',
+                    'tank_sensorsdb_practice_ui.tank_capacity',
+                    'tank_sensorsdb_practice_ui.max_height',
+                    'tank_data.water_distance'
+                )
+                ->first();
+
+            return [
+                'mac_add' => $macAdd,
+                'use' => $query->use,
+                'water_distance' => $query->water_distance,
+                'tank_area' => $query->tank_area,
+                'tank_capacity' => $query->tank_capacity,
+                'max_height' => $query->max_height
+            ];
+        });
+
+        // return response()->json([
+        //     'tankData' => $tankData
+        // ]);
+
         // Obtener datos del tanque junto con la última lectura de distancia del agua
-        $tank = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
-            ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
-            ->orderBy('tank_data.datetime', 'desc')
-            ->select(
-                'tank_sensorsdb_practice_ui.tank_area',
-                'tank_sensorsdb_practice_ui.tank_capacity',
-                'tank_sensorsdb_practice_ui.max_height',
-                'tank_data.water_distance'
-            )
-            ->first();
-    
-        if (!$tank) {
+        // $tank = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
+        //     ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
+        //     ->orderBy('tank_data.datetime', 'desc')
+        //     ->select(
+        //         'tank_sensorsdb_practice_ui.tank_area',
+        //         'tank_sensorsdb_practice_ui.tank_capacity',
+        //         'tank_sensorsdb_practice_ui.max_height',
+        //         'tank_data.water_distance'
+        //     )
+        //     ->first();
+
+        if (!$tankData) {
             return response()->json(["message" => "Tanque no encontrado o sin datos de nivel de agua"], 404);
         }
-    
-        // Convertir todo a metros
-        $max_height_m = $tank->max_height / 1000; // Convertir mm a m
-        $water_distance_m = $tank->water_distance / 1000; // Convertir mm a m
-    
-        // Calcular la altura del agua en metros
-        $water_height_m = $max_height_m - $water_distance_m;
-    
-        // Calcular el volumen de agua en metros cúbicos
-        $volume_m3 = $tank->tank_area * $water_height_m;
-    
-        // Convertir el volumen a litros (1 m³ = 1000 litros)
-        $volume_liters = $volume_m3 * 1000;
-    
-        // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
-        $percentage = ($volume_liters / $tank->tank_capacity) * 100;
-    
-        // // Mostrar datos en la consola
-        // echo "Datos del tanque:\n" .
-        //      " - Área del tanque (tank_area): " . $tank->tank_area . " m²\n" .
-        //      " - Capacidad total (tank_capacity): " . $tank->tank_capacity . " L\n" .
-        //      " - Altura total (max_height): " . $tank->max_height . " mm\n" .
-        //      " - Distancia al agua (water_distance): " . $tank->water_distance . " mm\n" .
-        //      " - Altura total en metros (max_height_m): " . $max_height_m . " m\n" .
-        //      " - Distancia al agua en metros (water_distance_m): " . $water_distance_m . " m\n" .
-        //      " - Altura del agua en metros (water_height_m): " . $water_height_m . " m\n" .
-        //      " - Volumen de agua en m³ (volume_m3): " . $volume_m3 . " m³\n" .
-        //      " - Volumen de agua en litros (volume_liters): " . $volume_liters . " L\n" .
-        //      " - Porcentaje de llenado (fill_percentage): " . round($percentage, 2) . "%\n";
-    
-        return response()->json([
-            "mac_add" => $macAdd,
-            "fill_percentage" => round($percentage, 2)
-        ]);
+
+
+        // return response()->json([
+        //     "type" => gettype($tankData),
+        //     "len" => count($tankData),
+        //     // "val" => $tankData
+        // ]);
+
+        $storageData = $tankData->map(function ($tank) {
+
+            // Convertir todo a metros
+            $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
+            $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
+
+            // Calcular la altura del agua en metros
+            $water_height_m = $max_height_m - $water_distance_m;
+
+            // Calcular el volumen de agua en metros cúbicos
+            $volume_m3 = $tank['tank_area'] * $water_height_m;
+
+            // Convertir el volumen a litros (1 m³ = 1000 litros)
+            $volume_liters = $volume_m3 * 1000;
+
+            // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
+            $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
+
+            // Calcular litros restantes
+            $remaining_liters = ($percentage * $tank['tank_capacity']) / 100;
+
+            return [
+                "mac_add" => $tank['mac_add'],
+                "use" => $tank['use'],
+                "fill_percentage" => round($percentage, 2),
+                "remaining_liters" => round($remaining_liters, 2)
+            ];
+        });
+
+        return response()->json($storageData);
+
+        // $storageData = array_map(function ($tank) {
+
+        //     return response()->json([
+        //         "tankData" => $tank
+        //     ]);
+
+        //     // Convertir todo a metros
+        //     $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
+        //     $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
+
+        //     // Calcular la altura del agua en metros
+        //     $water_height_m = $max_height_m - $water_distance_m;
+
+        //     // Calcular el volumen de agua en metros cúbicos
+        //     $volume_m3 = $tank['tank_area'] * $water_height_m;
+
+        //     // Convertir el volumen a litros (1 m³ = 1000 litros)
+        //     $volume_liters = $volume_m3 * 1000;
+
+        //     // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
+        //     $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
+
+        //     return [
+        //         "mac_add" => $tank['mac_add'],
+        //         "fill_percentage" => round($percentage, 2)
+        //     ];
+        // }, $tankData);
+
+        // return response()->json($storageData);
     }
 
 }

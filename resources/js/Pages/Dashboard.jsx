@@ -10,32 +10,58 @@ import ColumnChart from "@/Components/ColumnChart";
 import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 
-export default function Dashboard({ auth, user , qualityData , tankData }) {
-    console.log("qualityData");
-    console.log(qualityData);
-    console.log("tankData");
-    console.log(tankData);
+export default function Dashboard({ auth, user, axolData }) {
+    // console.log("qualityData");
+    // console.log(qualityData);
+    // console.log("tankData");
+    // console.log(tankData);
+    // console.log("homehubData");
+    // console.log(homehubData);
+
+    // console.log("user")
+    // console.log(user)
+    // console.log("userId")
+    // console.log(userId)
+    // console.log("homehubData")
+    // console.log(homehubData)
+
+    console.log("axolData")
+    console.log(axolData)
+
+    // const [qualityData, setQualityData] = useState(axolData.qualityData);
+    console.log(typeof axolData)
+    // return (<></>);
+
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
+    const [homehubList, setHomehubList] = useState(axolData);
+    const [currentHomehub, setCurrentHomehub] = useState(axolData[0]);
+    const [currentLat , setCurrentLat] = useState(parseFloat(currentHomehub.homehub.lat));
+    const [currentLon , setCurrentLon] = useState(parseFloat(currentHomehub.homehub.lon));
 
-    const homehubList = [
-        { name: "CSLab" },
-        { name: "PabloHH" },
-        { name: "TonyHH" },
-        { name: "CUCEI1" },
-        { name: "CUCEI2" },
-    ];
+    console.log("location")
+    console.log(currentHomehub.homehub.lat)
+    console.log(currentHomehub.homehub.lon)
 
-    const tanks = [
-        { name: "Tank CSLab", id: 1 },
-        { name: "Tank PabloHH", id: 2 },
-        { name: "Tank TonyHH", id: 3 },
-        { name: "Tank CUCEI1", id: 4 },
-        { name: "Tank CUCEI2", id: 5 },
-    ];
+    // const homehubList = [
+    //     { name: "CSLab" },
+    //     { name: "PabloHH" },
+    //     { name: "TonyHH" },
+    //     { name: "CUCEI1" },
+    //     { name: "CUCEI2" },
+    // ];
+
+    // const tanks = [
+    //     { name: "Tank CSLab", id: 1 },
+    //     { name: "Tank PabloHH", id: 2 },
+    //     { name: "Tank TonyHH", id: 3 },
+    //     { name: "Tank CUCEI1", id: 4 },
+    //     { name: "Tank CUCEI2", id: 5 },
+    // ];
 
     const hour = new Date().getHours();
 
@@ -93,6 +119,10 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
     //     }
     // };
 
+    const handleChange = (value) => {
+        setCurrentHomehub(homehubList[value]);
+    }
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
@@ -107,20 +137,27 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                     width: 280,
                                     height: 50,
                                 }}
-                            // onChange={handleChange}
+                                onChange={(value) => handleChange(value)}
+                                defaultValue={0}
                             >
-                                {homehubList.map((homehub) => (
-                                    <Select.Option key={homehub.name} value={homehub.name}>
-                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.name}</span>
+                                {homehubList.map((homehub, i) => (
+                                    <Select.Option key={i} value={i} >
+                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.homehub.name}</span>
                                     </Select.Option>
                                 ))}
                             </Select>
                         </div>
 
+                        {/* aqui va el map que quite */}
                         <div className="flex flex-col gap-7">
-                            {tanks.map((tank) => (
-                                <div key={tank.id} className="flex flex-col gap-3 ">
-                                    <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
+                            {currentHomehub.sensors.map((tank) => (
+                                <div key={tank.mac_add} className="flex flex-col gap-3 ">
+                                    {tank.storage ?
+                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.storage.use}</span>)
+                                        :
+                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.quality.use}</span>)
+                                    }
+
 
                                     <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
                                         <div className="md:w-3/4 w-full">
@@ -130,16 +167,25 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                     <ChartCard title="Agua almacenada">
                                                         <div className="grid grid-cols-1 gap-6 h-full">
                                                             <div className="flex flex-col gap-2 items-center justify-center h-full">
-                                                                <RadialChart waterPercentage={tankData.fill_percentage} className="h-20 w-20" />
-                                                                <div className="flex items-center text-center text-sm">
-                                                                    <span>Hay un total de 0 Litros de agua</span>
-                                                                </div>
+                                                                {tank.storage ?
+                                                                    (
+                                                                        <>
+                                                                            <RadialChart waterPercentage={tank.storage.fill_percentage} className="h-20 w-20" />
+                                                                            <div className="flex items-center text-center text-sm">
+                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage.remaining_liters} Litros de agua</span>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                    :
+                                                                    (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
+                                                                }
+
                                                             </div>
                                                         </div>
                                                     </ChartCard>
                                                 </div>
 
-                                                {/* Segunda Card - Agua almacenada (ancha) */}
+                                                {/* Segunda Card - Calidad del agua */}
                                                 <div className="md:w-2/3 w-full">
                                                     <ChartCard
                                                         title={
@@ -156,9 +202,16 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                         className="relative min-h-[400px] py-4"
                                                     >
                                                         <div className="flex md:flex-row-reverse flex-col gap-6">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
+                                                            <div className="flex md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
-                                                                    <ColumnChart tds={qualityData.tds} />
+                                                                    {tank.quality ?
+                                                                        (
+                                                                            <WaterQualityIndicator tds={tank.quality.tds} />
+                                                                        )
+                                                                        :
+                                                                        (<span className="text-text font-semibold text-2xl">no data</span>)
+                                                                    }
+                                                                    {/* <ColumnChart tds={tank} /> */}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -193,7 +246,7 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
 
                         {/* Map */}
                         <MapContainer
-                            center={[51.505, -0.09]}
+                            center={[currentLat, currentLon]}
                             zoom={13}
                             scrollWheelZoom={false}
                             style={{ height: "400px", width: "100%" }}
@@ -202,9 +255,9 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            <Marker position={[51.505, -0.09]}>
+                            <Marker position={[currentLat, currentLon]}>
                                 <Popup>
-                                    A pretty CSS3 popup. <br /> Easily customizable.
+                                    Tanques: {currentHomehub.sensors.length}
                                 </Popup>
                             </Marker>
                         </MapContainer>
@@ -241,18 +294,32 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                 >
                     {/* Contenedor flex para organizar el contenido en columna y centrado */}
                     <div className="flex flex-col items-center gap-6">
-                        {/* Párrafo de advertencia con palabras clave resaltadas en negrita */}
-                        <p className="text-lg">
-                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. La medición de calidad presentada{' '}
+                        
+
+                        <p className="text-lg mt-4">
+                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. 
+                            La medición de calidad presentada{' '}
                             <span className="font-bold">no detecta</span> ni toma en cuenta todos los tipos de contaminantes ni bacterias.
                         </p>
 
-                        {/* Imagen informativa que muestra la escala de PPM */}
+
+                        {/* Categorías de calidad del agua */}
+                        <div className="flex flex-col gap-4 w-full items-center">
+                            <div className="text-[#00E396] text-lg">
+                                Categoría 1 - Agua pura o con bajo contenido de minerales y metales.
+                            </div>
+                        <div className="text-[#FEB019] text-lg">
+                            Categoría 2 - Agua con características de agua tratada.
+                            </div>
+                            <div className="text-[#FF4560] text-lg">
+                                Categoría 3 - Agua con alto contenido de minerales y posibles metales.
+                            </div>
+                        </div>
+
                         <img
                             src="/assets/Information/tds_agua.jpeg"
                             alt="Escala de PPM del agua"
-                            // Ancho completo con máximo de 768px y margen superior
-                            className="w-full max-w-3xl mt-4"
+                            className="w-full max-w-3xl mt-12"
                         />
                     </div>
                 </Modal>

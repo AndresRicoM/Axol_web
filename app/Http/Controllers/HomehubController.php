@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Homehub;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use App\Models\Tank;
 
 class HomehubController extends Controller
 {
@@ -54,8 +55,14 @@ class HomehubController extends Controller
 
     public function getHomehub(Request $request)
     {
+        $userId = $request->input('user_id');
+        $homehub = Homehub::where('user_id', $userId)->get();
+        // $homehubIds = $homehub->pluck('mac_add');
+
+        Log::info('Homehub data:', ['user_id' => $userId, 'homehub' => $homehub]);
         return response()->json([
-            'message' => 'Welcome to Homehub',
+            "homehub" => $homehub
+
         ], 200);
     }
 }

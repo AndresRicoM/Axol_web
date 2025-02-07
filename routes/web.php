@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomehubController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -10,6 +11,11 @@ use App\Http\Controllers\WaterTankController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\QualityController;
 use Illuminate\Http\Request;
+
+use App\Models\Homehub;
+use App\Models\QualityData;
+use App\Models\TankData;
+use App\Models\WaterData;
 
 
 /*
@@ -49,36 +55,73 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// Dashboard - protegido por middleware auth y verified
 Route::get('/dashboard', function () {
-    // Instancia de los controladores
-    $waterController = new WaterTankController();
+    $homehubController = new HomehubController();
     $qualityController = new QualityController();
     $tankController = new TankController();
 
-    // MAC addresses
-    $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
-    $tank_mac = '90:38:0C:88:1B:24'; // MAC Address de prueba para el tanque
-    $quality_mac ='40:22:D8:69:5F:DC'; // MAC Address de prueba para el quality
+
+    $user = Auth::user();
+    $userId = $user->user_id;
+
+    // get user homehubs
+    $homehubRequest = request()->merge(['user_id' => $userId]);
+    $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehub; // RETURNS A STRING
 
 
-    // Obtener datos del controlador de agua
-    // $waterData = $waterController->getWaterData($homehub_mac);
-    // Obtener datos del controlador de calidad
-    $qualityRequest = request()->merge(['mac_add' => $quality_mac]);
-    $qualityData = $qualityController->getQualityData($qualityRequest);
+    $axolData = array_map(function ($homehub) use ($qualityController, $tankController) {
 
-    // Obtener datos del controlador del tanque
-    $tankRequest = request()->merge(['mac_add' => $tank_mac]);
-    $tankData = $tankController->getTankFillPercentage($tankRequest);
-    
+        //     return [
+        //         "type" => gettype($homehub),
+        //         "homehub" => $homehub,
+        //         'value' => $homehub->mac_add,
+        // ];
 
-    $user = Auth::user()->only('id', 'username');
+        $qualityRequest = request()->merge(['paired_with' => $homehub->mac_add]);
+        $qualityData = $qualityController->getQualityData($qualityRequest)->getData();
 
+        $tankRequest = request()->merge(['paired_with' => $homehub->mac_add]);
+        $tankData = $tankController->getTankFillPercentage($tankRequest)->getData();
+
+        // Merging sensors with the same 'use' attribute
+        $groupedSensors = [];
+
+        foreach ($qualityData as $quality) {
+            $use = $quality->use;
+            if (!isset($groupedSensors[$use])) {
+                $groupedSensors[$use] = [];
+            }
+            $groupedSensors[$use]['quality'] = $quality;
+        }
+
+        foreach ($tankData as $tank) {
+            $use = $tank->use;
+            if (!isset($groupedSensors[$use])) {
+                $groupedSensors[$use] = [];
+            }
+            $groupedSensors[$use]['storage'] = $tank;
+        }
+
+        // Convierte el array asociativo en un array indexado
+        $sensors = array_values($groupedSensors);
+
+        return [
+            'homehub' => $homehub,
+            'sensors' => $sensors,
+            // 'quality' => $qualityData,
+            // 'tank' => $tankData,
+        ];
+    }, $homehubData);
+
+    // All data in json format
+    // return response()->json([
+    //     'axolData' => $axolData,
+    // ]);
+
+    // Render the dashboard
     return Inertia::render('Dashboard', [
+        'axolData' => $axolData,
         'user' => $user,
-        'qualityData' => $qualityData->getData() ?? [],
-        'tankData' => $tankData->getData() ?? []
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -104,4 +147,4 @@ Route::prefix('api')->middleware('web')->group(function () {
 
     Route::get('/sensors', [TankController::class, 'getSensors']);
 });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
