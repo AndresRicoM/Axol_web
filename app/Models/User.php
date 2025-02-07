@@ -2,44 +2,37 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
-        'remember_token',
+    ]; 
+
+    // Cambia la tabla a tu tabla personalizada
+    protected $table = 'users_practice_ui';
+
+    // Define las columnas que se pueden llenar masivamente
+    protected $fillable = [
+        'username',
+        'password',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    // Laravel espera que la clave primaria sea "id". Si es diferente (por ejemplo, "user_id"), agrega esto:
+    protected $primaryKey = 'user_id';
+
+    // Si la clave primaria no es auto-incremental, indica que no usa autoincremento
+    public $incrementing = true;
+
+    // Si la clave primaria no es de tipo "int", especifica el tipo
+    protected $keyType = 'int';
+
+    // Si tu tabla no tiene las columnas de marcas de tiempo (created_at y updated_at), desactívalas:
+    public $timestamps = false;
 }
