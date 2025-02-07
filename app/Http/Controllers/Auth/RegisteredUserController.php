@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
     {
         $validated = $request->validate([
             'username' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => 'required|confirmed|min:8',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);

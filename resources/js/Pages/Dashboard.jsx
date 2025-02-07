@@ -39,13 +39,21 @@ export default function Dashboard({ auth, user, axolData }) {
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
     const [homehubList, setHomehubList] = useState(axolData);
+
+    console.log("axolData")
+    console.log(axolData)
+
+    // return (
+    //     <></>
+    // )
+
     const [currentHomehub, setCurrentHomehub] = useState(axolData[0]);
-    const [currentLat , setCurrentLat] = useState(parseFloat(currentHomehub.homehub.lat));
-    const [currentLon , setCurrentLon] = useState(parseFloat(currentHomehub.homehub.lon));
+    const [currentLat, setCurrentLat] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lat) : 0);
+    const [currentLon, setCurrentLon] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0);
 
     console.log("location")
-    console.log(currentHomehub.homehub.lat)
-    console.log(currentHomehub.homehub.lon)
+    // console.log(currentHomehub.homehub.lat)
+    // console.log(currentHomehub.homehub.lon)
 
     // const homehubList = [
     //     { name: "CSLab" },
@@ -121,6 +129,18 @@ export default function Dashboard({ auth, user, axolData }) {
 
     const handleChange = (value) => {
         setCurrentHomehub(homehubList[value]);
+    }
+
+    if (axolData.length === 0) {
+        return (
+            <AuthenticatedLayout user={auth.user}>
+                <Head title="Dashboard" />
+                <Flex vertical gap="middle" align="center">
+                    <span className="text-text text-2xl font-semibold mt-10">No hay datos disponibles.</span>
+                    <span className="text-text text-lg mt-10">Registra un Homehub</span>
+                </Flex>
+            </AuthenticatedLayout>
+        )
     }
 
     return (
@@ -294,10 +314,10 @@ export default function Dashboard({ auth, user, axolData }) {
                 >
                     {/* Contenedor flex para organizar el contenido en columna y centrado */}
                     <div className="flex flex-col items-center gap-6">
-                        
+
 
                         <p className="text-lg mt-4">
-                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. 
+                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo.
                             La medición de calidad presentada{' '}
                             <span className="font-bold">no detecta</span> ni toma en cuenta todos los tipos de contaminantes ni bacterias.
                         </p>
@@ -308,8 +328,8 @@ export default function Dashboard({ auth, user, axolData }) {
                             <div className="text-[#00E396] text-lg">
                                 Categoría 1 - Agua pura o con bajo contenido de minerales y metales.
                             </div>
-                        <div className="text-[#FEB019] text-lg">
-                            Categoría 2 - Agua con características de agua tratada.
+                            <div className="text-[#FEB019] text-lg">
+                                Categoría 2 - Agua con características de agua tratada.
                             </div>
                             <div className="text-[#FF4560] text-lg">
                                 Categoría 3 - Agua con alto contenido de minerales y posibles metales.
