@@ -130,7 +130,7 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                     <ChartCard title="Agua almacenada">
                                                         <div className="grid grid-cols-1 gap-6 h-full">
                                                             <div className="flex flex-col gap-2 items-center justify-center h-full">
-                                                                <RadialChart waterData={waterData} className="h-20 w-20" />
+                                                                <RadialChart waterPercentage={tankData.fill_percentage} className="h-20 w-20" />
                                                                 <div className="flex items-center text-center text-sm">
                                                                     <span>Hay un total de 0 Litros de agua</span>
                                                                 </div>
@@ -173,12 +173,6 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                 title={
                                                     <div className="flex justify-between items-center">
                                                         <span>Ajolotito</span>
-                                                        <button
-                                                            className="p-1"
-                                                            onClick={() => setOpenResponsive(true)}
-                                                        >
-                                                            <FontAwesomeIcon icon={faCircleInfo} />
-                                                        </button>
                                                     </div>
                                                 }
                                                 className="relative h-full py-4"

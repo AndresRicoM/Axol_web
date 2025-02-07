@@ -1,8 +1,7 @@
 import React from 'react'
 import Chart from "react-apexcharts";
 
-function RadialChart({waterData}) {
-
+function RadialChart({waterPercentage}) {
     const getChartColor = (percentage) => {
         if (percentage <= 25) return "#FF4560"; // Rojo - Nivel crítico
         if (percentage <= 50) return "#FEB019"; // Amarillo - Nivel bajo
@@ -10,11 +9,10 @@ function RadialChart({waterData}) {
         return "#00E396"; // Verde - Nivel óptimo
     };
 
-    console.log(waterData);
 
     const options = {
-        series: [waterData.totalFill],
-        colors: [getChartColor(waterData.totalFill)], // Color dinámico
+        series: [waterPercentage],
+        colors: [getChartColor(waterPercentage)], // Color dinámico
         plotOptions: {
             radialBar: {
                 hollow: {
