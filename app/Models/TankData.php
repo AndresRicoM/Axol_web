@@ -5,23 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class QualityData extends Model
+class TankData extends Model
 {
     use HasFactory;
 
-    protected $table = 'quality_data_practice_ui';
+    protected $table = 'stored_waterdb_practice_ui';
 
     protected $fillable = [
         'mac_add',
-        'tds',
-        'water_temp',
+        'water_distance',
         'datetime'
     ];
     
     protected $casts = [
         'mac_add' => 'string',
-        'tds'=> 'float',
-        'water_temp'=> 'float',
+        'water_distance'=> 'float',
         'datetime'=> 'datetime'
 
     ];
@@ -29,4 +27,10 @@ class QualityData extends Model
     protected $primaryKey = 'mac_add';
 
     public $timestamps = false;
+
+    // Define a relationship with the Tank model
+    public function tank()
+    {
+        return $this->belongsTo(Tank::class, 'mac_add', 'mac_add');
+    }
 }

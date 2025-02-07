@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
 use App\Http\Controllers\WaterTankController;
 use App\Http\Controllers\TankController;
+use App\Http\Controllers\QualityController;
 use Illuminate\Http\Request;
 
 
@@ -47,17 +48,38 @@ Route::middleware(['auth'])->group(function () {
     })->name('welcome');
 });
 
+
 // Dashboard - protegido por middleware auth y verified
 Route::get('/dashboard', function () {
+    // Instancia de los controladores
     $waterController = new WaterTankController();
+    $qualityController = new QualityController();
+    $tankController = new TankController();
+
+    // MAC addresses
     $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
+    $tank_mac = '90:38:0C:88:1B:24'; // MAC Address de prueba para el tanque
+    $quality_mac ='40:22:D8:69:5F:DC'; // MAC Address de prueba para el quality
+
+
+    // Obtener datos del controlador de agua
     $waterData = $waterController->getWaterData($homehub_mac);
+    // Obtener datos del controlador de calidad
+    $qualityRequest = request()->merge(['mac_add' => $quality_mac]);
+    $qualityData = $qualityController->getQualityData($qualityRequest);
+
+    // Obtener datos del controlador del tanque
+    $tankRequest = request()->merge(['mac_add' => $tank_mac]);
+    $tankData = $tankController->getTankFillPercentage($tankRequest);
+    
 
     $user = Auth::user()->only('id', 'username');
 
     return Inertia::render('Dashboard', [
         'waterData' => $waterData,
         'user' => $user,
+        'qualityData' => $qualityData->getData() ?? [],
+        'tankData' => $tankData->getData() ?? []
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

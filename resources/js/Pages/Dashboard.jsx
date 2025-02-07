@@ -11,7 +11,10 @@ import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 
-export default function Dashboard({ auth, waterData, user }) {
+export default function Dashboard({ auth, waterData, user , qualityData , tankData }) {
+    console.log(waterData);
+    console.log(qualityData);
+    console.log(tankData);
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
