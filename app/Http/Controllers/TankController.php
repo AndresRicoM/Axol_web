@@ -137,6 +137,7 @@ class TankController extends Controller
                 ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
                 ->orderBy('tank_data.datetime', 'desc')
                 ->select(
+                    'tank_sensorsdb_practice_ui.use',
                     'tank_sensorsdb_practice_ui.tank_area',
                     'tank_sensorsdb_practice_ui.tank_capacity',
                     'tank_sensorsdb_practice_ui.max_height',
@@ -146,6 +147,7 @@ class TankController extends Controller
 
             return [
                 'mac_add' => $macAdd,
+                'use' => $query->use,
                 'water_distance' => $query->water_distance,
                 'tank_area' => $query->tank_area,
                 'tank_capacity' => $query->tank_capacity,
@@ -200,46 +202,42 @@ class TankController extends Controller
 
             return [
                 "mac_add" => $tank['mac_add'],
+                "use" => $tank['use'],
                 "fill_percentage" => round($percentage, 2)
             ];
         });
 
-        return response()->json([
-            "tankData" => $storageData,
-        ]);
+        return response()->json($storageData);
 
-        $storageData = array_map(function ($tank) {
+        // $storageData = array_map(function ($tank) {
 
-            return response()->json([
-                "tankData" => $tank
-            ]);
+        //     return response()->json([
+        //         "tankData" => $tank
+        //     ]);
 
-            // Convertir todo a metros
-            $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
-            $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
+        //     // Convertir todo a metros
+        //     $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
+        //     $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
 
-            // Calcular la altura del agua en metros
-            $water_height_m = $max_height_m - $water_distance_m;
+        //     // Calcular la altura del agua en metros
+        //     $water_height_m = $max_height_m - $water_distance_m;
 
-            // Calcular el volumen de agua en metros cúbicos
-            $volume_m3 = $tank['tank_area'] * $water_height_m;
+        //     // Calcular el volumen de agua en metros cúbicos
+        //     $volume_m3 = $tank['tank_area'] * $water_height_m;
 
-            // Convertir el volumen a litros (1 m³ = 1000 litros)
-            $volume_liters = $volume_m3 * 1000;
+        //     // Convertir el volumen a litros (1 m³ = 1000 litros)
+        //     $volume_liters = $volume_m3 * 1000;
 
-            // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
-            $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
+        //     // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
+        //     $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
 
-            return [
-                "mac_add" => $tank['mac_add'],
-                "fill_percentage" => round($percentage, 2)
-            ];
-        }, $tankData);
+        //     return [
+        //         "mac_add" => $tank['mac_add'],
+        //         "fill_percentage" => round($percentage, 2)
+        //     ];
+        // }, $tankData);
 
-        return response()->json([
-            "tankData" => $storageData,
-            // "fill_percentage" => round($percentage, 2)
-        ]);
+        // return response()->json($storageData);
     }
 
 }

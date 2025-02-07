@@ -57,11 +57,11 @@ class HomehubController extends Controller
     {
         $userId = $request->input('user_id');
         $homehub = Homehub::where('user_id', $userId)->get();
-        $homehubIds = $homehub->pluck('mac_add');
+        // $homehubIds = $homehub->pluck('mac_add');
 
-        Log::info('Homehub data:', ['user_id' => $userId, 'homehubIds' => $homehubIds]);
+        Log::info('Homehub data:', ['user_id' => $userId, 'homehub' => $homehub]);
         return response()->json([
-            "homehubsMacAdd" => $homehubIds
+            "homehub" => $homehub
 
         ], 200);
     }

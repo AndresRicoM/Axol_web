@@ -144,7 +144,8 @@ class QualityController extends Controller
 
                 return [
                     'mac_add' => $query->mac_add,
-                    'tds' => $query->tds
+                    'tds' => $query->tds,
+                    'use' => $sensor->use,
                 ];
             });
 
@@ -161,9 +162,7 @@ class QualityController extends Controller
             }
     
             // Devolver los datos en formato JSON con la estructura requerida
-            return response()->json([
-                "qualityData" => $qualityData
-            ], 200);
+            return response()->json($qualityData, 200);
     
         } catch (\Throwable $th) {
             // Manejo de errores
