@@ -10,6 +10,7 @@ import ColumnChart from "@/Components/ColumnChart";
 import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 
 export default function Dashboard({ auth, user, axolData }) {
     // console.log("qualityData");
@@ -184,7 +185,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     </ChartCard>
                                                 </div>
 
-                                                {/* Segunda Card - Agua almacenada (ancha) */}
+                                                {/* Segunda Card - Calidad del agua */}
                                                 <div className="md:w-2/3 w-full">
                                                     <ChartCard
                                                         title={
@@ -293,18 +294,32 @@ export default function Dashboard({ auth, user, axolData }) {
                 >
                     {/* Contenedor flex para organizar el contenido en columna y centrado */}
                     <div className="flex flex-col items-center gap-6">
-                        {/* Párrafo de advertencia con palabras clave resaltadas en negrita */}
-                        <p className="text-lg">
-                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. La medición de calidad presentada{' '}
+                        
+
+                        <p className="text-lg mt-4">
+                            <span className="font-bold">Siempre</span> hierve el agua y toma precauciones con su consumo. 
+                            La medición de calidad presentada{' '}
                             <span className="font-bold">no detecta</span> ni toma en cuenta todos los tipos de contaminantes ni bacterias.
                         </p>
 
-                        {/* Imagen informativa que muestra la escala de PPM */}
+
+                        {/* Categorías de calidad del agua */}
+                        <div className="flex flex-col gap-4 w-full items-center">
+                            <div className="text-[#00E396] text-lg">
+                                Categoría 1 - Agua pura o con bajo contenido de minerales y metales.
+                            </div>
+                        <div className="text-[#FEB019] text-lg">
+                            Categoría 2 - Agua con características de agua tratada.
+                            </div>
+                            <div className="text-[#FF4560] text-lg">
+                                Categoría 3 - Agua con alto contenido de minerales y posibles metales.
+                            </div>
+                        </div>
+
                         <img
                             src="/assets/Information/tds_agua.jpeg"
                             alt="Escala de PPM del agua"
-                            // Ancho completo con máximo de 768px y margen superior
-                            className="w-full max-w-3xl mt-4"
+                            className="w-full max-w-3xl mt-12"
                         />
                     </div>
                 </Modal>
