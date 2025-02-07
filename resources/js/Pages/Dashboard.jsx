@@ -172,12 +172,12 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                         <>
                                                                             <RadialChart waterPercentage={tank.storage.fill_percentage} className="h-20 w-20" />
                                                                             <div className="flex items-center text-center text-sm">
-                                                                                <span>Hay un total de 0 Litros de agua</span>
+                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage.remaining_liters} Litros de agua</span>
                                                                             </div>
                                                                         </>
                                                                     )
                                                                     :
-                                                                    (<span className="text-text font-semibold text-2xl">no data</span>)
+                                                                    (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
                                                                 }
 
                                                             </div>
@@ -202,11 +202,11 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         className="relative min-h-[400px] py-4"
                                                     >
                                                         <div className="flex md:flex-row-reverse flex-col gap-6">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
+                                                            <div className="flex md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
                                                                     {tank.quality ?
                                                                         (
-                                                                            <ColumnChart tds={tank.quality.tds} />
+                                                                            <WaterQualityIndicator tds={tank.quality.tds} />
                                                                         )
                                                                         :
                                                                         (<span className="text-text font-semibold text-2xl">no data</span>)
@@ -257,7 +257,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             />
                             <Marker position={[currentLat, currentLon]}>
                                 <Popup>
-                                    A pretty CSS3 popup. <br /> Easily customizable.
+                                    Tanques: {currentHomehub.sensors.length}
                                 </Popup>
                             </Marker>
                         </MapContainer>

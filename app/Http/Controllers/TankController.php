@@ -200,10 +200,14 @@ class TankController extends Controller
             // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
             $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
 
+            // Calcular litros restantes
+            $remaining_liters = ($percentage * $tank['tank_capacity']) / 100;
+
             return [
                 "mac_add" => $tank['mac_add'],
                 "use" => $tank['use'],
-                "fill_percentage" => round($percentage, 2)
+                "fill_percentage" => round($percentage, 2),
+                "remaining_liters" => round($remaining_liters, 2)
             ];
         });
 
