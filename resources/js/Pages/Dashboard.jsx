@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo, faGamepad } from '@fortawesome/free-solid-svg-icons'
 import RadialChart from "@/Components/RadialChart";
 import ColumnChart from "@/Components/ColumnChart";
-import { Button, Flex, Modal } from 'antd';
+import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 
@@ -140,13 +140,24 @@ export default function Dashboard({ auth, waterData, user }) {
                                                     <ChartCard
                                                         title={
                                                             <div className="flex justify-between items-center">
-                                                                <span>Agua almacenada</span>
-                                                                
+                                                                <span>Calidad del agua</span>
+                                                                <button
+                                                                    className="p-1"
+                                                                    onClick={() => setOpenResponsive(true)}
+                                                                >
+                                                                    <FontAwesomeIcon icon={faCircleInfo} />
+                                                                </button>
                                                             </div>
                                                         }
-                                                        className="relative h-full py-4"
+                                                        className="relative min-h-[400px] py-4"
                                                     >
-                                                        {/* Contenido de agua almacenada */}
+                                                        <div className="flex md:flex-row-reverse flex-col gap-6">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
+                                                                <div className="w-full h-[281px]">
+                                                                    <ColumnChart />
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </ChartCard>
                                                 </div>
                                             </div>
@@ -169,8 +180,8 @@ export default function Dashboard({ auth, waterData, user }) {
                                                 className="relative h-full py-4"
                                             >
                                                 <div className="flex items-center justify-center h-full">
-                                                    <img 
-                                                        src="/assets/Desktop/CirculoAjolote/CirculoBlanco.gif" 
+                                                    <img
+                                                        src="/assets/Desktop/CirculoAjolote/CirculoBlanco.gif"
                                                         alt="Ajolotito"
                                                         className="w-64 h-64 object-cover mt-2"
                                                     />

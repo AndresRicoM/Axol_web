@@ -16,7 +16,7 @@ export default function ColumnChart() {
             const width = window.innerWidth;
             // Diferentes offsets según el breakpoint:
             if (width >= 1024) {
-                setChartOffset(255);     // Desktop - mueve bastante a la derecha
+                setChartOffset(150);     // Desktop - mueve bastante a la derecha
             } else if (width >= 768) {
                 setChartOffset(50);      // Tablets - mueve un poco a la derecha
             } else if (width >= 480) {
