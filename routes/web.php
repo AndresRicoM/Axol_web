@@ -63,11 +63,12 @@ Route::get('/dashboard', function () {
 
     $user = Auth::user();
     $userId = $user->user_id;
+    // dd($user->username);
 
     // get user homehubs
     $homehubRequest = request()->merge(['user_id' => $userId]);
     $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehub; // RETURNS A STRING
-
+    // dd($homehubData);
 
     $axolData = array_map(function ($homehub) use ($qualityController, $tankController) {
 
@@ -136,8 +137,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/logout', function () {
     Auth::logout(); // Cierra la sesión del usuario
     return redirect('/')->with('success', 'Has cerrado sesión correctamente.');
-})->name('logout')->middleware('auth'); // Solo usuarios autenticados pueden cerrar sesión
-
+})->name('logout')->middleware('auth');
 
 // Endpoints que usan la autenticacion y así obtener la sesión del usuario
 Route::prefix('api')->middleware('web')->group(function () {

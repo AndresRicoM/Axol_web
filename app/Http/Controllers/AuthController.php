@@ -31,7 +31,6 @@ class AuthController extends Controller
             ], 429);
         }
 
-
         if (Auth::attempt($request->only('username', 'password'), $request->remember)) {
             RateLimiter::clear($request->username);
             // $request->session()->regenerate();
@@ -44,5 +43,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Las credenciales no coinciden con nuestros registros.',
         ], 401);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

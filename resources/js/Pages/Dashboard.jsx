@@ -136,6 +136,9 @@ export default function Dashboard({ auth, user, axolData }) {
             <AuthenticatedLayout user={auth.user}>
                 <Head title="Dashboard" />
                 <Flex vertical gap="middle" align="center">
+                    <div className="flex md:flex-row flex-col gap-5 justify-between">
+                        <span className="text-text md:text-5xl text-2xl font-semibold">{getGreeting()}, {user.username}.</span>
+                    </div>
                     <span className="text-text text-2xl font-semibold mt-10">No hay datos disponibles.</span>
                     <span className="text-text text-lg mt-10">Registra un Homehub</span>
                 </Flex>
@@ -229,7 +232,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                             <WaterQualityIndicator tds={tank.quality.tds} />
                                                                         )
                                                                         :
-                                                                        (<span className="text-text font-semibold text-2xl">no data</span>)
+                                                                        (<span className="text-text font-semibold text-2xl">No hay sensor registrado</span>)
                                                                     }
                                                                     {/* <ColumnChart tds={tank} /> */}
                                                                 </div>

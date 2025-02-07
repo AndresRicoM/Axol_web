@@ -147,8 +147,8 @@ class TankController extends Controller
 
             return [
                 'mac_add' => $macAdd,
-                'use' => $query->use,
                 'water_distance' => $query->water_distance,
+                'use' => $query->use,
                 'tank_area' => $query->tank_area,
                 'tank_capacity' => $query->tank_capacity,
                 'max_height' => $query->max_height
