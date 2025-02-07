@@ -41,11 +41,11 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
 
     const getGreeting = () => {
         if (hour >= 5 && hour < 12) {
-            return "Good Morning";
+            return "Buenos días";
         } else if (hour >= 12 && hour < 18) {
-            return "Good Afternoon";
+            return "Buenas tardes";
         } else {
-            return "Good Evening";
+            return "Buenas noches";
         }
     };
 
