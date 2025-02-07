@@ -158,7 +158,7 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                         <div className="flex md:flex-row-reverse flex-col gap-6">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
-                                                                    <ColumnChart />
+                                                                    <ColumnChart tds={qualityData.tds} />
                                                                 </div>
                                                             </div>
                                                         </div>

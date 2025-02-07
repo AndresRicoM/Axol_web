@@ -1,14 +1,17 @@
-import React from 'react'
+import React from 'react';
 import Chart from "react-apexcharts";
 
-export default function ColumnChart() {
-    // Valor inicial de la calidad del agua en PPM
-    const value = 44;
-
+export default function ColumnChart({ tds }) {
     // Estado para controlar la posición horizontal de la gráfica
-    // 255 es el valor inicial para desktop (mueve la gráfica hacia la derecha)
     const [chartOffset, setChartOffset] = React.useState(255);
 
+    const getChartColor = (value) => {
+        if (value <= 50) return "#3CADD4"; // Azul - Nivel normal
+        if (value <= 600) return "#FEB019"; // Amarillo - Nivel bajo
+        if (value >= 900) return "#FF4560"; // Rojo - Nivel crítico
+        return "#00E396"; // Verde - Nivel óptimo
+    };
+     
     // Este efecto se ejecuta cuando el componente se monta y cuando la ventana cambia de tamaño
     React.useEffect(() => {
         // Función que determina el offset según el ancho de la pantalla
@@ -38,7 +41,7 @@ export default function ColumnChart() {
         // Datos de la serie que se mostrará en la gráfica
         series: [{
             name: "Calidad",
-            data: [value]
+            data: [tds]
         }],
         // Configuración completa de la gráfica
         options: {
@@ -105,7 +108,7 @@ export default function ColumnChart() {
         },
     });
 
-    // Este efecto actualiza las opciones de la gráfica cuando cambia el offset
+    // Este efecto actualiza las opciones de la gráfica cuando cambia el offset o el valor de tds
     React.useEffect(() => {
         setState(prev => ({
             ...prev,
@@ -114,10 +117,15 @@ export default function ColumnChart() {
                 chart: {
                     ...prev.options.chart,
                     offsetX: chartOffset  // Actualiza el offset en las opciones
-                }
-            }
+                },
+                colors: [getChartColor(tds)]  // Actualiza el color en las opciones
+            },
+            series: [{
+                name: "Calidad",
+                data: [tds]
+            }]
         }));
-    }, [chartOffset]);
+    }, [chartOffset, tds]);
 
     // Renderiza el componente Chart con todas las configuraciones
     return (
