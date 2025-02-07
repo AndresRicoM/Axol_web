@@ -39,8 +39,12 @@ export default function Dashboard({ auth, user, axolData }) {
     const [openResponsive, setOpenResponsive] = useState(false);
     const [homehubList, setHomehubList] = useState(axolData);
     const [currentHomehub, setCurrentHomehub] = useState(axolData[0]);
+    const [currentLat , setCurrentLat] = useState(parseFloat(currentHomehub.homehub.lat));
+    const [currentLon , setCurrentLon] = useState(parseFloat(currentHomehub.homehub.lon));
 
-
+    console.log("location")
+    console.log(currentHomehub.homehub.lat)
+    console.log(currentHomehub.homehub.lon)
 
     // const homehubList = [
     //     { name: "CSLab" },
@@ -241,7 +245,7 @@ export default function Dashboard({ auth, user, axolData }) {
 
                         {/* Map */}
                         <MapContainer
-                            center={[51.505, -0.09]}
+                            center={[currentLat, currentLon]}
                             zoom={13}
                             scrollWheelZoom={false}
                             style={{ height: "400px", width: "100%" }}
@@ -250,7 +254,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            <Marker position={[51.505, -0.09]}>
+                            <Marker position={[currentLat, currentLon]}>
                                 <Popup>
                                     A pretty CSS3 popup. <br /> Easily customizable.
                                 </Popup>
