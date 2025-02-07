@@ -9,7 +9,7 @@ class Quality extends Model
 {
     use HasFactory;
 
-    protected $table = 'quality_sensors_practice';
+    protected $table = 'quality_sensors';
 
     protected $fillable = [
         'mac_add',

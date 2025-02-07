@@ -9,7 +9,7 @@ class Homehub extends Model
 {
     use HasFactory;
 
-    protected $table = 'homehub_devices_practice';
+    protected $table = 'homehub_devices_2';
 
     // Define las columnas que se pueden llenar masivamente
     protected $fillable = [

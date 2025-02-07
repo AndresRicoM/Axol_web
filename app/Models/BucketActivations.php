@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BucketActivations extends Model
 {
     use HasFactory;
-    protected $table = 'bucket_activationsdb_practice';
+    protected $table = 'bucket_activationsdb';
 
     protected $fillable = [
         'datetime',
