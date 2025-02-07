@@ -11,7 +11,10 @@ import { Button, Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 
-export default function Dashboard({ auth, waterData, user }) {
+export default function Dashboard({ auth, waterData, user , qualityData , tankData }) {
+    console.log(waterData);
+    console.log(qualityData);
+    console.log(tankData);
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
@@ -92,68 +95,6 @@ export default function Dashboard({ auth, waterData, user }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
-<<<<<<< HEAD
-
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                        <div className="p-6">
-                            <h2 className="text-2xl font-semibold mb-4">Estado del Agua</h2>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Información del agua */}
-                                <div className="space-y-4">
-                                    <div className="bg-blue-50 p-4 rounded-lg">
-                                        <p className="text-lg">
-                                            Total de agua: <span className="font-bold">{waterData.totalMass}</span> Litros
-                                        </p>
-                                    </div>
-
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <p>Tanques conectados: {waterData.tankNum}</p>
-                                        <p>Volumen total: {waterData.totalVolume} m³</p>
-                                    </div>
-                                </div>
-
-                                {/* Gráfica circular */}
-                                <div className="h-[400px]">
-                                    <ReactApexChart
-                                        options={options}
-                                        series={options.series}
-                                        type="radialBar"
-                                        height={300}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mostrar datos de calidad del agua */}
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                        <div className="p-6">
-                            <h3 className="text-xl font-semibold mb-4">Calidad del Agua</h3>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <p>MAC: {qualityData.mac_add}.</p>
-                                <p>TDS: {qualityData.tds}.</p>
-    
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mostrar datos del tanque */}
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6">
-                            <h3 className="text-xl font-semibold mb-4">Nivel del Tanque</h3>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <p>MAC: {tankData.mac_add}.</p>
-                                <p>Nivel del tanque: {tankData.fill_percentage}%.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-=======
             <Flex vertical gap="middle" align="flex-start">
                 <div className="flex flex-col w-full items-center">
                     <div className="flex flex-col gap-10 w-[95%] py-8">
@@ -290,7 +231,6 @@ export default function Dashboard({ auth, waterData, user }) {
                 </Modal>
             </Flex>
             {/* Division de cuadros */}
->>>>>>> Figma
         </AuthenticatedLayout>
     );
 }
