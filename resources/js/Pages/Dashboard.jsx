@@ -119,24 +119,45 @@ export default function Dashboard({ auth, waterData, user }) {
                                     <span className="text-text font-semibold text-2xl">Tanque {tank.name}</span>
 
                                     <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
-                                        <div className="md:w-1/4 w-full ">
-                                            <ChartCard title="Agua almacenada">
-                                                <div className="grid grid-cols-1 gap-6 h-full ">
-                                                    <div className="flex flex-col gap-2   items-center justify-center h-full">
-                                                        <RadialChart waterData={waterData} className="h-20 w-20" />
-                                                        <div className="flex items-center text-center text-sm">
-                                                            <span>Hay un total de 0 Litros de Agua en la Casa</span>
+                                        <div className="md:w-3/4 w-full">
+                                            <div className="flex md:flex-row flex-col gap-3">
+                                                {/* Primera Card - Agua almacenada (pequeña) */}
+                                                <div className="md:w-1/3 w-full">
+                                                    <ChartCard title="Agua almacenada">
+                                                        <div className="grid grid-cols-1 gap-6 h-full">
+                                                            <div className="flex flex-col gap-2 items-center justify-center h-full">
+                                                                <RadialChart waterData={waterData} className="h-20 w-20" />
+                                                                <div className="flex items-center text-center text-sm">
+                                                                    <span>Hay un total de 0 Litros de agua</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </ChartCard>
                                                 </div>
-                                            </ChartCard>
+
+                                                {/* Segunda Card - Agua almacenada (ancha) */}
+                                                <div className="md:w-2/3 w-full">
+                                                    <ChartCard
+                                                        title={
+                                                            <div className="flex justify-between items-center">
+                                                                <span>Agua almacenada</span>
+                                                                
+                                                            </div>
+                                                        }
+                                                        className="relative h-full py-4"
+                                                    >
+                                                        {/* Contenido de agua almacenada */}
+                                                    </ChartCard>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="md:w-3/4 w-full">
+                                        {/* Tercera Card - Mismo tamaño que la primera */}
+                                        <div className="md:w-1/4 w-full">
                                             <ChartCard
                                                 title={
                                                     <div className="flex justify-between items-center">
-                                                        <span>Calidad del agua</span>
+                                                        <span>Ajolotito</span>
                                                         <button
                                                             className="p-1"
                                                             onClick={() => setOpenResponsive(true)}
@@ -145,14 +166,14 @@ export default function Dashboard({ auth, waterData, user }) {
                                                         </button>
                                                     </div>
                                                 }
-                                                className="relative min-h-[400px] py-4"
+                                                className="relative h-full py-4"
                                             >
-                                                <div className="flex md:flex-row-reverse flex-col gap-6">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
-                                                        <div className="w-full h-[281px]">
-                                                            <ColumnChart />
-                                                        </div>
-                                                    </div>
+                                                <div className="flex items-center justify-center h-full">
+                                                    <img 
+                                                        src="/assets/Desktop/CirculoAjolote/CirculoBlanco.gif" 
+                                                        alt="Ajolotito"
+                                                        className="w-64 h-64 object-cover mt-2"
+                                                    />
                                                 </div>
                                             </ChartCard>
                                         </div>
