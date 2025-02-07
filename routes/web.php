@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomehubController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -10,6 +11,11 @@ use App\Http\Controllers\WaterTankController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\QualityController;
 use Illuminate\Http\Request;
+
+use App\Models\Homehub;
+use App\Models\QualityData;
+use App\Models\TankData;
+use App\Models\WaterData;
 
 
 /*
@@ -52,33 +58,71 @@ Route::middleware(['auth'])->group(function () {
 // Dashboard - protegido por middleware auth y verified
 Route::get('/dashboard', function () {
     // Instancia de los controladores
-    $waterController = new WaterTankController();
+    $homehubController = new HomehubController();
     $qualityController = new QualityController();
     $tankController = new TankController();
 
-    // MAC addresses
-    $homehub_mac = 'C8:F0:96:06:72:D4'; // MAC address del HomeHub
-    $tank_mac = '90:38:0C:88:1B:24'; // MAC Address de prueba para el tanque
-    $quality_mac ='40:22:D8:69:5F:DC'; // MAC Address de prueba para el quality
 
+    $user = Auth::user();
+    $userId = $user->user_id;
+
+    // Obtener los homehubs del usuario
+    $homehubRequest = request()->merge(['user_id' => $userId]);
+    $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehubsMacAdd; // RETURNS A STRING
+
+
+    $sensorsData = array_map(function ($homehub) use ($qualityController, $tankController) {
+
+        //     return [
+        //         "homehub" => gettype($homehub),
+        //         "quality" => $homehub
+        // ];
+
+        $qualityRequest = request()->merge(['paired_with' => $homehub]);
+        $qualityData = $qualityController->getQualityData($qualityRequest)->getData();
+
+        $tankRequest = request()->merge(['paired_with' => $homehub]);
+        $tankData = $tankController->getTankFillPercentage($tankRequest)->getData();
+
+        return [
+            'homehub' => $homehub,
+            'quality' => $qualityData,
+            'tank' => $tankData,
+        ];
+    }, $homehubData);
+
+    // Obtener los sensores del tanque por cada homehub
+    // $qualityRequest = request()->merge(['paired_with' => $userId]);
+    // $qualityData = $qualityController->getQualitySensors($homehubData->getData());
 
     // Obtener datos del controlador de agua
     // $waterData = $waterController->getWaterData($homehub_mac);
+
     // Obtener datos del controlador de calidad
-    $qualityRequest = request()->merge(['mac_add' => $quality_mac]);
-    $qualityData = $qualityController->getQualityData($qualityRequest);
+    // $qualityRequest = request()->merge(['mac_add' => $quality_mac]);
+    // $qualityData = $qualityController->getQualityData($qualityRequest);
 
-    // Obtener datos del controlador del tanque
-    $tankRequest = request()->merge(['mac_add' => $tank_mac]);
-    $tankData = $tankController->getTankFillPercentage($tankRequest);
-    
+    // // Obtener datos del controlador del tanque
+    // $tankRequest = request()->merge(['mac_add' => Auth::user()->id]);
+    // $tankData = $tankController->getTankFillPercentage($tankRequest);
 
-    $user = Auth::user()->only('id', 'username');
+    // return Inertia::render('Dashboard', [
+    //     // 'user' => $user,
+    //     // 'userId' => $userId,
+    //     // 'qualityData' => $qualityData->getData() ?? [],
+    //     // 'tankData' => $tankData->getData() ?? [],
+    //     // 'homehubData' => $homehubData->getData()
+    //     'sensorsData' => $sensorsData,
+    // ]);
+
+    // All data in json format
+    // return response()->json([
+    //     'sensorsData' => $sensorsData,
+    // ]); 
 
     return Inertia::render('Dashboard', [
+        'sensorsData' => $sensorsData,
         'user' => $user,
-        'qualityData' => $qualityData->getData() ?? [],
-        'tankData' => $tankData->getData() ?? []
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -104,4 +148,4 @@ Route::prefix('api')->middleware('web')->group(function () {
 
     Route::get('/sensors', [TankController::class, 'getSensors']);
 });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -125,19 +125,36 @@ class QualityController extends Controller
     //         ], 500);
     //     }
     // }
+
+    // RECIBE: mac_add DEL SENSOR DE TANQUE
     public function getQualityData(Request $request)
     {
         try {
             // Obtener los parámetros de la solicitud
-            $macAdd = $request->input('mac_add');
+            $macAdd = $request->input('paired_with');
     
+            // Encontrar todos los registros de calidad con el paired_with proporcionado
+            $quality = Quality::where('paired_with', $macAdd)
+                ->get();
+
+            $qualityData = $quality->map(function ($sensor) {
+                $query = QualityData::where('mac_add', $sensor->mac_add)
+                    ->orderBy('datetime', 'desc')
+                    ->first(); // Obtener solo el último registro
+
+                return [
+                    'mac_add' => $query->mac_add,
+                    'tds' => $query->tds
+                ];
+            });
+
             // Consulta base
-            $query = QualityData::where('mac_add', $macAdd)
-                                ->orderBy('datetime', 'desc')
-                                ->first(); // Obtener solo el último registro
+            // $query = QualityData::where('mac_add', $macAdd)
+            //                     ->orderBy('datetime', 'desc')
+            //                     ->first(); // Obtener solo el último registro
     
             // Verificar si se encontraron datos
-            if (!$query) {
+            if (!$qualityData) {
                 return response()->json([
                     'message' => 'No data found',
                 ], 404);
@@ -145,8 +162,7 @@ class QualityController extends Controller
     
             // Devolver los datos en formato JSON con la estructura requerida
             return response()->json([
-                "mac_add" => $query->mac_add,
-                "tds" => $query->tds
+                "qualityData" => $qualityData
             ], 200);
     
         } catch (\Throwable $th) {
@@ -161,6 +177,29 @@ class QualityController extends Controller
                 'error' => $th->getMessage(),
             ], 500);
         }
+    }
+
+    public function getQualitySensors(Request $request)
+    {
+        $paired_with = $request->query('paired_with');
+        if (!$paired_with) {
+            return response()->json([
+                'error' => 'El parámetro paired_with es requerido'
+            ], 400);
+        }
+
+        $quality = Quality::where('paired_with', $paired_with)
+            ->get();
+
+        if ($quality->isEmpty()) {
+            return response()->json([
+                'error' => 'No se encontraron sensores de calidad con ese paired_with'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $quality
+        ], 200);
     }
     
 }

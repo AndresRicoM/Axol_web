@@ -11,31 +11,51 @@ import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 
-export default function Dashboard({ auth, user , qualityData , tankData }) {
-    console.log("qualityData");
-    console.log(qualityData);
-    console.log("tankData");
-    console.log(tankData);
+export default function Dashboard({ auth, user, sensorsData }) {
+    // console.log("qualityData");
+    // console.log(qualityData);
+    // console.log("tankData");
+    // console.log(tankData);
+    // console.log("homehubData");
+    // console.log(homehubData);
+
+    // console.log("user")
+    // console.log(user)
+    // console.log("userId")
+    // console.log(userId)
+    // console.log("homehubData")
+    // console.log(homehubData)
+
+    console.log("sensorsData")
+    console.log(sensorsData)
+
+    // const [qualityData, setQualityData] = useState(sensorsData.qualityData);
+    // console.log(typeof sensorsData)
+    // return (<></>);
+
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
 
-    const homehubList = [
-        { name: "CSLab" },
-        { name: "PabloHH" },
-        { name: "TonyHH" },
-        { name: "CUCEI1" },
-        { name: "CUCEI2" },
-    ];
+    
 
-    const tanks = [
-        { name: "Tank CSLab", id: 1 },
-        { name: "Tank PabloHH", id: 2 },
-        { name: "Tank TonyHH", id: 3 },
-        { name: "Tank CUCEI1", id: 4 },
-        { name: "Tank CUCEI2", id: 5 },
-    ];
+
+    // const homehubList = [
+    //     { name: "CSLab" },
+    //     { name: "PabloHH" },
+    //     { name: "TonyHH" },
+    //     { name: "CUCEI1" },
+    //     { name: "CUCEI2" },
+    // ];
+
+    // const tanks = [
+    //     { name: "Tank CSLab", id: 1 },
+    //     { name: "Tank PabloHH", id: 2 },
+    //     { name: "Tank TonyHH", id: 3 },
+    //     { name: "Tank CUCEI1", id: 4 },
+    //     { name: "Tank CUCEI2", id: 5 },
+    // ];
 
     const hour = new Date().getHours();
 

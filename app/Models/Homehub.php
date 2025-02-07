@@ -20,6 +20,10 @@ class Homehub extends Model
         'name',
     ];
 
+    protected $casts = [
+        'mac_add' => 'string'
+    ];
+
     protected $primaryKey = 'mac_add';
 
     public $timestamps = false;
