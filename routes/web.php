@@ -63,7 +63,7 @@ Route::get('/dashboard', function () {
 
 
     // Obtener datos del controlador de agua
-    $waterData = $waterController->getWaterData($homehub_mac);
+    // $waterData = $waterController->getWaterData($homehub_mac);
     // Obtener datos del controlador de calidad
     $qualityRequest = request()->merge(['mac_add' => $quality_mac]);
     $qualityData = $qualityController->getQualityData($qualityRequest);
@@ -76,7 +76,6 @@ Route::get('/dashboard', function () {
     $user = Auth::user()->only('id', 'username');
 
     return Inertia::render('Dashboard', [
-        'waterData' => $waterData,
         'user' => $user,
         'qualityData' => $qualityData->getData() ?? [],
         'tankData' => $tankData->getData() ?? []
