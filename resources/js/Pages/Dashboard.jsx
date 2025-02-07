@@ -10,6 +10,7 @@ import ColumnChart from "@/Components/ColumnChart";
 import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 
 export default function Dashboard({ auth, user , qualityData , tankData }) {
     console.log("qualityData");
@@ -139,7 +140,7 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                     </ChartCard>
                                                 </div>
 
-                                                {/* Segunda Card - Agua almacenada (ancha) */}
+                                                {/* Segunda Card - Calidad del agua */}
                                                 <div className="md:w-2/3 w-full">
                                                     <ChartCard
                                                         title={
@@ -155,12 +156,8 @@ export default function Dashboard({ auth, user , qualityData , tankData }) {
                                                         }
                                                         className="relative min-h-[400px] py-4"
                                                     >
-                                                        <div className="flex md:flex-row-reverse flex-col gap-6">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
-                                                                <div className="w-full h-[281px]">
-                                                                    <ColumnChart tds={qualityData.tds} />
-                                                                </div>
-                                                            </div>
+                                                        <div className="flex flex-col justify-center h-full">
+                                                            <WaterQualityIndicator tds={qualityData.tds} />
                                                         </div>
                                                     </ChartCard>
                                                 </div>
