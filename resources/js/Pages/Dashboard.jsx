@@ -181,7 +181,6 @@ export default function Dashboard({ auth, user, axolData }) {
                                         (<span className="text-text font-semibold text-2xl">Tanque {tank.quality.use}</span>)
                                     }
 
-
                                     <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
                                         <div className="md:w-3/4 w-full">
                                             <div className="flex md:flex-row flex-col gap-3">
@@ -193,7 +192,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 {tank.storage ?
                                                                     (
                                                                         <>
-                                                                            <RadialChart waterPercentage={tank.storage.fill_percentage} className="h-20 w-20" />
+                                                                            <RadialChart waterPercentage={tank.storage.fill_percentage > 100 ? 100 : tank.storage.fill_percentage} className="h-20 w-20" />
                                                                             <div className="flex items-center text-center text-sm">
                                                                                 <span className="font-semibold text-text">Hay un total de {tank.storage.remaining_liters} Litros de agua</span>
                                                                             </div>
