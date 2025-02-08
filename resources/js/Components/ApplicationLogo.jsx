@@ -1,5 +1,8 @@
 export default function ApplicationLogo(props) {
     return (
-        <img {...props} src="/assets/AxolSitting.png" alt="Mi Logo" />
+        <div>
+            <img {...props} src="/assets/AxolSitting.png" alt="Mi Logo" />
+            <img {...props} src="/assets/logosblack.png" alt="MIT City Science" />
+        </div>
     );
 }
