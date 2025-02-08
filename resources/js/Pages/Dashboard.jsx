@@ -201,7 +201,6 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                     :
                                                                     (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
                                                                 }
-
                                                             </div>
                                                         </div>
                                                     </ChartCard>
@@ -242,7 +241,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                             </div>
                                         </div>
 
-                                        {/* Tercera Card - Mismo tamaño que la primera */}
+                                        {/* Tercera Card - Ocupa el ancho restante */}
                                         <div className="md:w-1/4 w-full">
                                             <ChartCard
                                                 title={
