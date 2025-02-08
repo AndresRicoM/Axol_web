@@ -5,7 +5,7 @@ function RadialChart({waterPercentage}) {
     const getChartColor = (percentage) => {
         if (percentage <= 25) return "#FF4560"; // Rojo - Nivel crítico
         if (percentage <= 50) return "#FEB019"; // Amarillo - Nivel bajo
-        if (percentage <= 75) return "#3CADD4"; // Azul - Nivel normal
+        if (percentage <= 75) return "#01e296"; // Azul - Nivel normal
         return "#00E396"; // Verde - Nivel óptimo
     };
 

@@ -144,7 +144,7 @@ class QualityController extends Controller
 
                 return [
                     'mac_add' => $query->mac_add,
-                    'tds' => $query->tds,
+                    'tds' => round($query->tds, 0),
                     'use' => $sensor->use,
                 ];
             });

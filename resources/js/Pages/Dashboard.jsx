@@ -327,13 +327,13 @@ export default function Dashboard({ auth, user, axolData }) {
                         {/* Categorías de calidad del agua */}
                         <div className="flex flex-col gap-4 w-full items-center">
                             <div className="text-[#00E396] text-lg">
-                                Categoría 1 - Agua pura o con bajo contenido de minerales y metales.
+                                Buena: Categoría 1 - Agua pura o con bajo contenido de minerales y metales.
                             </div>
                             <div className="text-[#FEB019] text-lg">
-                                Categoría 2 - Agua con características de agua tratada.
+                                Regular: Categoría 2 - Agua con características de agua tratada.
                             </div>
                             <div className="text-[#FF4560] text-lg">
-                                Categoría 3 - Agua con alto contenido de minerales y posibles metales.
+                                Mala: Categoría 3 - Agua con alto contenido de minerales y posibles metales.
                             </div>
                         </div>
 

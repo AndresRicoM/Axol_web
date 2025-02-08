@@ -206,8 +206,8 @@ class TankController extends Controller
             return [
                 "mac_add" => $tank['mac_add'],
                 "use" => $tank['use'],
-                "fill_percentage" => round($percentage, 2),
-                "remaining_liters" => round($remaining_liters, 2)
+                "fill_percentage" => round($percentage, 0),
+                "remaining_liters" => round($remaining_liters, 0)
             ];
         });
 
