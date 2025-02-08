@@ -83,50 +83,6 @@ export default function Dashboard({ auth, user, axolData }) {
         }
     };
 
-    // const getChartColor = (percentage) => {
-    //     if (percentage <= 25) return "#FF4560"; // Rojo - Nivel crítico
-    //     if (percentage <= 50) return "#FEB019"; // Amarillo - Nivel bajo
-    //     if (percentage <= 75) return "#3CADD4"; // Azul - Nivel normal
-    //     return "#00E396"; // Verde - Nivel óptimo
-    // };
-
-    // const options = {
-    //     series: [waterData.totalFill],
-    //     chart: {
-    //         height: 300,
-    //         type: 'radialBar',
-    //     },
-    //     colors: [getChartColor(waterData.totalFill)], // Color dinámico
-    //     plotOptions: {
-    //         radialBar: {
-    //             hollow: {
-    //                 size: '70%',
-    //             },
-    //             track: {
-    //                 background: '#f2f2f2',  // Color del fondo de la barra
-    //             },
-    //             dataLabels: {
-    //                 value: {
-    //                     fontSize: '24px',
-    //                     formatter: function(val) {
-    //                         return val + '%';
-    //                     }
-    //                 }
-    //             }
-    //         },
-    //     },
-    //     stroke: {
-    //         lineCap: 'round'
-    //     },
-    //     labels: ['Almacenamiento'],
-    //     tooltip: {
-    //         enabled: true,
-    //         formatter: function(val) {
-    //             return waterData.totalMass + ' Litros';
-    //         }
-    //     }
-    // };
-
     const handleChange = (value) => {
         setCurrentHomehub(homehubList[value]);
     }
@@ -150,7 +106,7 @@ export default function Dashboard({ auth, user, axolData }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
             <Flex vertical gap="middle" align="flex-start">
-                <div className="flex flex-col w-full items-center">
+                <div className="flex flex-col w-full items-center bg-[#F2F0FB]">
                     <div className="flex flex-col gap-10 w-[95%] py-8">
                         <div className="flex md:flex-row flex-col gap-5 justify-between">
                             <span className="text-text md:text-5xl text-2xl font-semibold">{getGreeting()}, {user.username}.</span>

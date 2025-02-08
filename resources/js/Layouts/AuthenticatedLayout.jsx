@@ -10,7 +10,7 @@ export default function Authenticated({ user, header, children }) {
     const { auth } = usePage().props;
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#F2F0FB]">
             <nav className="bg-white border-b border-gray-100">
                 <div className="w-full sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 md:px-0 px-4">

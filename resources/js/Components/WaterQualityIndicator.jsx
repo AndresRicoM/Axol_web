@@ -16,7 +16,7 @@ export default function WaterQualityIndicator({ tds }) {
             </div>
 
             {/* Barra de calidad */}
-            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
                 <div className="absolute top-0 left-0 h-full w-full flex">
                     <div className="h-full bg-[#00E396] flex-1" /> {/* Buena */}
                     <div className="h-full bg-[#FEB019] flex-1" /> {/* Regular */}
