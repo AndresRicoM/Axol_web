@@ -86,21 +86,31 @@ Route::get('/dashboard', function () {
 
         // Merging sensors with the same 'use' attribute
         $groupedSensors = [];
-
         foreach ($qualityData as $quality) {
-            $use = $quality->use;
-            if (!isset($groupedSensors[$use])) {
-                $groupedSensors[$use] = [];
+            try {
+                $use = $quality->use;
+                if (!isset($groupedSensors[$use])) {
+                    $groupedSensors[$use] = [];
+                }
+                $groupedSensors[$use]['quality'] = $quality;
+            } catch (\Throwable $th) {
+                dd($quality->use);
             }
-            $groupedSensors[$use]['quality'] = $quality;
+
         }
 
         foreach ($tankData as $tank) {
-            $use = $tank->use;
-            if (!isset($groupedSensors[$use])) {
-                $groupedSensors[$use] = [];
+            try {
+                $use = $tank->use;
+                if (!isset($groupedSensors[$use])) {
+                    $groupedSensors[$use] = [];
+                }
+                $groupedSensors[$use]['storage'] = $tank;
+            } catch (\Throwable $th) {
+
+                dd($tank->use);
             }
-            $groupedSensors[$use]['storage'] = $tank;
+
         }
 
         // Convierte el array asociativo en un array indexado
