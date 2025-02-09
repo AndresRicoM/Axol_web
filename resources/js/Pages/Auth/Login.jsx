@@ -36,7 +36,7 @@ export default function Login({ errors }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="username" value="Username" />
+                    <InputLabel htmlFor="username" value="Usuario" />
                     <TextInput
                         id="username"
                         type="text"
@@ -51,7 +51,7 @@ export default function Login({ errors }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <InputLabel htmlFor="password" value="Contraseña" />
                     <TextInput
                         id="password"
                         type="password"
@@ -74,7 +74,7 @@ export default function Login({ errors }) {
                             }
                         />
                         <span className="ms-2 text-sm text-gray-600">
-                            Remember me
+                            Recuerdame
                         </span>
                     </label>
                 </div>
@@ -84,10 +84,10 @@ export default function Login({ errors }) {
                         href={route('register')}
                         className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                        Don't have an account?
+                        ¿No tienes cuenta?
                     </Link>
                     <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
+                        Ingresar
                     </PrimaryButton>
                 </div>
             </form>

@@ -197,7 +197,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                             </div>
                                         </div>
 
-                                        {/* Tercera Card - Ocupa el ancho restante */}
+                                        {/* Tercera Card - Ajolote */}
                                         <div className="md:w-1/4 w-full">
                                             <ChartCard
                                                 title={
@@ -208,11 +208,24 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 className="relative h-full py-4"
                                             >
                                                 <div className="flex items-center justify-center h-full">
-                                                    <img
-                                                        src="/assets/Desktop/CirculoAjolote/CirculoBlanco.gif"
-                                                        alt="Ajolotito"
-                                                        className="w-64 h-64 object-cover mt-2"
-                                                    />
+                                                    {tank.quality.tds < 900 ?
+                                                        (
+                                                            <img
+                                                                src="/assets/Desktop/Calidad/CirculoBlanco.gif"
+                                                                alt="Calidad buena o regular"
+                                                                className="w-64 h-64 object-cover mt-2"
+                                                            />
+                                                        )
+                                                        :
+                                                        (
+                                                            <img
+                                                                src="/assets/Desktop/Calidad/AjoloteTriste.gif"
+                                                                alt="Mala calidad"
+                                                                className="w-64 h-64 object-cover mt-2"
+                                                            />
+                                                        )
+                                                    }
+
                                                 </div>
                                             </ChartCard>
                                         </div>

@@ -3,11 +3,21 @@ import React from 'react';
 export default function WaterQualityIndicator({ tds }) {
     const getQualityLevel = (value) => {
         if (value <= 50) return { text: "Buena", color: "#00E396" };
-        if (value <= 600) return { text: "Regular", color: "#FEB019" };
+        if (value <= 900) return { text: "Regular", color: "#FEB019" };
         return { text: "Mala", color: "#FF4560" };
     };
 
     const quality = getQualityLevel(tds);
+
+    const calculateLeftPosition = (value) => {
+        if (value <= 50) {
+            return (value / 50) * 33.33; // Buena calidad ocupa el 33.33% de la barra
+        } else if (value <= 899) {
+            return 33.33 + ((value - 50) / 849) * 33.33; // Calidad regular ocupa el siguiente 33.33% de la barra
+        } else {
+            return 66.66 + ((value - 899) / 101) * 33.33; // Calidad mala ocupa el último 33.33% de la barra
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4 p-4 pt-20">
@@ -23,10 +33,10 @@ export default function WaterQualityIndicator({ tds }) {
                     <div className="h-full bg-[#FF4560] flex-1" /> {/* Mala */}
                 </div>
                 {/* Indicador de nivel actual */}
-                <div 
+                <div
                     className="absolute top-0 h-full w-2 bg-white border-2 border-gray-800 rounded-full"
-                    style={{ 
-                        left: `${Math.min((tds / 1000) * 100, 100)}%`,
+                    style={{
+                        left: `${calculateLeftPosition(tds)}%`,
                         transform: 'translateX(-50%)'
                     }}
                 />
