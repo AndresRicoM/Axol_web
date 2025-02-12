@@ -194,7 +194,7 @@ class TankController extends Controller
             $a = $max_height_mm + $offset_mm - $water_distance_mm;  // 2140 + 760 - 913 = 1987
             $b = $a + $water_distance_mm - $offset_mm;  // 1987 + 913 - 760 = 2140 
 
-            $percentage = (1 - (($b-$a)/$b) * 100); 
+            $percentage = (1 - (($b-$a)/$b))*100; 
             $remaining_liters = ($a * $tank['tank_area']) ; 
 
             return [

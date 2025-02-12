@@ -143,24 +143,24 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 {/* Primera Card - Agua almacenada (pequeña) */}
                                                 <div className="md:w-1/3 w-full">
                                                     <ChartCard title="Agua almacenada">
-                                                        <div className="grid grid-cols-1 gap-6 h-full">
-                                                            <div className="flex flex-col gap-2 items-center justify-center h-full">
+                                    <div className="grid grid-cols-1 gap-6 h-full">
+                                        <div className="flex flex-col gap-2 items-center justify-center h-full">
                                                                 {tank.storage ?
                                                                     (
                                                                         <>
                                                                             <RadialChart waterPercentage={tank.storage.fill_percentage > 100 ? 100 : tank.storage.fill_percentage} className="h-20 w-20" />
-                                                                            <div className="flex items-center text-center text-sm">
+                                        <div className="flex items-center text-center text-sm">
                                                                                 <span className="font-semibold text-text">Hay un total de {tank.storage.remaining_liters} Litros de agua</span>
-                                                                            </div>
+                                        </div>
                                                                         </>
                                                                     )
                                                                     :
                                                                     (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
                                                                 }
-                                                            </div>
-                                                        </div>
-                                                    </ChartCard>
-                                                </div>
+                                        </div>
+                                    </div>
+                                    </ChartCard>
+                                        </div>
 
                                                 {/* Segunda Card - Calidad del agua */}
                                                 <div className="md:w-2/3 w-full">
@@ -170,9 +170,9 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 <span>Calidad del agua</span>
                                                                 <button
                                                                     className="p-1"
-                                                                    onClick={() => setOpenResponsive(true)}
-                                                                >
-                                                                    <FontAwesomeIcon icon={faCircleInfo} />
+                                            onClick={() => setOpenResponsive(true)}
+                                        >
+                                            <FontAwesomeIcon icon={faCircleInfo} />
                                                                 </button>
                                                             </div>
                                                         }
@@ -226,30 +226,30 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         )
                                                     }
 
-                                                </div>
-                                            </ChartCard>
+                                    </div>
+                                    </ChartCard>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Map */}
+                    {/* Map */}
                         <MapContainer
                             center={[currentLat, currentLon]}
                             zoom={13}
                             scrollWheelZoom={false}
                             style={{ height: "400px", width: "100%" }}
                         >
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
                             <Marker position={[currentLat, currentLon]}>
-                                <Popup>
+                        <Popup>
                                     Tanques: {currentHomehub.sensors.length}
-                                </Popup>
-                            </Marker>
+                        </Popup>
+                    </Marker>
                         </MapContainer>
                     </div>
                     {/* PopUp de info */}
