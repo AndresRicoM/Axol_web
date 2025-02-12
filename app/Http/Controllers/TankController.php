@@ -22,8 +22,8 @@ class TankController extends Controller
                 'tank_capacity' => 'required',
                 'use' => 'required',
                 'tank_area' => 'required',
-                'max_height' => 'required',
-                'offset' => 'required'
+                'max_height' => 'required'
+                // 'offset' => 'required'
             ]);
             Log::info('Validated> ', ['validated' => $validated]);
 
