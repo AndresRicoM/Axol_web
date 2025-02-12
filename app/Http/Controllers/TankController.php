@@ -23,6 +23,7 @@ class TankController extends Controller
                 'use' => 'required',
                 'tank_area' => 'required',
                 'max_height' => 'required',
+                'offset' => 'required'
             ]);
             Log::info('Validated> ', ['validated' => $validated]);
 
@@ -141,7 +142,8 @@ class TankController extends Controller
                     'tank_sensorsdb.tank_area',
                     'tank_sensorsdb.tank_capacity',
                     'tank_sensorsdb.max_height',
-                    'tank_data.water_distance'
+                    'tank_data.water_distance',
+                    'tank_sensorsdb.offset'
                 )
                 ->first();
 
@@ -151,7 +153,8 @@ class TankController extends Controller
                 'use' => $query->use,
                 'tank_area' => $query->tank_area,
                 'tank_capacity' => $query->tank_capacity,
-                'max_height' => $query->max_height
+                'max_height' => $query->max_height,
+                'offset' => $query->offset
             ];
         });
 
@@ -184,24 +187,15 @@ class TankController extends Controller
 
         $storageData = $tankData->map(function ($tank) {
 
-            // Convertir todo a metros
-            $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
-            $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
+            $offset_mm = $tank['offset']; // Convertir mm a m Valor vacio del tanque  (760)
+            $max_height_mm = $tank['max_height']; // Convertir mm a m  (2140)
+            $water_distance_mm = $tank['water_distance']; // Convertir mm a m  (913)
 
-            // Calcular la altura del agua en metros
-            $water_height_m = $max_height_m - $water_distance_m;
+            $a = $max_height_mm + $offset_mm - $water_distance_mm;  // 2140 + 760 - 913 = 1987
+            $b = $a + $water_distance_mm - $offset_mm;  // 1987 + 913 - 760 = 2140 
 
-            // Calcular el volumen de agua en metros cúbicos
-            $volume_m3 = $tank['tank_area'] * $water_height_m;
-
-            // Convertir el volumen a litros (1 m³ = 1000 litros)
-            $volume_liters = $volume_m3 * 1000;
-
-            // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
-            $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
-
-            // Calcular litros restantes
-            $remaining_liters = ($percentage * $tank['tank_capacity']) / 100;
+            $percentage = (1 - (($b-$a)/$b) * 100); 
+            $remaining_liters = ($a * $tank['tank_area']) ; 
 
             return [
                 "mac_add" => $tank['mac_add'],

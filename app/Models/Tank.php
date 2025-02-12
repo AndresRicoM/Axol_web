@@ -17,7 +17,8 @@ class Tank extends Model
         'tank_capacity',
         'use',
         'tank_area',
-        'max_height'
+        'max_height',
+        'offset'
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Tank extends Model
         'use' => 'string',
         'tank_area' => 'float',
         'max_height' => 'integer'
+        'offset' => 'integer'
     ];
 
     protected $primaryKey = 'mac_add';
