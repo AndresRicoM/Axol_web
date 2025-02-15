@@ -9,7 +9,7 @@ class QualityData extends Model
 {
     use HasFactory;
 
-    protected $table = 'quality_data';
+    protected $table = 'quality_data_practice_ui';
 
     protected $fillable = [
         'mac_add',

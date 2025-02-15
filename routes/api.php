@@ -20,6 +20,7 @@ Route::post('/homehub', [HomehubController::class, 'registerHomehub']);
 
 // Bucket
 Route::post('/sensor/bucket', [BucketController::class, 'registerBucket']);
+Route::post('/sensor/bucketData', [BucketController::class, 'registerBucketData']);
 Route::get('/sensor/bucket', [BucketController::class, 'getBucket']);
 
 // Tank

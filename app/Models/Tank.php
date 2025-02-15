@@ -9,7 +9,7 @@ class Tank extends Model
 {
     use HasFactory;
 
-    protected $table = 'tank_sensorsdb';
+    protected $table = 'tank_sensorsdb_practice_ui';
 
     protected $fillable = [
         'mac_add',
@@ -17,7 +17,8 @@ class Tank extends Model
         'tank_capacity',
         'use',
         'tank_area',
-        'max_height'
+        'max_height',
+        'offset'
     ];
 
     protected $casts = [
@@ -26,7 +27,8 @@ class Tank extends Model
         'tank_capacity' => 'float',
         'use' => 'string',
         'tank_area' => 'float',
-        'max_height' => 'integer'
+        'max_height' => 'integer',
+        'offset' => 'integer'
     ];
 
     protected $primaryKey = 'mac_add';
