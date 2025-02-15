@@ -9,7 +9,7 @@ class Tank extends Model
 {
     use HasFactory;
 
-    protected $table = 'tank_sensorsdb';
+    protected $table = 'tank_sensorsdb_practice_ui';
 
     protected $fillable = [
         'mac_add',
