@@ -29,7 +29,6 @@ class TankController extends Controller
 
             $sensor = Tank::create($validated);
             Log::info('Tank created successfully', ['sensor' => $sensor]);
-
         } catch (\Throwable $th) {
             Log::error('Error creating a new Tank', ['error' => $th->getMessage()]);
 
@@ -61,7 +60,6 @@ class TankController extends Controller
             // Crear el registro en la base de datos
             $sensor = TankData::create($validated);
             Log::info('Tank created successfully', ['sensor' => $sensor]);
-
         } catch (\Throwable $th) {
             Log::error('Error sending Tank Data', [
                 'error_message' => $th->getMessage(),
@@ -119,7 +117,6 @@ class TankController extends Controller
         return response()->json([
             'data' => $results
         ], 200);
-
     }
 
     public function getTankFillPercentage(Request $request)
@@ -132,21 +129,23 @@ class TankController extends Controller
             ->get();
 
         // Lista de objetos
-        $tankData = $tanks->map(function ($tank) {
+        $tankData = $tanks->map(function ($tank): array {
             $macAdd = $tank->mac_add;
-            $query = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_ui.mac_add', '=', 'tank_data.mac_add')
-                ->where('tank_sensorsdb_ui.mac_add', $macAdd)
+
+            $query = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
+                ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
                 ->orderBy('tank_data.datetime', 'desc')
                 ->select(
-                    'tank_sensorsdb_ui.use',
-                    'tank_sensorsdb_ui.tank_area',
-                    'tank_sensorsdb_ui.tank_capacity',
-                    'tank_sensorsdb_ui.max_height',
+                    'tank_sensorsdb_practice_ui.use',
+                    'tank_sensorsdb_practice_ui.tank_area',
+                    'tank_sensorsdb_practice_ui.tank_capacity',
+                    'tank_sensorsdb_practice_ui.max_height',
                     'tank_data.water_distance',
-                    'tank_sensorsdb_ui.offset'
+                    'tank_sensorsdb_practice_ui.offset'
                 )
                 ->first();
 
+            
             return [
                 'mac_add' => $macAdd,
                 'water_distance' => $query->water_distance,
@@ -194,8 +193,8 @@ class TankController extends Controller
             $a = $max_height_mm + $offset_mm - $water_distance_mm;  // 2140 + 760 - 913 = 1987
             $b = $a + $water_distance_mm - $offset_mm;  // 1987 + 913 - 760 = 2140 
 
-            $percentage = (1 - (($b-$a)/$b))*100; 
-            $remaining_liters = ($a * $tank['tank_area']) ; 
+            $percentage = (1 - (($b - $a) / $b)) * 100;
+            $remaining_liters = ($a * $tank['tank_area']);
 
             return [
                 "mac_add" => $tank['mac_add'],
@@ -237,5 +236,4 @@ class TankController extends Controller
 
         // return response()->json($storageData);
     }
-
 }

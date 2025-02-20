@@ -38,6 +38,10 @@ Route::get('/check-session', function () {
 });
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard'); 
+    }
+    
     return Inertia::render('Auth/Login');
 })->name('login');
 
@@ -67,6 +71,7 @@ Route::get('/dashboard', function () {
 
     // get user homehubs
     $homehubRequest = request()->merge(['user_id' => $userId]);
+    // ojo
     $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehub; // RETURNS A STRING
     // dd($homehubData);
 
