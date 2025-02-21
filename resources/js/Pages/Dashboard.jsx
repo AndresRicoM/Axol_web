@@ -121,7 +121,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             >
                                 {homehubList.map((homehub, i) => (
                                     <Select.Option key={i} value={i} >
-                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.homehub.name}</span>
+                                        <FontAwesomeIcon icon={faGamepad} className="text-text" /> <span className="text-text">{homehub.homehub?.name}</span>
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -130,11 +130,12 @@ export default function Dashboard({ auth, user, axolData }) {
                         {/* aqui va el map que quite */}
                         <div className="flex flex-col gap-7">
                             {currentHomehub.sensors.map((tank) => (
+                                
                                 <div key={tank.mac_add} className="flex flex-col gap-3 ">
                                     {tank.storage ?
-                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.storage.use}</span>)
+                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.storage?.use}</span>)
                                         :
-                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.quality.use}</span>)
+                                        (<span className="text-text font-semibold text-2xl">Tanque {tank.quality?.use}</span>)
                                     }
 
                                     <div className="flex md:flex-row flex-col gap-3 w-full h-full overflow-hidden">
@@ -148,9 +149,9 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 {tank.storage ?
                                                                     (
                                                                         <>
-                                                                            <RadialChart waterPercentage={tank.storage.fill_percentage > 100 ? 100 : tank.storage.fill_percentage} className="h-20 w-20" />
+                                                                            <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />
                                         <div className="flex items-center text-center text-sm">
-                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage.remaining_liters} Litros de agua</span>
+                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage?.remaining_liters} Litros de agua</span>
                                         </div>
                                                                         </>
                                                                     )
@@ -183,7 +184,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 <div className="w-full h-[281px]">
                                                                     {tank.quality ?
                                                                         (
-                                                                            <WaterQualityIndicator tds={tank.quality.tds} />
+                                                                            <WaterQualityIndicator tds={tank.quality?.tds} />
                                                                         )
                                                                         :
                                                                         (<span className="text-text font-semibold text-2xl">No hay sensor registrado</span>)
@@ -208,7 +209,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 className="relative h-full py-4"
                                             >
                                                 <div className="flex items-center justify-center h-full">
-                                                    {tank.quality.tds < 900 ?
+                                                    {tank.quality?.tds < 900 ?
                                                         (
                                                             <img
                                                                 src="/assets/Desktop/Calidad/CirculoBlanco.gif"

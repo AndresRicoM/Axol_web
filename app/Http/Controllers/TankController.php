@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+use function PHPUnit\Framework\isEmpty;
 
 class TankController extends Controller
 {
@@ -129,7 +130,7 @@ class TankController extends Controller
             ->get();
 
         // Lista de objetos
-        $tankData = $tanks->map(function ($tank): array {
+        $tankData = $tanks->map(function ($tank) {
             $macAdd = $tank->mac_add;
 
             $query = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
@@ -144,18 +145,21 @@ class TankController extends Controller
                     'tank_sensorsdb_practice_ui.offset'
                 )
                 ->first();
-
             
-            return [
-                'mac_add' => $macAdd,
-                'water_distance' => $query->water_distance,
-                'use' => $query->use,
-                'tank_area' => $query->tank_area,
-                'tank_capacity' => $query->tank_capacity,
-                'max_height' => $query->max_height,
-                'offset' => $query->offset
-            ];
-        });
+            if($query){
+                return [
+                    'mac_add' => $macAdd,
+                    'water_distance' => $query->water_distance,
+                    'use' => $query->use,
+                    'tank_area' => $query->tank_area,
+                    'tank_capacity' => $query->tank_capacity,
+                    'max_height' => $query->max_height,
+                    'offset' => $query->offset
+                ];
+            } else{
+                return null;
+            }
+        })->filter();
 
         // return response()->json([
         //     'tankData' => $tankData
@@ -173,7 +177,7 @@ class TankController extends Controller
         //     )
         //     ->first();
 
-        if (!$tankData) {
+        if ($tankData->isEmpty()) {
             return response()->json(["message" => "Tanque no encontrado o sin datos de nivel de agua"], 404);
         }
 

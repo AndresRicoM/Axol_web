@@ -141,13 +141,16 @@ class QualityController extends Controller
                 $query = QualityData::where('mac_add', $sensor->mac_add)
                     ->orderBy('datetime', 'desc')
                     ->first(); // Obtener solo el último registro
-
-                return [
-                    'mac_add' => $query->mac_add,
-                    'tds' => round($query->tds, 0),
-                    'use' => $sensor->use,
-                ];
-            });
+                if($query){
+                    return [
+                        'mac_add' => $query->mac_add,
+                        'tds' => round($query->tds, 0),
+                        'use' => $sensor->use,
+                    ];
+                } else{
+                    return null;
+                }
+            })->filter();
 
             // Consulta base
             // $query = QualityData::where('mac_add', $macAdd)
