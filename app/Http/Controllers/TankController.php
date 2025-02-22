@@ -32,7 +32,7 @@ class TankController extends Controller
 
             // Convert length and max_height from millimeters to meters
             $length = $validated['max_height'] / 1000 ;
-            $width = $validated['width'] / 1000;
+            $width = isset($validated['width']) ? $validated['width'] / 1000 : null;
 
             // Calculate the area based on the tank type
             if ($validated['tank_type'] == 'cylindrical') {
