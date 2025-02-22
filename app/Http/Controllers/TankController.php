@@ -107,18 +107,33 @@ class TankController extends Controller
             ], 400);
         }
 
-        $tank = Tank::select('mac_add', 'paired_with', 'tank_capacity', 'use', 'tank_area', 'max_height')
+        $tanks = Tank::select('mac_add', 'paired_with', 'tank_capacity', 'use', 'max_height', 'tank_type', 'diameter', 'length', 'width')
             ->where('paired_with', $paired_with)
             ->get();
 
-        if ($tank->isEmpty()) {
+        if ($tanks->isEmpty()) {
             return response()->json([
                 'error' => 'No se encontraron tanques con ese paired_with'
             ], 404);
         }
 
+        $tanks = $tanks->map(function ($tank) {
+            // Convert length and max_height from millimeters to meters
+            $tank->length = isset($tank->length) ? $tank->length / 1000 : null;
+            $tank->max_height = $tank->max_height / 1000;
+
+            // Calculate the area based on the tank type
+            if ($tank->tank_type == 'cylindrical') {
+                $radius = $tank->diameter / 2;
+                $tank->tank_area = pi() * pow($radius, 2);
+            } elseif ($tank->tank_type == 'rectangular') {
+                $tank->tank_area = $tank->length * $tank->width;
+            }
+            return $tank;
+        });
+
         return response()->json([
-            'data' => $tank
+            'data' => $tanks
         ], 200);
     }
 
@@ -155,9 +170,11 @@ class TankController extends Controller
                 ->orderBy('tank_data.datetime', 'desc')
                 ->select(
                     'tank_sensorsdb_practice_ui.use',
-                    'tank_sensorsdb_practice_ui.tank_area',
                     'tank_sensorsdb_practice_ui.tank_capacity',
                     'tank_sensorsdb_practice_ui.max_height',
+                    'tank_sensorsdb_practice_ui.tank_type',
+                    'tank_sensorsdb_practice_ui.diameter',
+                    'tank_sensorsdb_practice_ui.width',
                     'tank_data.water_distance',
                     'tank_sensorsdb_practice_ui.offset'
                 )
@@ -168,10 +185,14 @@ class TankController extends Controller
                     'mac_add' => $macAdd,
                     'water_distance' => $query->water_distance,
                     'use' => $query->use,
-                    'tank_area' => $query->tank_area,
                     'tank_capacity' => $query->tank_capacity,
                     'max_height' => $query->max_height,
-                    'offset' => $query->offset
+                    'offset' => $query->offset,
+                    'tank_type' => $query->tank_type,
+                    'diameter' => $query->diameter,
+                    'width' => $query->width,
+
+
                 ];
             } else{
                 return null;
@@ -187,6 +208,14 @@ class TankController extends Controller
 
         $storageData = $tankData->map(function ($tank) {
 
+            // Calculate the area based on the tank type
+            if ($tank['tank_type'] == 'cylindrical') {
+                $radius = $tank['diameter'] / 2;
+                $tank_area = pi() * pow($radius, 2);
+            } elseif ($tank['tank_type'] == 'rectangular') {
+                $tank_area = ($tank ['width'] * $tank['max_height']/2000);
+            }
+
             $offset_mm = $tank['offset']; // Convertir mm a m Valor vacio del tanque  (760)
             $max_height_mm = $tank['max_height']; // Convertir mm a m  (2140)
             $water_distance_mm = $tank['water_distance']; // Convertir mm a m  (913)
@@ -195,7 +224,7 @@ class TankController extends Controller
             $b = $a + $water_distance_mm - $offset_mm;  // 1987 + 913 - 760 = 2140 
 
             $percentage = (1 - (($b - $a) / $b)) * 100;
-            $remaining_liters = ($a * $tank['tank_area']);
+            $remaining_liters = ($a * $tank_area);
 
             return [
                 "mac_add" => $tank['mac_add'],
