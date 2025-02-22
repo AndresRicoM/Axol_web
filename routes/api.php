@@ -8,6 +8,7 @@ use App\Http\Controllers\BucketController;
 use App\Http\Controllers\TankController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\HomehubWeatherController;
+use App\Http\Controllers\HomehubActivityController;
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
@@ -18,6 +19,7 @@ use App\Http\Controllers\HomehubWeatherController;
 // Homehub
 Route::post('/homehub', [HomehubController::class, 'registerHomehub']);
 Route::post('/homehub/weather', [HomehubWeatherController::class, 'registerHomehubWeather']);
+Route::post('/homehub/activity', [HomehubActivityController::class, 'registerHomehubActivity']);
 // Route::post('/homehub', [HomehubController::class, 'getHomehub']);
 
 // Bucket
