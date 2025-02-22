@@ -12,6 +12,7 @@ import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 
+
 export default function Dashboard({ auth, user, axolData }) {
     // console.log("qualityData");
     // console.log(qualityData);
@@ -38,6 +39,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
+    const [openAjoloteModal, setOpenAjoloteModal] = useState(false);
     const [homehubList, setHomehubList] = useState(axolData);
 
     console.log("axolData")
@@ -208,9 +210,12 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 }
                                                 className="relative h-full py-4"
                                             >
-                                                <div className="flex items-center justify-center h-full">
+                                                <div className="relative flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 hover:opacity-80"
+                                                     onClick={() => setOpenAjoloteModal(true)}>
+                                                    
                                                     {tank.quality?.tds < 900 ?
                                                         (
+
                                                             <img
                                                                 src="/assets/Desktop/Calidad/CirculoBlanco.gif"
                                                                 alt="Calidad buena o regular"
@@ -226,7 +231,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                             />
                                                         )
                                                     }
-
+                                                    
                                     </div>
                                     </ChartCard>
                                         </div>
@@ -314,6 +319,34 @@ export default function Dashboard({ auth, user, axolData }) {
                         />
                     </div>
                 </Modal>
+
+                <Modal
+                    title={<div className="text-center w-full text-2xl font-bold">
+                            TITO el ajolotito
+                            </div>
+                    }
+                    open={openAjoloteModal}
+                    onOk={() => setOpenAjoloteModal(false)}
+                    onCancel={() => setOpenAjoloteModal(false)}
+                    cancelButtonProps={{ style: { display: 'none' } }}
+                    width="90%"
+                    style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
+                >
+                    <div className="max-h-[80vh] flex flex-col items-center justify-center">
+                        <p className="text-lg mt-4 text-center px-4">
+                            Los ajolotes son muy sensibles a la calidad del agua. Si el nivel de sólidos disueltos totales (TDS) es alto, el ajolote podría estar en peligro.
+                        </p>
+
+                        {/* Imagen que se adapta sin scroll */}
+                        <img
+                            src="/assets/Desktop/Calidad/CirculoBlanco.gif"
+                            //src="/assets/Desktop/Calidad/Axol_modal_ajolote.png"
+                            alt="Ajolote Feliz" 
+                            className="max-w-full max-h-[60vh] h-auto object-contain mt-6"
+                        />
+                    </div>
+                </Modal>
+
             </Flex>
             {/* Division de cuadros */}
         </AuthenticatedLayout>
