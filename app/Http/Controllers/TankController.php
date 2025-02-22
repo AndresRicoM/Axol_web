@@ -15,17 +15,34 @@ class TankController extends Controller
 {
     public function registerTank(Request $request)
     {
-
         try {
+            // Log the incoming request data
+            Log::info('Incoming request data: ', $request->all());
+
             $validated = $request->validate([
-                'mac_add' => 'required',
-                'paired_with' => 'required',
-                'tank_capacity' => 'required',
-                'use' => 'required',
-                'tank_area' => 'required',
-                'max_height' => 'required'
-                // 'offset' => 'required'
+                'mac_add' => 'required|string',
+                'paired_with' => 'required|string',
+                'tank_capacity' => 'required|numeric',
+                'use' => 'required|string',
+                'max_height' => 'required|numeric',
+                'tank_type' => 'required|string|in:cylindrical,rectangular',
+                'diameter' => 'required_if:tank_type,cylindrical|numeric',
+                'width' => 'required_if:tank_type,rectangular|numeric',
             ]);
+
+            // Convert length and max_height from millimeters to meters
+            $length = $validated['max_height'] / 1000 ;
+            $width = $validated['width'] / 1000;
+
+            // Calculate the area based on the tank type
+            if ($validated['tank_type'] == 'cylindrical') {
+                $radius = $validated['diameter'] / 2;
+                $validated['tank_area'] = pi() * pow($radius, 2);
+            } elseif ($validated['tank_type'] == 'rectangular') {
+                $validated['tank_area'] = $width * $length;
+            }
+
+
             Log::info('Validated> ', ['validated' => $validated]);
 
             $sensor = Tank::create($validated);
@@ -161,32 +178,12 @@ class TankController extends Controller
             }
         })->filter();
 
-        // return response()->json([
-        //     'tankData' => $tankData
-        // ]);
-
-        // Obtener datos del tanque junto con la última lectura de distancia del agua
-        // $tank = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_ui.mac_add', '=', 'tank_data.mac_add')
-        //     ->where('tank_sensorsdb_ui.mac_add', $macAdd)
-        //     ->orderBy('tank_data.datetime', 'desc')
-        //     ->select(
-        //         'tank_sensorsdb_ui.tank_area',
-        //         'tank_sensorsdb_ui.tank_capacity',
-        //         'tank_sensorsdb_ui.max_height',
-        //         'tank_data.water_distance'
-        //     )
-        //     ->first();
 
         if ($tankData->isEmpty()) {
             return response()->json(["message" => "Tanque no encontrado o sin datos de nivel de agua"], 404);
         }
 
 
-        // return response()->json([
-        //     "type" => gettype($tankData),
-        //     "len" => count($tankData),
-        //     // "val" => $tankData
-        // ]);
 
         $storageData = $tankData->map(function ($tank) {
 
@@ -209,35 +206,5 @@ class TankController extends Controller
         });
 
         return response()->json($storageData);
-
-        // $storageData = array_map(function ($tank) {
-
-        //     return response()->json([
-        //         "tankData" => $tank
-        //     ]);
-
-        //     // Convertir todo a metros
-        //     $max_height_m = $tank['max_height'] / 1000; // Convertir mm a m
-        //     $water_distance_m = $tank['water_distance'] / 1000; // Convertir mm a m
-
-        //     // Calcular la altura del agua en metros
-        //     $water_height_m = $max_height_m - $water_distance_m;
-
-        //     // Calcular el volumen de agua en metros cúbicos
-        //     $volume_m3 = $tank['tank_area'] * $water_height_m;
-
-        //     // Convertir el volumen a litros (1 m³ = 1000 litros)
-        //     $volume_liters = $volume_m3 * 1000;
-
-        //     // Calcular el porcentaje de llenado usando la capacidad registrada en la base de datos
-        //     $percentage = ($volume_liters / $tank['tank_capacity']) * 100;
-
-        //     return [
-        //         "mac_add" => $tank['mac_add'],
-        //         "fill_percentage" => round($percentage, 2)
-        //     ];
-        // }, $tankData);
-
-        // return response()->json($storageData);
     }
 }
