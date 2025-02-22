@@ -38,6 +38,10 @@ Route::get('/check-session', function () {
 });
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard'); 
+    }
+    
     return Inertia::render('Auth/Login');
 })->name('login');
 
@@ -63,12 +67,11 @@ Route::get('/dashboard', function () {
 
     $user = Auth::user();
     $userId = $user->user_id;
-    // dd($user->username);
 
     // get user homehubs
     $homehubRequest = request()->merge(['user_id' => $userId]);
+    
     $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehub; // RETURNS A STRING
-    // dd($homehubData);
 
     $axolData = array_map(function ($homehub) use ($qualityController, $tankController) {
 
@@ -78,10 +81,14 @@ Route::get('/dashboard', function () {
         //         'value' => $homehub->mac_add,
         // ];
 
-        $qualityRequest = request()->merge(['paired_with' => $homehub->mac_add]);
+        if($homehub && isset($homehub->mac_add)){
+            $qualityRequest = request()->merge(['paired_with' => $homehub->mac_add]);
+        }
+
         $qualityData = $qualityController->getQualityData($qualityRequest)->getData();
 
         $tankRequest = request()->merge(['paired_with' => $homehub->mac_add]);
+
         $tankData = $tankController->getTankFillPercentage($tankRequest)->getData();
 
         // Merging sensors with the same 'use' attribute
@@ -123,6 +130,7 @@ Route::get('/dashboard', function () {
             // 'tank' => $tankData,
         ];
     }, $homehubData);
+
 
     // All data in json format
     // return response()->json([
