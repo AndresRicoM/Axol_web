@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+use function PHPUnit\Framework\isEmpty;
 
 class TankController extends Controller
 {
@@ -29,7 +30,6 @@ class TankController extends Controller
 
             $sensor = Tank::create($validated);
             Log::info('Tank created successfully', ['sensor' => $sensor]);
-
         } catch (\Throwable $th) {
             Log::error('Error creating a new Tank', ['error' => $th->getMessage()]);
 
@@ -61,7 +61,6 @@ class TankController extends Controller
             // Crear el registro en la base de datos
             $sensor = TankData::create($validated);
             Log::info('Tank created successfully', ['sensor' => $sensor]);
-
         } catch (\Throwable $th) {
             Log::error('Error sending Tank Data', [
                 'error_message' => $th->getMessage(),
@@ -110,7 +109,7 @@ class TankController extends Controller
     {
         $user = $request->user();
         $user_id = $user["user_id"];
-        $results = \DB::table('tank_sensorsdb AS t')
+        $results = \DB::table('tank_sensorsdb_ui_ui AS t')
             ->select('t.tank_capacity', 't.use', 't.tank_area', 't.max_height')
             ->join('homehub_devices_2 AS h', 'h.mac_add', '=', 't.paired_with')
             ->join('users AS u', 'u.user_id', '=', 'h.user_id')
@@ -119,7 +118,6 @@ class TankController extends Controller
         return response()->json([
             'data' => $results
         ], 200);
-
     }
 
     public function getTankFillPercentage(Request $request)
@@ -134,6 +132,7 @@ class TankController extends Controller
         // Lista de objetos
         $tankData = $tanks->map(function ($tank) {
             $macAdd = $tank->mac_add;
+
             $query = Tank::join('stored_waterdb as tank_data', 'tank_sensorsdb.mac_add', '=', 'tank_data.mac_add')
                 ->where('tank_sensorsdb.mac_add', $macAdd)
                 ->orderBy('tank_data.datetime', 'desc')
@@ -146,35 +145,39 @@ class TankController extends Controller
                     'tank_sensorsdb.offset'
                 )
                 ->first();
-
-            return [
-                'mac_add' => $macAdd,
-                'water_distance' => $query->water_distance,
-                'use' => $query->use,
-                'tank_area' => $query->tank_area,
-                'tank_capacity' => $query->tank_capacity,
-                'max_height' => $query->max_height,
-                'offset' => $query->offset
-            ];
-        });
+            
+            if($query){
+                return [
+                    'mac_add' => $macAdd,
+                    'water_distance' => $query->water_distance,
+                    'use' => $query->use,
+                    'tank_area' => $query->tank_area,
+                    'tank_capacity' => $query->tank_capacity,
+                    'max_height' => $query->max_height,
+                    'offset' => $query->offset
+                ];
+            } else{
+                return null;
+            }
+        })->filter();
 
         // return response()->json([
         //     'tankData' => $tankData
         // ]);
 
         // Obtener datos del tanque junto con la última lectura de distancia del agua
-        // $tank = Tank::join('stored_waterdb as tank_data', 'tank_sensorsdb.mac_add', '=', 'tank_data.mac_add')
-        //     ->where('tank_sensorsdb.mac_add', $macAdd)
+        // $tank = Tank::join('stored_waterdb as tank_data', 'tank_sensorsdb_ui.mac_add', '=', 'tank_data.mac_add')
+        //     ->where('tank_sensorsdb_ui.mac_add', $macAdd)
         //     ->orderBy('tank_data.datetime', 'desc')
         //     ->select(
-        //         'tank_sensorsdb.tank_area',
-        //         'tank_sensorsdb.tank_capacity',
-        //         'tank_sensorsdb.max_height',
+        //         'tank_sensorsdb_ui.tank_area',
+        //         'tank_sensorsdb_ui.tank_capacity',
+        //         'tank_sensorsdb_ui.max_height',
         //         'tank_data.water_distance'
         //     )
         //     ->first();
 
-        if (!$tankData) {
+        if ($tankData->isEmpty()) {
             return response()->json(["message" => "Tanque no encontrado o sin datos de nivel de agua"], 404);
         }
 
@@ -194,8 +197,8 @@ class TankController extends Controller
             $a = $max_height_mm + $offset_mm - $water_distance_mm;  // 2140 + 760 - 913 = 1987
             $b = $a + $water_distance_mm - $offset_mm;  // 1987 + 913 - 760 = 2140 
 
-            $percentage = (1 - (($b-$a)/$b))*100; 
-            $remaining_liters = ($a * $tank['tank_area']) ; 
+            $percentage = (1 - (($b - $a) / $b)) * 100;
+            $remaining_liters = ($a * $tank['tank_area']);
 
             return [
                 "mac_add" => $tank['mac_add'],
@@ -237,5 +240,4 @@ class TankController extends Controller
 
         // return response()->json($storageData);
     }
-
 }
