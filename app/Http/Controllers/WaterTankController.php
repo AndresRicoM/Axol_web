@@ -25,7 +25,7 @@ class WaterTankController extends Controller
             // Obtener distancia del agua más reciente
             $height = DB::select("
                 SELECT water_distance 
-                FROM stored_waterdb_practice_ui 
+                FROM stored_waterdb 
                 WHERE mac_add = ?
                 ORDER BY datetime DESC 
                 LIMIT 1

@@ -9,7 +9,7 @@ class Bucket extends Model
 {
     use HasFactory;
 
-    protected $table = 'bucket_sensorsdb_practice';
+    protected $table = 'bucket_sensorsdb';
 
     protected $fillable = [
         'mac_add',

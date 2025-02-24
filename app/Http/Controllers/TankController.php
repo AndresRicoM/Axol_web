@@ -133,16 +133,16 @@ class TankController extends Controller
         $tankData = $tanks->map(function ($tank) {
             $macAdd = $tank->mac_add;
 
-            $query = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_practice_ui.mac_add', '=', 'tank_data.mac_add')
-                ->where('tank_sensorsdb_practice_ui.mac_add', $macAdd)
+            $query = Tank::join('stored_waterdb as tank_data', 'tank_sensorsdb.mac_add', '=', 'tank_data.mac_add')
+                ->where('tank_sensorsdb.mac_add', $macAdd)
                 ->orderBy('tank_data.datetime', 'desc')
                 ->select(
-                    'tank_sensorsdb_practice_ui.use',
-                    'tank_sensorsdb_practice_ui.tank_area',
-                    'tank_sensorsdb_practice_ui.tank_capacity',
-                    'tank_sensorsdb_practice_ui.max_height',
+                    'tank_sensorsdb.use',
+                    'tank_sensorsdb.tank_area',
+                    'tank_sensorsdb.tank_capacity',
+                    'tank_sensorsdb.max_height',
                     'tank_data.water_distance',
-                    'tank_sensorsdb_practice_ui.offset'
+                    'tank_sensorsdb.offset'
                 )
                 ->first();
             
@@ -166,7 +166,7 @@ class TankController extends Controller
         // ]);
 
         // Obtener datos del tanque junto con la última lectura de distancia del agua
-        // $tank = Tank::join('stored_waterdb_practice_ui as tank_data', 'tank_sensorsdb_ui.mac_add', '=', 'tank_data.mac_add')
+        // $tank = Tank::join('stored_waterdb as tank_data', 'tank_sensorsdb_ui.mac_add', '=', 'tank_data.mac_add')
         //     ->where('tank_sensorsdb_ui.mac_add', $macAdd)
         //     ->orderBy('tank_data.datetime', 'desc')
         //     ->select(
