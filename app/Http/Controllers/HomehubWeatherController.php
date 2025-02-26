@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\HomehubWeather;
 
@@ -22,11 +23,18 @@ class HomehubWeatherController extends Controller
             'humidity' => 'numeric',
             'wind_speed' => 'numeric',
             'wind_direction' => 'numeric',
-            'datetime' => 'date',
         ]);
 
-        // Create a new HomehubWeather record
-        $homehubWeather = HomehubWeather::create($validatedData);
+        $validatedData['datetime'] = Carbon::now();
+
+        try{
+            // Create a new HomehubWeather record
+            $homehubWeather = HomehubWeather::create($validatedData);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => "Homehub not registered"
+            ], 500);
+        }
 
         // Return a response
         return response()->json([
