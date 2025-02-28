@@ -70,7 +70,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // 'timezone' => 'UTC', // default
+    'timezone' => 'America/Mexico_City',
 
     /*
     |--------------------------------------------------------------------------

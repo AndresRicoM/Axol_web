@@ -17,7 +17,8 @@ export default defineConfig({
         port: 5173,      // Define el puerto (puede ser cualquier puerto disponible)
         hmr: {
             // host: 'blindspot.media.mit.edu', // IP de tu adaptador Wi-Fi
-            host: '192.168.100.2', // IP de tu adaptador Wi-Fi
+            // host: '192.168.100.2', // IP de tu adaptador Wi-Fi
+            host: '192.168.1.59', // IP de tu adaptador Wi-Fi
 
         },
     },

@@ -61,7 +61,7 @@ class TankController extends Controller
             'data' => $sensor
         ], 201);
     }
-    public function registerTanKData(Request $request)
+    public function registerTankData(Request $request)
     {
         try {
             $request->merge([
@@ -77,12 +77,12 @@ class TankController extends Controller
 
             // Crear el registro en la base de datos
             $sensor = TankData::create($validated);
-            Log::info('Tank created successfully', ['sensor' => $sensor]);
+            Log::info('New tank data stored successfully', ['sensor' => $sensor]);
         } catch (\Throwable $th) {
             Log::error('Error sending Tank Data', [
                 'error_message' => $th->getMessage(),
-                'error_trace' => $th->getTraceAsString(),
-                'request_data' => $request->all(), // Para registrar los datos que se están enviando
+                // 'error_trace' => $th->getTraceAsString(),
+                // 'request_data' => $request->all(), // Para registrar los datos que se están enviando
             ]);
 
             return response()->json([

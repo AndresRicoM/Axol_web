@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\HomehubWeather;
+use Illuminate\Support\Facades\Log;
 
 class HomehubWeatherController extends Controller
 {
@@ -26,6 +27,9 @@ class HomehubWeatherController extends Controller
         ]);
 
         $validatedData['datetime'] = Carbon::now();
+
+        Log::info('Validated> ', ['validated' => $validatedData]);
+
 
         try{
             // Create a new HomehubWeather record
