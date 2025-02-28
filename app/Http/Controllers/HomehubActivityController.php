@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HomehubActivity;
+use Carbon\Carbon;
+
 
 class HomehubActivityController extends Controller
 {
@@ -11,18 +13,26 @@ class HomehubActivityController extends Controller
     public function registerHomehubActivity(Request $request)
     {
         // Validate the incoming request data
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'mac_add' => 'required|string',
-            'datetime' => 'required|date',
             'activity' => 'required|integer',
         ]);
+        $validated["datetime"] = Carbon::now();
 
-        // Create a new HomehubActivity record
-        $homehubActivity = HomehubActivity::create($validatedData);
+
+        try {
+            // Create a new HomehubActivity record
+            $homehubActivity = HomehubActivity::create($validated);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "Error saving activity: $e"
+            ], 500);
+        }
+
 
         // Return a response
         return response()->json([
-            'message' => 'Data saved successfully',
+            'message' => 'Homehub Activity data saved successfully',
             'data' => $homehubActivity
         ], 201);
     }
