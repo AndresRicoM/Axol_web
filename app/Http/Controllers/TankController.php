@@ -8,6 +8,7 @@ use App\Models\Homehub;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -64,15 +65,13 @@ class TankController extends Controller
     public function registerTankData(Request $request)
     {
         try {
-            $request->merge([
-                'datetime' => $request->input('datetime', now()->format('Y-m-d H:i:s')),
-            ]);
             // Validación de los datos
             $validated = $request->validate([
                 'mac_add' => 'required',
                 'water_distance' => 'required',
-                'datetime' => 'required'
             ]);
+            $validated["datetime"] = Carbon::now();
+            
             Log::info('Validated> ', ['validated' => $validated]);
 
             // Crear el registro en la base de datos
