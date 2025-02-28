@@ -95,27 +95,30 @@ Route::get('/dashboard', function () {
         $groupedSensors = [];
         foreach ($qualityData as $quality) {
             try {
-                $use = $quality->use;
-                if (!isset($groupedSensors[$use])) {
-                    $groupedSensors[$use] = [];
+                if(is_object($quality)){
+                    $use = $quality->use;
+                    if (!isset($groupedSensors[$use])) {
+                        $groupedSensors[$use] = [];
+                    }
+                    $groupedSensors[$use]['quality'] = $quality;
                 }
-                $groupedSensors[$use]['quality'] = $quality;
             } catch (\Throwable $th) {
-                dd($quality->use);
+                dd($th);
             }
 
         }
 
         foreach ($tankData as $tank) {
             try {
-                $use = $tank->use;
-                if (!isset($groupedSensors[$use])) {
-                    $groupedSensors[$use] = [];
+                if(is_object($tank)){
+                    $use = $tank->use;
+                    if (!isset($groupedSensors[$use])) {
+                        $groupedSensors[$use] = [];
+                    }
+                    $groupedSensors[$use]['storage'] = $tank;
                 }
-                $groupedSensors[$use]['storage'] = $tank;
             } catch (\Throwable $th) {
-
-                dd($tank->use);
+                dd($th);
             }
 
         }

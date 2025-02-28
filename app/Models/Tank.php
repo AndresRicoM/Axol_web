@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Tank extends Model
 {
@@ -36,21 +37,18 @@ class Tank extends Model
         'width' => 'float'
     ];
 
-
-    // Laravel expects the primary key to be "id". If it's different (for example, "mac_add';"), add this:
     protected $primaryKey = 'mac_add';
-
-    // If the primary key is not auto-incrementing, specify that it's not
     public $incrementing = false;
-
-    // If the primary key is not an integer, specify the type
     protected $keyType = 'string';
 
-    // Disable the automatic timestamps
     public $timestamps = false;
 
-    // Define a relationship with the TankData model
-    public function tankData()
+    public function homehub(): BelongsTo
+    {
+        return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
+    }
+
+    public function logs()
     {
         return $this->hasMany(TankData::class, 'mac_add', 'mac_add');
     }

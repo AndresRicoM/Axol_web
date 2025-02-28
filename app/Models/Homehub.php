@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Homehub extends Model
 {
@@ -25,6 +26,18 @@ class Homehub extends Model
     ];
 
     protected $primaryKey = 'mac_add';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public $timestamps = false;
+
+    public function qualitySensors(): HasMany
+    {
+        return $this->hasMany(Quality::class, 'paired_with', 'mac_add');
+    }
+
+    public function tankSensors(): HasMany
+    {
+        return $this->hasMany(Tank::class, 'paired_with', 'mac_add');
+    }
 }
