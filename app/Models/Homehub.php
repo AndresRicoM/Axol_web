@@ -36,6 +36,11 @@ class Homehub extends Model
         return $this->hasMany(Quality::class, 'paired_with', 'mac_add');
     }
 
+    public function bucketSensors(): HasMany
+    {
+        return $this->hasMany(Bucket::class, 'paired_with', 'mac_add');
+    }
+
     public function tankSensors(): HasMany
     {
         return $this->hasMany(Tank::class, 'paired_with', 'mac_add');
