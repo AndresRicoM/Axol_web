@@ -68,6 +68,9 @@ Route::get('/dashboard', function () {
     $user = Auth::user();
     $userId = $user->user_id;
 
+    #$homehubs = $user->homehubs()->with(['bucketSensors.logs'])->get();
+    #dd($homehubs);
+
     // get user homehubs
     $homehubRequest = request()->merge(['user_id' => $userId]);
     
