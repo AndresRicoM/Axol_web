@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Quality extends Model
 {
@@ -36,8 +36,8 @@ class Quality extends Model
         return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
     }
 
-    public function logs(): HasMany
+    public function logs(): HasOne
     {
-        return $this->hasMany(QualityData::class, 'mac_add', 'mac_add');
+        return $this->hasOne(QualityData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 }

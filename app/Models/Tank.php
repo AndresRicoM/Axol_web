@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tank extends Model
 {
@@ -48,8 +49,8 @@ class Tank extends Model
         return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
     }
 
-    public function logs()
+    public function logs(): HasOne
     {
-        return $this->hasMany(TankData::class, 'mac_add', 'mac_add');
+        return $this->hasOne(TankData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 }
