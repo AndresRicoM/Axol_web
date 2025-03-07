@@ -226,7 +226,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         (
 
                                                             <img
-                                                                src="/assets/Desktop/Calidad/CirculoBlanco.gif"
+                                                                src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
                                                                 alt="Calidad buena o regular"
                                                                 className="w-64 h-64 object-cover mt-2"
                                                             />
@@ -329,6 +329,8 @@ export default function Dashboard({ auth, user, axolData }) {
                     </div>
                 </Modal>
 
+
+                // Modal para mostrar la imagen del ajolote expandido al presionar la imagen en el dashboard //
                 <Modal
                     title={<div className="text-center w-full text-2xl font-bold">
                             TITO el ajolotito
@@ -348,8 +350,7 @@ export default function Dashboard({ auth, user, axolData }) {
 
                         {/* Imagen que se adapta sin scroll */}
                         <img
-                            src="/assets/Desktop/Calidad/CirculoBlanco.gif"
-                            //src="/assets/Desktop/Calidad/Axol_modal_ajolote.png"
+                            src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
                             alt="Ajolote Feliz" 
                             className="max-w-full max-h-[60vh] h-auto object-contain mt-6"
                         />

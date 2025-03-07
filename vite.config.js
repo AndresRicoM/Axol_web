@@ -18,7 +18,7 @@ export default defineConfig({
         hmr: {
             // host: 'blindspot.media.mit.edu', // IP de tu adaptador Wi-Fi
             // host: '192.168.100.2', // IP de tu adaptador Wi-Fi
-            host: '192.168.1.129', // IP de tu adaptador Wi-Fi
+            host: '192.168.1.109', // IP de tu adaptador Wi-Fi
 
         },
     },
