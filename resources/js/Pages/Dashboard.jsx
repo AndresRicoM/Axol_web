@@ -150,12 +150,17 @@ export default function Dashboard({ auth, user, axolData }) {
                                         <div className="flex flex-col gap-2 items-center justify-center h-full">
                                                                 {tank.storage ?
                                                                     (
-                                                                        <>
-                                                                            <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />
-                                        <div className="flex items-center text-center text-sm">
-                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage?.remaining_liters} Litros de agua</span>
-                                        </div>
-                                                                        </>
+                                                                        tank.storage.water_distance ? 
+                                                                        (
+                                                                            <>
+                                                                                <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />
+                                                                                <div className="flex items-center text-center text-sm">
+                                                                                    <span className="font-semibold text-text">Hay un total de {tank.storage?.remaining_liters} Litros de agua</span>
+                                                                                </div>
+                                                                            </>
+                                                                        )
+                                                                        :
+                                                                        (<span className="text-text font-semibold text-lg">No hay datos del sensor</span>)
                                                                     )
                                                                     :
                                                                     (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
@@ -185,8 +190,12 @@ export default function Dashboard({ auth, user, axolData }) {
                                                             <div className="flex md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
                                                                     {tank.quality ?
-                                                                        (
-                                                                            <WaterQualityIndicator tds={tank.quality?.tds} />
+                                                                        (   
+                                                                            tank.quality.tds ? 
+                                                                            (<WaterQualityIndicator tds={tank.quality?.tds} />) 
+                                                                            :
+                                                                            (<span className="text-text font-semibold text-2xl">No hay datos del sensor</span>)
+                                                                            
                                                                         )
                                                                         :
                                                                         (<span className="text-text font-semibold text-2xl">No hay sensor registrado</span>)
