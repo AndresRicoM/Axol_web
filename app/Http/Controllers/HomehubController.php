@@ -75,9 +75,9 @@ class HomehubController extends Controller
     {
         $data = $user->homehubs()
             ->with(['qualitySensors:mac_add,use,paired_with', 
-                    'qualitySensors.logs:tds,mac_add', 
+                    'qualitySensors.logs:tds,mac_add,datetime', 
                     'tankSensors:mac_add,use,tank_type,diameter,width,max_height,offset,paired_with',
-                    'tankSensors.logs:water_distance,mac_add'])
+                    'tankSensors.logs:water_distance,mac_add,datetime'])
             ->get();
 
         if ($data->isEmpty()) {
@@ -92,6 +92,7 @@ class HomehubController extends Controller
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
                     'tds' => $sensor->logs->tds ?? null,
+                    'datetime' => $sensor->logs?->datetime,
                 ];
             });
 
@@ -129,6 +130,7 @@ class HomehubController extends Controller
                     'water_distance' => $sensor->logs->water_distance ?? null,
                     'fill_percentage' => round($percentage, 0),
                     'remaining_liters' => round($remaining_liters, 0),
+                    'datetime' => $sensor->logs?->datetime,
                 ];
             });
 
