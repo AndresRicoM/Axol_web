@@ -157,7 +157,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     <ChartCard title={
                                                             <div className="flex justify-between items-center">
                                                                 <span>Agua almacenada</span>
-                                                                <Notification flag={elapsedTime(tank.storage?.datetime)}/>
+                                                                <Notification flag={elapsedTime(tank.storage?.datetime)} datetime={tank.storage?.datetime}/>
                                                             </div>
                                                     }>
                                                         <div className="grid grid-cols-1 gap-6 h-full">
@@ -191,7 +191,8 @@ export default function Dashboard({ auth, user, axolData }) {
                                                             <div className="flex justify-between items-center">
                                                                 <span>Calidad del agua</span>
                                                                 <div>
-                                                                    <Notification flag={elapsedTime(tank.quality?.datetime)}/>
+                                                                    <Notification flag={elapsedTime(tank.quality?.datetime)}
+                                                                    datetime={tank.quality?.datetime}/>
                                                                     <button
                                                                         className="p-1 ml-5"
                                                                         onClick={() => setOpenResponsive(true)}

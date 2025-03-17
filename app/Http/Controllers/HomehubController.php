@@ -92,7 +92,7 @@ class HomehubController extends Controller
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
                     'tds' => $sensor->logs->tds ?? null,
-                    'datetime' => $sensor->logs?->datetime,
+                    'datetime' => $sensor->logs?->datetime ?? null,
                 ];
             });
 

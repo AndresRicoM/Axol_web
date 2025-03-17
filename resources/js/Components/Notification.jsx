@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { Popover } from "@headlessui/react";
+import DateFormat from "./DateFormat";
 
-export default function Notification({ flag }) {
+export default function Notification({ flag, datetime }) {
        if (flag) {
         return (
             <div className="relative inline-block">
@@ -24,7 +25,12 @@ export default function Notification({ flag }) {
                         <div className="px-3 py-2">
                             <p>
                                 Los datos registrados no son recientes, revisa
-                                el homehub.
+                                el homehub. 
+                                <br />
+                                <br />
+                                Ultimo dato recibido: 
+                                <br />
+                                <DateFormat datetime={datetime} />
                             </p>
                         </div>
                         <div className="absolute w-3 h-3 bg-white border-gray-200 rotate-45 top-2 -right-1 dark:bg-gray-700"></div>
