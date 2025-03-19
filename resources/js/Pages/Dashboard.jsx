@@ -252,7 +252,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         :
                                                         (
                                                             <img
-                                                                src="/assets/Desktop/Calidad/AjoloteTriste.gif"
+                                                                src="/assets/Desktop/Calidad/Ajolotito_triste_1.gif"
                                                                 alt="Mala calidad"
                                                                 className="w-64 h-64 object-cover mt-2"
                                                             />
