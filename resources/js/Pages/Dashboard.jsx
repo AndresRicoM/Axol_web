@@ -164,7 +164,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                             <div className="flex flex-col gap-2 items-center justify-center h-full">
                                                                 {tank.storage ?
                                                                     (
-                                                                        tank.storage.water_distance ? 
+                                                                        tank.storage.water_distance >= 0? 
                                                                         (
                                                                             <>
                                                                                 <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />

@@ -32,7 +32,7 @@ class Tank extends Model
         'tank_capacity' => 'float',
         'use' => 'string',
         'max_height' => 'integer',
-        'offset' => 'integer',
+        'offset' => 'float',
         'tank_type' => 'string',
         'diameter' => 'float',
         'width' => 'float'

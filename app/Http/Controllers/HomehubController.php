@@ -76,7 +76,7 @@ class HomehubController extends Controller
         $data = $user->homehubs()
             ->with(['qualitySensors:mac_add,use,paired_with', 
                     'qualitySensors.logs:tds,mac_add,datetime', 
-                    'tankSensors:mac_add,use,tank_type,diameter,width,max_height,offset,paired_with',
+                    'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
                     'tankSensors.logs:water_distance,mac_add,datetime'])
             ->get();
 
@@ -91,43 +91,46 @@ class HomehubController extends Controller
                     'type' => 'quality',
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'tds' => $sensor->logs->tds ?? null,
-                    'datetime' => $sensor->logs?->datetime ?? null,
+                    'tds' => $sensor->logs?->tds,
+                    'datetime' => $sensor->logs?->datetime,
                 ];
             });
 
             $tankData = $homehub->tankSensors->map(function ($sensor){
-                $tank_area = 0;
-                if ($sensor['tank_type'] == 'cylindrical') {
+                $tank_volume = 0;
+                if ($sensor['height'] > 0 && $sensor['diameter'] > 0) {
                     $radius = $sensor['diameter'] / 2;
-                    $tank_area = pi() * pow($radius, 2);
-                } elseif ($sensor['tank_type'] == 'rectangular') {
-                    $tank_area = ($sensor['width'] * $sensor['max_height'] / 2000);
+                    $tank_volume = pi() * pow($radius, 2) * $sensor['height'];
+                } else {
+                    $tank_volume = ($sensor['width'] * $sensor['depth'] * $sensor['height']);
                 }
 
-                $offset_mm = $sensor['offset'];
-                $max_height_mm = $sensor['max_height'];
-                $water_distance_mm = $sensor->logs?->water_distance ?? null;
+                $offset = $sensor['offset'];
+                $height = $sensor['height'];
+
+                $water_distance = $sensor->logs?->water_distance !== null 
+                    ? $sensor->logs?->water_distance / 1000 
+                    : null;
 
                 $percentage = 0;
                 $remaining_liters = 0;
 
-                if(isset($offset_mm, $max_height_mm, $water_distance_mm, $tank_area)){
-                    $a = $max_height_mm + $offset_mm - $water_distance_mm;
-                    $b = $a + $water_distance_mm - $offset_mm;
+                if(isset($offset, $height, $water_distance, $tank_volume)){
+                    $a = $height + $offset - $water_distance;   
+                    $b = $a + $water_distance - $offset;
 
-                    if ($b != 0) {
+                    if ($height != 0) {
                         $percentage = (1 - (($b - $a) / $b)) * 100;
                     } else {
                         $percentage = 0;
                     }
-                    $remaining_liters = ($a * $tank_area);
+                    $remaining_liters = ($a / $height) * $tank_volume * 1000;
                 }
 
                 return [
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'water_distance' => $sensor->logs->water_distance ?? null,
+                    'water_distance' => $sensor->logs?->water_distance,
                     'fill_percentage' => round($percentage, 0),
                     'remaining_liters' => round($remaining_liters, 0),
                     'datetime' => $sensor->logs?->datetime,
