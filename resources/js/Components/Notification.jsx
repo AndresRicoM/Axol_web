@@ -16,7 +16,7 @@ export default function Notification({ flag, datetime }) {
                         />
                     </Popover.Button>
 
-                    <Popover.Panel className="absolute z-10 right-full top-0 mr-2 w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-100 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
+                    <Popover.Panel className="absolute z-10 -right-4 top-9 mr-2 w-44 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-100 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800 xl:w-64">
                         <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
                             <h3 className="font-semibold text-gray-900 dark:text-white">
                                 Alerta
@@ -33,7 +33,7 @@ export default function Notification({ flag, datetime }) {
                                 <DateFormat datetime={datetime} />
                             </p>
                         </div>
-                        <div className="absolute w-3 h-3 bg-white border-gray-200 rotate-45 top-2 -right-1 dark:bg-gray-700"></div>
+                        <div className="absolute w-3 h-3 bg-white border-gray-200 rotate-45 -top-1 right-3 dark:bg-gray-700"></div>
                     </Popover.Panel>
                 </Popover>
             </div>
