@@ -61,85 +61,13 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/dashboard', function () {
     $homehubController = new HomehubController();
-    $qualityController = new QualityController();
-    $tankController = new TankController();
-
 
     $user = Auth::user();
-    $userId = $user->user_id;
-
-    // get user homehubs
-    $homehubRequest = request()->merge(['user_id' => $userId]);
-    
-    $homehubData = $homehubController->getHomehub($homehubRequest)->getData()->homehub; // RETURNS A STRING
-
-    $axolData = array_map(function ($homehub) use ($qualityController, $tankController) {
-
-        //     return [
-        //         "type" => gettype($homehub),
-        //         "homehub" => $homehub,
-        //         'value' => $homehub->mac_add,
-        // ];
-
-        if($homehub && isset($homehub->mac_add)){
-            $qualityRequest = request()->merge(['paired_with' => $homehub->mac_add]);
-        }
-
-        $qualityData = $qualityController->getQualityData($qualityRequest)->getData();
-
-        $tankRequest = request()->merge(['paired_with' => $homehub->mac_add]);
-
-        $tankData = $tankController->getTankFillPercentage($tankRequest)->getData();
-
-        // Merging sensors with the same 'use' attribute
-        $groupedSensors = [];
-        foreach ($qualityData as $quality) {
-            try {
-                $use = $quality->use;
-                if (!isset($groupedSensors[$use])) {
-                    $groupedSensors[$use] = [];
-                }
-                $groupedSensors[$use]['quality'] = $quality;
-            } catch (\Throwable $th) {
-                dd($quality->use);
-            }
-
-        }
-
-        foreach ($tankData as $tank) {
-            try {
-                $use = $tank->use;
-                if (!isset($groupedSensors[$use])) {
-                    $groupedSensors[$use] = [];
-                }
-                $groupedSensors[$use]['storage'] = $tank;
-            } catch (\Throwable $th) {
-
-                dd($tank->use);
-            }
-
-        }
-
-        // Convierte el array asociativo en un array indexado
-        $sensors = array_values($groupedSensors);
-
-        return [
-            'homehub' => $homehub,
-            'sensors' => $sensors,
-            // 'quality' => $qualityData,
-            // 'tank' => $tankData,
-        ];
-    }, $homehubData);
-
-
-    // All data in json format
-    // return response()->json([
-    //     'axolData' => $axolData,
-    // ]);
+    $data = $homehubController->getSensors($user);
 
     // Render the dashboard
     return Inertia::render('Dashboard', [
-        'axolData' => $axolData,
+        'axolData' => $data,
         'user' => $user,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');

@@ -6,6 +6,8 @@ use App\Models\Quality;
 use App\Models\QualityData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+
 
 class QualityController extends Controller
 {
@@ -41,18 +43,14 @@ class QualityController extends Controller
     public function registerQualityData(Request $request)
     {
         try {
-            // Asegurar que el campo 'datetime' tenga un valor por defecto si no se proporciona
-            $request->merge([
-                'datetime' => $request->input('datetime', now()->format('Y-m-d H:i:s')),
-            ]);
     
             // Validación de los datos
             $validated = $request->validate([
                 'mac_add' => 'required|string', // Asegurar que 'mac_add' sea un string
                 'tds' => 'required|numeric',   // Asegurar que 'tds' sea un número
                 'water_temp' => 'required|numeric', // Asegurar que 'water_temp' sea un número
-                'datetime' => 'required|date', // Asegurar que 'datetime' sea una fecha válida
             ]);
+            $validated["datetime"] = Carbon::now();
     
             Log::info('Validated> ', ['validated' => $validated]);
     

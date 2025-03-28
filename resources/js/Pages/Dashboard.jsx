@@ -4,13 +4,15 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Select } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleInfo, faGamepad } from '@fortawesome/free-solid-svg-icons'
+import { faCircleInfo, faGamepad, faCircleExclamation, faBell } from '@fortawesome/free-solid-svg-icons'
 import RadialChart from "@/Components/RadialChart";
 import ColumnChart from "@/Components/ColumnChart";
 import { Flex, Modal } from 'antd';
 import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
+import Notification from "@/Components/Notification";
+
 
 export default function Dashboard({ auth, user, axolData }) {
     // console.log("qualityData");
@@ -38,6 +40,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const [selectedCity, setSelectedCity] = useState(null);
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
+    const [openAjoloteModal, setOpenAjoloteModal] = useState(false);
     const [homehubList, setHomehubList] = useState(axolData);
 
     console.log("axolData")
@@ -82,6 +85,14 @@ export default function Dashboard({ auth, user, axolData }) {
             return "Buenas noches";
         }
     };
+
+    const elapsedTime = (dateLog) => {
+        if (!dateLog) {
+            return false; // Devuelve false si dateLog es null o undefined
+        }
+        return (Date.now() - new Date(dateLog)) > 3 * 86400000;
+    };
+
 
     const handleChange = (value) => {
         setCurrentHomehub(homehubList[value]);
@@ -143,25 +154,35 @@ export default function Dashboard({ auth, user, axolData }) {
                                             <div className="flex md:flex-row flex-col gap-3">
                                                 {/* Primera Card - Agua almacenada (pequeña) */}
                                                 <div className="md:w-1/3 w-full">
-                                                    <ChartCard title="Agua almacenada">
-                                    <div className="grid grid-cols-1 gap-6 h-full">
-                                        <div className="flex flex-col gap-2 items-center justify-center h-full">
+                                                    <ChartCard title={
+                                                            <div className="flex justify-between items-center">
+                                                                <span>Agua almacenada</span>
+                                                                <Notification flag={elapsedTime(tank.storage?.datetime)} datetime={tank.storage?.datetime}/>
+                                                            </div>
+                                                    }>
+                                                        <div className="grid grid-cols-1 gap-6 h-full">
+                                                            <div className="flex flex-col gap-2 items-center justify-center h-full">
                                                                 {tank.storage ?
                                                                     (
-                                                                        <>
-                                                                            <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />
-                                        <div className="flex items-center text-center text-sm">
-                                                                                <span className="font-semibold text-text">Hay un total de {tank.storage?.remaining_liters} Litros de agua</span>
-                                        </div>
-                                                                        </>
+                                                                        tank.storage.water_distance >= 0 ? 
+                                                                        (
+                                                                            <>
+                                                                                <RadialChart waterPercentage={tank.storage?.fill_percentage > 100 ? 100 : tank.storage?.fill_percentage} className="h-20 w-20" />
+                                                                                <div className="flex items-center text-center text-sm">
+                                                                                    <span className="font-semibold text-text">Hay un total de {tank.storage?.remaining_liters} Litros de agua</span>
+                                                                                </div>
+                                                                            </>
+                                                                        )
+                                                                        :
+                                                                        (<span className="text-text font-semibold text-lg"><FontAwesomeIcon icon={faCircleExclamation} /> No hay datos del sensor</span>)
                                                                     )
                                                                     :
                                                                     (<span className="text-text font-semibold text-lg">No hay sensor registrado</span>)
                                                                 }
-                                        </div>
-                                    </div>
-                                    </ChartCard>
-                                        </div>
+                                                            </div>
+                                                        </div>
+                                                    </ChartCard>
+                                                </div>
 
                                                 {/* Segunda Card - Calidad del agua */}
                                                 <div className="md:w-2/3 w-full">
@@ -169,12 +190,16 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         title={
                                                             <div className="flex justify-between items-center">
                                                                 <span>Calidad del agua</span>
-                                                                <button
-                                                                    className="p-1"
-                                            onClick={() => setOpenResponsive(true)}
-                                        >
-                                            <FontAwesomeIcon icon={faCircleInfo} />
-                                                                </button>
+                                                                <div>
+                                                                    <Notification flag={elapsedTime(tank.quality?.datetime)}
+                                                                    datetime={tank.quality?.datetime}/>
+                                                                    <button
+                                                                        className="p-1 ml-5"
+                                                                        onClick={() => setOpenResponsive(true)}
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faCircleInfo} />
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         }
                                                         className="relative min-h-[400px] py-4"
@@ -183,8 +208,12 @@ export default function Dashboard({ auth, user, axolData }) {
                                                             <div className="flex md:grid-cols-2 gap-6 relative w-full">
                                                                 <div className="w-full h-[281px]">
                                                                     {tank.quality ?
-                                                                        (
-                                                                            <WaterQualityIndicator tds={tank.quality?.tds} />
+                                                                        (   
+                                                                            tank.quality.tds ? 
+                                                                            (<WaterQualityIndicator tds={tank.quality?.tds} />) 
+                                                                            :
+                                                                            (<span className="text-text font-semibold text-2xl"><FontAwesomeIcon icon={faCircleExclamation} /> No hay datos del sensor</span>)
+                                                                            
                                                                         )
                                                                         :
                                                                         (<span className="text-text font-semibold text-2xl">No hay sensor registrado</span>)
@@ -208,11 +237,14 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 }
                                                 className="relative h-full py-4"
                                             >
-                                                <div className="flex items-center justify-center h-full">
+                                                <div className="relative flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 hover:opacity-80"
+                                                     onClick={() => setOpenAjoloteModal(true)}>
+                                                    
                                                     {tank.quality?.tds < 900 ?
                                                         (
+
                                                             <img
-                                                                src="/assets/Desktop/Calidad/CirculoBlanco.gif"
+                                                                src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
                                                                 alt="Calidad buena o regular"
                                                                 className="w-64 h-64 object-cover mt-2"
                                                             />
@@ -220,13 +252,13 @@ export default function Dashboard({ auth, user, axolData }) {
                                                         :
                                                         (
                                                             <img
-                                                                src="/assets/Desktop/Calidad/AjoloteTriste.gif"
+                                                                src="/assets/Desktop/Calidad/Ajolotito_triste_1.gif"
                                                                 alt="Mala calidad"
                                                                 className="w-64 h-64 object-cover mt-2"
                                                             />
                                                         )
                                                     }
-
+                                                    
                                     </div>
                                     </ChartCard>
                                         </div>
@@ -314,6 +346,35 @@ export default function Dashboard({ auth, user, axolData }) {
                         />
                     </div>
                 </Modal>
+
+
+                {/* // Modal para mostrar la imagen del ajolote expandido al presionar la imagen en el dashboard // */}
+                <Modal
+                    title={<div className="text-center w-full text-2xl font-bold">
+                            TITO el ajolotito
+                            </div>
+                    }
+                    open={openAjoloteModal}
+                    onOk={() => setOpenAjoloteModal(false)}
+                    onCancel={() => setOpenAjoloteModal(false)}
+                    cancelButtonProps={{ style: { display: 'none' } }}
+                    width="90%"
+                    style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
+                >
+                    <div className="max-h-[80vh] flex flex-col items-center justify-center">
+                        <p className="text-lg mt-4 text-center px-4">
+                            Los ajolotes son muy sensibles a la calidad del agua. Si el nivel de sólidos disueltos totales (TDS) es alto, el ajolote podría estar en peligro.
+                        </p>
+
+                        {/* Imagen que se adapta sin scroll */}
+                        <img
+                            src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
+                            alt="Ajolote Feliz" 
+                            className="max-w-full max-h-[60vh] h-auto object-contain mt-6"
+                        />
+                    </div>
+                </Modal>
+
             </Flex>
             {/* Division de cuadros */}
         </AuthenticatedLayout>

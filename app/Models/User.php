@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -35,4 +35,9 @@ class User extends Authenticatable
 
     // Si tu tabla no tiene las columnas de marcas de tiempo (created_at y updated_at), desactívalas:
     public $timestamps = false;
+
+    public function homehubs(): HasMany
+    {
+        return $this->hasMany(Homehub::class, 'user_id', 'user_id');
+    }
 }

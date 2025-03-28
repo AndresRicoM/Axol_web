@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QualityData extends Model
 {
@@ -27,6 +28,13 @@ class QualityData extends Model
     ];
 
     protected $primaryKey = 'mac_add';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public $timestamps = false;
+
+    public function qualitySensor(): BelongsTo
+    {
+        return $this->belongsTo(Quality::class, 'mac_add', 'mac_add');
+    }
 }

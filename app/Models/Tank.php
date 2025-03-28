@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tank extends Model
 {
@@ -16,9 +18,12 @@ class Tank extends Model
         'paired_with',
         'tank_capacity',
         'use',
-        'tank_area',
         'max_height',
-        'offset'
+        'offset',
+        'diameter',
+        'width',
+        'height',
+        'depth'
     ];
 
     protected $casts = [
@@ -26,19 +31,27 @@ class Tank extends Model
         'paired_with' => 'string',
         'tank_capacity' => 'float',
         'use' => 'string',
-        'tank_area' => 'float',
         'max_height' => 'integer',
-        'offset' => 'integer'
+        'offset' => 'float',
+        'diameter' => 'float',
+        'width' => 'float',
+        'height' => 'float',
+        'depth' => 'float'
     ];
 
     protected $primaryKey = 'mac_add';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public $timestamps = false;
 
-
-    // Define a relationship with the TankData model
-    public function tankData()
+    public function homehub(): BelongsTo
     {
-        return $this->hasMany(TankData::class, 'mac_add', 'mac_add');
+        return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
+    }
+
+    public function logs(): HasOne
+    {
+        return $this->hasOne(TankData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 }
