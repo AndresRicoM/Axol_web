@@ -26,22 +26,24 @@ class TankController extends Controller
                 'tank_capacity' => 'required|numeric',
                 'use' => 'required|string',
                 'max_height' => 'required|numeric',
-                'tank_type' => 'required|string|in:cylindrical,rectangular',
-                'diameter' => 'required_if:tank_type,cylindrical|numeric',
-                'width' => 'required_if:tank_type,rectangular|numeric',
+                'offset' => 'nullable|numeric',
+                'diameter' => 'nullable|numeric',
+                'width' => 'nullable|numeric',
+                'height' => 'required|numeric',
+                'depth' => 'nullable|numeric'
             ]);
 
             // Convert length and max_height from millimeters to meters
-            $length = $validated['max_height'] / 1000 ;
-            $width = isset($validated['width']) ? $validated['width'] / 1000 : null;
+            // $length = $validated['max_height'] / 1000 ;
+            // $width = isset($validated['width']) ? $validated['width'] / 1000 : null;
 
-            // Calculate the area based on the tank type
-            if ($validated['tank_type'] == 'cylindrical') {
-                $radius = $validated['diameter'] / 2;
-                $validated['tank_area'] = pi() * pow($radius, 2);
-            } elseif ($validated['tank_type'] == 'rectangular') {
-                $validated['tank_area'] = $width * $length;
-            }
+            // // Calculate the area based on the tank type
+            // if ($validated['tank_type'] == 'cylindrical') {
+            //     $radius = $validated['diameter'] / 2;
+            //     $validated['tank_area'] = pi() * pow($radius, 2);
+            // } elseif ($validated['tank_type'] == 'rectangular') {
+            //     $validated['tank_area'] = $width * $length;
+            // }
 
 
             Log::info('Validated> ', ['validated' => $validated]);
@@ -140,7 +142,7 @@ class TankController extends Controller
     {
         $user = $request->user();
         $user_id = $user["user_id"];
-        $results = \DB::table('tank_sensorsdb_ui_ui AS t')
+        $results = \DB::table('tank_sensorsdb AS t')
             ->select('t.tank_capacity', 't.use', 't.tank_area', 't.max_height')
             ->join('homehub_devices_2 AS h', 'h.mac_add', '=', 't.paired_with')
             ->join('users AS u', 'u.user_id', '=', 'h.user_id')
@@ -168,12 +170,12 @@ class TankController extends Controller
                 ->where('tank_sensorsdb.mac_add', $macAdd)
                 ->orderBy('tank_data.datetime', 'desc')
                 ->select(
-                    'tank_sensorsdb_practice_ui.use',
-                    'tank_sensorsdb_practice_ui.tank_capacity',
-                    'tank_sensorsdb_practice_ui.max_height',
-                    'tank_sensorsdb_practice_ui.tank_type',
-                    'tank_sensorsdb_practice_ui.diameter',
-                    'tank_sensorsdb_practice_ui.width',
+                    'tank_sensorsdb.use',
+                    'tank_sensorsdb.tank_capacity',
+                    'tank_sensorsdb.max_height',
+                    'tank_sensorsdb.tank_type',
+                    'tank_sensorsdb.diameter',
+                    'tank_sensorsdb.width',
                     'tank_data.water_distance',
                     'tank_sensorsdb.offset'
                 )
@@ -187,7 +189,6 @@ class TankController extends Controller
                     'tank_capacity' => $query->tank_capacity,
                     'max_height' => $query->max_height,
                     'offset' => $query->offset,
-                    'tank_type' => $query->tank_type,
                     'diameter' => $query->diameter,
                     'width' => $query->width,
 
