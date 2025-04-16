@@ -12,6 +12,7 @@ import ChartCard from "@/Components/ChartCard";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 import Notification from "@/Components/Notification";
+import useRangoMesActual from "@/hooks/useRangoMesActual";
 
 
 export default function Dashboard({ auth, user, axolData }) {
@@ -98,6 +99,8 @@ export default function Dashboard({ auth, user, axolData }) {
         setCurrentHomehub(homehubList[value]);
     }
 
+    const rangoFechas = useRangoMesActual();
+
     if (axolData.length === 0) {
         return (
             <AuthenticatedLayout user={auth.user}>
@@ -155,7 +158,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 {/* Primera Card - Agua almacenada (pequeña) */}
                                                 <div className="md:w-1/3 w-full">
                                                     <ChartCard title={
-                                                            <div className="flex justify-between items-center">
+                                                            <div className="flex justify-between items-center">git 
                                                                 <span>Agua almacenada</span>
                                                                 <Notification flag={elapsedTime(tank.storage?.datetime)} datetime={tank.storage?.datetime}/>
                                                             </div>
@@ -202,7 +205,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 </div>
                                                             </div>
                                                         }
-                                                        className="relative min-h-[400px] py-4"
+                                                        className="relative min-w-[320px] min-h-[370px] flex items-center justify-center"
                                                     >
                                                         <div className="flex md:flex-row-reverse flex-col gap-6">
                                                             <div className="flex md:grid-cols-2 gap-6 relative w-full">
@@ -227,41 +230,44 @@ export default function Dashboard({ auth, user, axolData }) {
                                             </div>
                                         </div>
 
-                                        {/* Tercera Card - Ajolote */}
-                                        <div className="md:w-1/4 w-full">
-                                            <ChartCard
-                                                title={
-                                                    <div className="flex justify-between items-center">
-                                                        <span>Ajolotito</span>
-                                                    </div>
-                                                }
-                                                className="relative h-full py-4"
-                                            >
-                                                <div className="relative flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 hover:opacity-80"
-                                                     onClick={() => setOpenAjoloteModal(true)}>
-                                                    
-                                                    {tank.quality?.tds < 900 ?
-                                                        (
-
-                                                            <img
-                                                                src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
-                                                                alt="Calidad buena o regular"
-                                                                className="w-64 h-64 object-cover mt-2"
-                                                            />
-                                                        )
-                                                        :
-                                                        (
-                                                            <img
-                                                                src="/assets/Desktop/Calidad/Ajolotito_triste_1.gif"
-                                                                alt="Mala calidad"
-                                                                className="w-64 h-64 object-cover mt-2"
-                                                            />
-                                                        )
-                                                    }
-                                                    
+                                        {/* Tercera Card - Agua Consumida */}
+                                    <div className="md:w-1/4 w-full">
+                                        <ChartCard
+                                            title={
+                                                <div className="flex justify-end items-center">
+                                                    {/* Lupa animada */}
+                                                    <button
+                                                        className="transition-transform duration-200 hover:scale-150 outline-none"
+                                                        onClick={() => setOpenAjoloteModal(true)}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                                            <circle cx="11" cy="11" r="7" />
+                                                            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            }
+                                            className="relative min-w-[320px] min-h-[370px] flex items-center justify-center"
+                                        >
+                                            <div className="flex flex-col items-center justify-center h-full w-full">
+                                                <img
+                                                    src="/assets/Desktop/Card3/Grifogif.gif"
+                                                    alt="Grifo animado"
+                                                    className="w-32 h-32 mb-2 object-contain mx-auto"
+                                                />
+                                                <span className="text-2xl font-semibold text-center">Agua<br />Consumida</span>
+                                                <span className="text-4xl font-extrabold mt-2 mb-2">100 Lts</span>
+                                                <div className="flex items-center gap-1 text-gray-500 mt-2">
+                                                    <img
+                                                        src="/assets/Desktop/Card3/Calendario.png"
+                                                        alt="Calendario"
+                                                        className="h-7 w-7 object-contain"
+                                                    />
+                                                    <span className="font-semibold text-base">{rangoFechas}</span>
+                                                </div>
+                                            </div>
+                                        </ChartCard>
                                     </div>
-                                    </ChartCard>
-                                        </div>
                                     </div>
                                 </div>
                             ))}
