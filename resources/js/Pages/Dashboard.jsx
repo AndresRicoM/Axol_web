@@ -4,7 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Select } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleInfo, faGamepad, faCircleExclamation, faBell } from '@fortawesome/free-solid-svg-icons'
+import { faCircleInfo, faGamepad, faCircleExclamation, faBell, faFileArrowDown } from '@fortawesome/free-solid-svg-icons'
 import RadialChart from "@/Components/RadialChart";
 import ColumnChart from "@/Components/ColumnChart";
 import { Flex, Modal } from 'antd';
@@ -158,7 +158,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 {/* Primera Card - Agua almacenada (pequeña) */}
                                                 <div className="md:w-1/3 w-full">
                                                     <ChartCard title={
-                                                            <div className="flex justify-between items-center">git 
+                                                            <div className="flex justify-between items-center"> 
                                                                 <span>Agua almacenada</span>
                                                                 <Notification flag={elapsedTime(tank.storage?.datetime)} datetime={tank.storage?.datetime}/>
                                                             </div>
@@ -273,23 +273,39 @@ export default function Dashboard({ auth, user, axolData }) {
                             ))}
                         </div>
 
-                    {/* Map */}
-                        <MapContainer
-                            center={[currentLat, currentLon]}
-                            zoom={13}
-                            scrollWheelZoom={false}
-                            style={{ height: "400px", width: "100%" }}
+                    {/* Botón de Descargar Reporte */}
+                    <div className="flex justify-center w-full -mt-2 -mb-2  ">
+                        <a 
+                            href="#" 
+                            className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg"
+                            onClick={(e) => e.preventDefault()}
                         >
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                            <Marker position={[currentLat, currentLon]}>
-                        <Popup>
-                                    Tanques: {currentHomehub.sensors.length}
-                        </Popup>
-                    </Marker>
-                        </MapContainer>
+                            <FontAwesomeIcon 
+                                icon={faFileArrowDown} 
+                                className="h-4 w-4"
+                            />
+                            <span className="text-[16px] font-semibold">Descargar Reporte</span>
+                        </a>
+                    </div>
+
+                    {/* Map */}
+                    <MapContainer
+                        center={[currentLat, currentLon]}
+                        zoom={13}
+                        scrollWheelZoom={false}
+                        style={{ height: "400px", width: "100%" }}
+                    >
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[currentLat, currentLon]}>
+                            <Popup>
+                                Tanques: {currentHomehub.sensors.length}
+                            </Popup>
+                        </Marker>
+                    </MapContainer>
+
                     </div>
                     {/* PopUp de info */}
 
