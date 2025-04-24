@@ -13,6 +13,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import WaterQualityIndicator from "@/Components/WaterQualityIndicator";
 import Notification from "@/Components/Notification";
 import useRangoMesActual from "@/hooks/useRangoMesActual";
+import PDF from "@/Components/PDF";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 
 export default function Dashboard({ auth, user, axolData }) {
@@ -274,19 +276,24 @@ export default function Dashboard({ auth, user, axolData }) {
                         </div>
 
                     {/* Botón de Descargar Reporte */}
-                    <div className="flex justify-center w-full -mt-2 -mb-2  ">
-                        <a 
-                            href="#" 
-                            className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg"
-                            onClick={(e) => e.preventDefault()}
-                        >
-                            <FontAwesomeIcon 
-                                icon={faFileArrowDown} 
-                                className="h-4 w-4"
-                            />
-                            <span className="text-[16px] font-semibold">Descargar Reporte</span>
-                        </a>
-                    </div>
+                    <div className="flex justify-center w-full -mt-2 -mb-2">
+                        <PDFDownloadLink document={<PDF />} fileName="Axol_Report.pdf">
+                            {({ loading }) =>
+                            loading ? (
+                                <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                                <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                                Cargando Reporte...
+                                </button>
+                            ) : (
+                                <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                                <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                                Descargar Reporte...
+                                </button>
+                            )
+                            }
+                        </PDFDownloadLink>
+                        </div>
+
 
                     {/* Map */}
                     <MapContainer
