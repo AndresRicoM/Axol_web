@@ -10,7 +10,7 @@ class TankData extends Model
 {
     use HasFactory;
 
-    protected $table = 'stored_waterdb';
+    protected $table = 'stored_waterdb_practice_ui';
 
     protected $fillable = [
         'mac_add',
