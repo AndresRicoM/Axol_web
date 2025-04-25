@@ -15,6 +15,7 @@ import Notification from "@/Components/Notification";
 import useRangoMesActual from "@/hooks/useRangoMesActual";
 import PDF from "@/Components/PDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import BarChart from '@/Components/BarChart'
 
 
 export default function Dashboard({ auth, user, axolData }) {
@@ -44,6 +45,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const [open, setOpen] = useState(false);
     const [openResponsive, setOpenResponsive] = useState(false);
     const [openAjoloteModal, setOpenAjoloteModal] = useState(false);
+    const [selectedConsumption, setSelectedConsumption] = useState({});
     const [homehubList, setHomehubList] = useState(axolData);
 
     console.log("axolData")
@@ -100,6 +102,11 @@ export default function Dashboard({ auth, user, axolData }) {
     const handleChange = (value) => {
         setCurrentHomehub(homehubList[value]);
     }
+
+    const handleOpenModal = (tank) => {
+        setSelectedConsumption(tank.storage.monthly_consumption || {}); 
+        setOpenAjoloteModal(true);
+    };
 
     const rangoFechas = useRangoMesActual();
 
@@ -240,7 +247,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     {/* Lupa animada */}
                                                     <button
                                                         className="transition-transform duration-200 hover:scale-150 outline-none"
-                                                        onClick={() => setOpenAjoloteModal(true)}
+                                                        onClick={() => handleOpenModal(tank)}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                                             <circle cx="11" cy="11" r="7" />
@@ -258,7 +265,10 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     className="w-32 h-32 mb-2 object-contain mx-auto"
                                                 />
                                                 <span className="text-2xl font-semibold text-center">Agua<br />Consumida</span>
-                                                <span className="text-4xl font-extrabold mt-2 mb-2">100 Lts</span>
+                                                <span className="text-4xl font-extrabold mt-2 mb-2">
+                                                    {Object.values(tank.storage.monthly_consumption).pop() ?? "Sin datos"}
+                                                </span>
+
                                                 <div className="flex items-center gap-1 text-gray-500 mt-2">
                                                     <img
                                                         src="/assets/Desktop/Card3/Calendario.png"
@@ -380,7 +390,7 @@ export default function Dashboard({ auth, user, axolData }) {
                 {/* // Modal para mostrar la imagen del ajolote expandido al presionar la imagen en el dashboard // */}
                 <Modal
                     title={<div className="text-center w-full text-2xl font-bold">
-                            TITO el ajolotito
+                            Consumo de agua
                             </div>
                     }
                     open={openAjoloteModal}
@@ -391,16 +401,7 @@ export default function Dashboard({ auth, user, axolData }) {
                     style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
                 >
                     <div className="max-h-[80vh] flex flex-col items-center justify-center">
-                        <p className="text-lg mt-4 text-center px-4">
-                            Los ajolotes son muy sensibles a la calidad del agua. Si el nivel de sólidos disueltos totales (TDS) es alto, el ajolote podría estar en peligro.
-                        </p>
-
-                        {/* Imagen que se adapta sin scroll */}
-                        <img
-                            src="/assets/Desktop/Calidad/Axol_TITO_Dashboard.gif"
-                            alt="Ajolote Feliz" 
-                            className="max-w-full max-h-[60vh] h-auto object-contain mt-6"
-                        />
+                        <BarChart monthlyConsumption={selectedConsumption} />
                     </div>
                 </Modal>
 
