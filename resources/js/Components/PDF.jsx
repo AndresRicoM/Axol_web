@@ -8,7 +8,7 @@ import Axol_logo from './assets_pdf/Axol_pdf.png';
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
-    backgroundColor: '#E4E4E4',
+    backgroundColor: '#FFFFFF',
     padding: 20,
   },
   header: {
@@ -25,10 +25,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 40,
     marginRight: 10,
+    objectFit: 'contain',
   },
   rightImage: {
-    width: 60,
+    width: 50,
     height: 40,
+    objectFit: 'contain',
   },
   section: {
     margin: 10,
@@ -85,8 +87,8 @@ const PDF = () => (
             <View style={styles.header}>
                 {/* Grupo izquierdo: 3 imágenes */}
                 <View style={styles.leftGroup}>
-                    <Image src={CCGDL} style={styles.image} />
                     <Image src={MIT_ML} style={styles.image} />
+                    <Image src={CCGDL} style={styles.image} />
                     <Image src={NubesLogo} style={styles.image} />
                 </View>
 
