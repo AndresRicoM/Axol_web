@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Homehub;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use App\Models\Tank;
-
-use function PHPSTORM_META\map;
 
 class HomehubController extends Controller
 {
@@ -77,7 +74,8 @@ class HomehubController extends Controller
             ->with(['qualitySensors:mac_add,use,paired_with', 
                     'qualitySensors.logs:tds,mac_add,datetime', 
                     'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
-                    'tankSensors.logs:water_distance,mac_add,datetime'])
+                    'tankSensors.logs:water_distance,mac_add,datetime',
+                    'tankSensors.latestLog:water_distance,mac_add,datetime'])
             ->get();
 
         if ($data->isEmpty()) {
@@ -96,7 +94,7 @@ class HomehubController extends Controller
                 ];
             });
 
-            $tankData = $homehub->tankSensors->map(function ($sensor){
+            $tankData = $homehub->tankSensors->map(function ($sensor) {
                 $tank_volume = 0;
                 if ($sensor['diameter'] > 0) {
                     $radius = $sensor['diameter'] / 2;
@@ -104,21 +102,50 @@ class HomehubController extends Controller
                 } else {
                     $tank_volume = ($sensor['width'] * $sensor['depth'] * $sensor['height']);
                 }
-
+            
                 $offset = $sensor['offset'];
                 $height = $sensor['height'];
+            
+                // Obtener el último dato
+                $latestLog = $sensor->latestLog;
+                $latestDistance = $latestLog?->water_distance / 1000;
+            
+                // Agrupar datos históricos por mes
+                $logsByMonth = $sensor->logs->groupBy(function ($log) {
+                    return date('m', strtotime($log->datetime)); // Agrupar por mes
+                });
 
-                $water_distance = $sensor->logs?->water_distance !== null 
-                    ? $sensor->logs?->water_distance / 1000 
-                    : null;
-
+                $monthlyConsumption = [];
+            
+                foreach ($logsByMonth as $month => $entries) {
+                    $previousReading = null;
+                    $monthlyConsumption[$month] = 0; // Inicializar consumo mensual
+                
+                    foreach ($entries as $log) {
+                        $currentReading = $log->water_distance / 1000;
+                
+                        // Solo calcular consumo si hay un valor anterior
+                        if ($previousReading !== null && $currentReading <= $previousReading) {
+                            $monthlyConsumption[$month] += ($previousReading - $currentReading) / $height * $tank_volume * 1000;
+                        }
+                
+                        // Actualizar el valor anterior
+                        $previousReading = $currentReading;
+                    }
+                
+                    // Redondear el consumo final
+                    $monthlyConsumption[$month] = round($monthlyConsumption[$month], 0);
+                }
+                          
+            
+                // Cálculo de porcentaje y litros restantes
                 $percentage = 0;
                 $remaining_liters = 0;
-
-                if(isset($offset, $height, $water_distance, $tank_volume)){
-                    $a = $height + $offset - $water_distance;   
-                    $b = $a + $water_distance - $offset;
-
+            
+                if (isset($offset, $height, $latestDistance, $tank_volume)) {
+                    $a = $height + $offset - $latestDistance;   
+                    $b = $a + $latestDistance - $offset;
+            
                     if ($height != 0) {
                         $percentage = (1 - (($b - $a) / $b)) * 100;
                     } else {
@@ -126,16 +153,18 @@ class HomehubController extends Controller
                     }
                     $remaining_liters = ($a / $height) * $tank_volume * 1000;
                 }
-
+            
                 return [
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'water_distance' => $sensor->logs?->water_distance,
+                    'water_distance' => $latestLog?->water_distance,
                     'fill_percentage' => round($percentage, 0),
                     'remaining_liters' => round($remaining_liters, 0),
-                    'datetime' => $sensor->logs?->datetime,
+                    'datetime' => $latestLog?->datetime,
+                    'monthly_consumption' => $monthlyConsumption,
                 ];
-            });
+            });            
+            
 
             // Agrupar sensores por "use"
             $groupedSensors = [];
