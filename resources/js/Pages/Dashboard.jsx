@@ -209,7 +209,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 <div className="w-full h-[281px]">
                                                                     {tank.quality ?
                                                                         (   
-                                                                            tank.quality.tds >= 0? 
+                                                                            tank.quality.tds >= 0 ? 
                                                                             (<WaterQualityIndicator tds={tank.quality?.tds} />) 
                                                                             :
                                                                             (<span className="text-text font-semibold text-2xl"><FontAwesomeIcon icon={faCircleExclamation} /> No hay datos del sensor</span>)
