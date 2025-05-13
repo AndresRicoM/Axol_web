@@ -16,14 +16,16 @@ class QualityData extends Model
         'mac_add',
         'tds',
         'water_temp',
-        'datetime'
+        'datetime',
+        'humidity',
     ];
     
     protected $casts = [
         'mac_add' => 'string',
         'tds'=> 'float',
         'water_temp'=> 'float',
-        'datetime'=> 'datetime'
+        'datetime'=> 'datetime',
+        'humidity' => 'float',
 
     ];
 
