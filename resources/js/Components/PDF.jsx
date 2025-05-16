@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Image,Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Image, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import CCGDL from './assets_pdf/CCGDL.png';
 import MIT_ML from './assets_pdf/MIT_ML.png';
 import NubesLogo from './assets_pdf/NubesLogo.png';
@@ -79,9 +79,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#000', // Color negro (se puede cambiar al azul como en el slack)
     marginVertical: 10, // Espacio arriba y abajo de la línea
   },
+  grafica: {
+    width: 400,
+    height: 200,
+    marginTop: 20,
+  },
 });
 
-const PDF = () => (
+const PDF = ({data, graficaUrl}) => (
         <Document>
             <Page size="A4" style={styles.page}>
             <View style={styles.header}>
@@ -103,7 +108,7 @@ const PDF = () => (
                 <View style={styles.row}>
                     <View style={styles.box}>
                     <Text style={styles.label}>Reporte:</Text>
-                    <Text style={styles.value}>homehub name</Text>
+                    <Text style={styles.value}>{data.homehub.name}</Text>
                     </View>
                     <View style={styles.box}>
                     <Text style={styles.label}>Fecha:</Text>
@@ -137,6 +142,13 @@ const PDF = () => (
 
                 <View style={styles.separator} />
 
+                {/* Aquí va la gráfica */}
+                {graficaUrl && (
+                    <View style={{ alignItems: 'center', marginTop: 10 }}>
+                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo mensual:</Text>
+                        <Image src={graficaUrl} style={{ width: 400, height: 200 }} />
+                    </View>
+                )}
 
             </Page>
         </Document>
