@@ -49,6 +49,7 @@ class QualityController extends Controller
                 'mac_add' => 'required|string', // Asegurar que 'mac_add' sea un string
                 'tds' => 'required|numeric',   // Asegurar que 'tds' sea un número
                 'water_temp' => 'required|numeric', // Asegurar que 'water_temp' sea un número
+                'humidity' => 'required|numeric', 
             ]);
             $validated["datetime"] = Carbon::now();
     
