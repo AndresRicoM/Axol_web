@@ -278,10 +278,6 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     className="w-32 h-32 mb-2 object-contain mx-auto"
                                                 />
                                                 <span className="text-2xl font-semibold text-center">Agua<br />Consumida</span>
-                                                <span className="text-4xl font-extrabold mt-2 mb-2">
-                                                    {Object.values(tank.storage.monthly_consumption).pop() ?? "Sin datos"}
-                                                </span>
-
                                                 <div className="flex items-center gap-1 text-gray-500 mt-2">
                                                     <img
                                                         src="/assets/Desktop/Card3/Calendario.png"
@@ -290,6 +286,10 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     />
                                                     <span className="font-semibold text-base">{rangoFechas}</span>
                                                 </div>
+
+                                                <span className="text-4xl font-extrabold mt-2 mb-2">
+                                                    {Object.values(tank.storage.monthly_consumption).pop()} litros
+                                                </span>
                                             </div>
                                         </ChartCard>
                                     </div>

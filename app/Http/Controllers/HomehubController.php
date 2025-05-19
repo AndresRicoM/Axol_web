@@ -39,7 +39,6 @@ class HomehubController extends Controller
 
             $homehub = Homehub::create($validated);
             Log::info('Homehub created successfully', ['homehub' => $homehub]);
-
         } catch (\Throwable $th) {
             Log::error('Error creating a new Homehub', ['error' => $th->getMessage()]);
 
@@ -71,11 +70,13 @@ class HomehubController extends Controller
     public function getSensors(User $user)
     {
         $data = $user->homehubs()
-            ->with(['qualitySensors:mac_add,use,paired_with', 
-                    'qualitySensors.logs:tds,mac_add,datetime,humidity', 
-                    'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
-                    'tankSensors.logs:water_distance,mac_add,datetime',
-                    'tankSensors.latestLog:water_distance,mac_add,datetime'])
+            ->with([
+                'qualitySensors:mac_add,use,paired_with',
+                'qualitySensors.logs:tds,mac_add,datetime,humidity',
+                'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
+                'tankSensors.logs:water_distance,mac_add,datetime',
+                'tankSensors.latestLog:water_distance,mac_add,datetime'
+            ])
             ->get();
 
         if ($data->isEmpty()) {
@@ -103,50 +104,66 @@ class HomehubController extends Controller
                 } else {
                     $tank_volume = ($sensor['width'] * $sensor['depth'] * $sensor['height']);
                 }
-            
+
                 $offset = $sensor['offset'];
                 $height = $sensor['height'];
-            
+
                 // Obtener el último dato
                 $latestLog = $sensor->latestLog;
                 $latestDistance = $latestLog?->water_distance / 1000;
-            
+                
+                // Obtener el mes actual
+                $currentMonth = date('m');
+
+                // Definir todos los meses posibles hasta el actual
+                $allMonths = array_map(fn($m) => str_pad($m, 2, "0", STR_PAD_LEFT), range(1, (int) $currentMonth));
+
+                // Inicializar consumo mensual con ceros para todos los meses hasta el actual
+                $monthlyConsumption = array_fill_keys($allMonths, 0);
+
                 // Agrupar datos históricos por mes
                 $logsByMonth = $sensor->logs->groupBy(function ($log) {
                     return date('m', strtotime($log->datetime)); // Agrupar por mes
                 });
 
-                $monthlyConsumption = [];
-            
                 foreach ($logsByMonth as $month => $entries) {
+                    // Asegurar que solo trabajamos con meses hasta el actual
+                    if ($month > $currentMonth) {
+                        continue;
+                    }
+
                     $previousReading = null;
-                    $monthlyConsumption[$month] = 0; // Inicializar consumo mensual
-                
+
                     foreach ($entries as $log) {
                         $currentReading = $log->water_distance / 1000;
-                
+
                         // Solo calcular consumo si hay un valor anterior
                         if ($previousReading !== null && $currentReading <= $previousReading) {
                             $monthlyConsumption[$month] += ($previousReading - $currentReading) / $height * $tank_volume * 1000;
                         }
-                
+
                         // Actualizar el valor anterior
                         $previousReading = $currentReading;
                     }
-                
+
                     // Redondear el consumo final
                     $monthlyConsumption[$month] = round($monthlyConsumption[$month], 0);
                 }
-                          
-            
+
+                // Convertir claves de los meses a formato numérico ("01", "02", ..., "12")
+                $monthlyConsumption = array_combine(
+                    array_map(fn($m) => str_pad($m, 2, "0", STR_PAD_LEFT), array_keys($monthlyConsumption)),
+                    array_values($monthlyConsumption)
+                );
+
                 // Cálculo de porcentaje y litros restantes
                 $percentage = 0;
                 $remaining_liters = 0;
-            
+
                 if (isset($offset, $height, $latestDistance, $tank_volume)) {
-                    $a = $height + $offset - $latestDistance;   
+                    $a = $height + $offset - $latestDistance;
                     $b = $a + $latestDistance - $offset;
-            
+
                     if ($height != 0) {
                         $percentage = (1 - (($b - $a) / $b)) * 100;
                     } else {
@@ -154,7 +171,7 @@ class HomehubController extends Controller
                     }
                     $remaining_liters = ($a / $height) * $tank_volume * 1000;
                 }
-            
+
                 return [
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
@@ -164,8 +181,8 @@ class HomehubController extends Controller
                     'datetime' => $latestLog?->datetime,
                     'monthly_consumption' => $monthlyConsumption,
                 ];
-            });            
-            
+            });
+
 
             // Agrupar sensores por "use"
             $groupedSensors = [];
@@ -200,5 +217,4 @@ class HomehubController extends Controller
             ];
         });
     }
-
 }
