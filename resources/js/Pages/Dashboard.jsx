@@ -119,6 +119,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const handleOpenModal = (tank) => {
         setSelectedConsumption(tank.storage.monthly_consumption || {}); 
         setOpenAjoloteModal(true);
+        setDatePdfModal(true);
     };
 
     const rangoFechas = useRangoMesActual();
@@ -305,7 +306,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             {/* Lupa animada */}
                             <button
                                 className="transition-transform duration-200 hover:scale-150 outline-none"
-                                onClick={() => handleOpenModal(tank)}
+                                onClick={() => setDatePdfModal(true)}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <circle cx="11" cy="11" r="7" />
@@ -420,27 +421,6 @@ export default function Dashboard({ auth, user, axolData }) {
                 <Modal
                     title={<div className="text-center w-full text-2xl font-bold">
                             Generacion de reporte
-                            <div>
-                                <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
-
-                                {chartImage && (
-                                <PDFDownloadLink document={<PDF data = {currentHomehub} graficaUrl={chartImage} />} fileName="Axol_Report.pdf">
-                                {({ loading }) =>
-                                loading ? (
-                                    <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                                    <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                                    Cargando Reporte...
-                                    </button>
-                                ) : (
-                                    <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                                    <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                                    Descargar Reporte...
-                                    </button>
-                                )
-                                }
-                                </PDFDownloadLink>
-                                )}
-                            </div>
                         </div>
                     }
                     open={openDatePdfModal}
@@ -450,7 +430,27 @@ export default function Dashboard({ auth, user, axolData }) {
                     width="90%"
                     style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
                 >
-                    
+                    <div>
+                    <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
+
+                    {chartImage && (
+                    <PDFDownloadLink document={<PDF data = {currentHomehub} graficaUrl={chartImage} />} fileName="Axol_Report.pdf">
+                    {({ loading }) =>
+                    loading ? (
+                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                        <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                        Cargando Reporte...
+                        </button>
+                    ) : (
+                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                        <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                        Descargar Reporte...
+                        </button>
+                    )
+                    }
+                    </PDFDownloadLink>
+                    )}
+                </div>
                 </Modal>
 
             </Flex>
