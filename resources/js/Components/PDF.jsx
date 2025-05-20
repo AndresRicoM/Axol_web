@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDF = ({data, graficaUrl}) => (
+const PDF = ({data, graficaUrl, qualityChartUrl}) => (
         <Document>
             <Page size="A4" style={styles.page}>
             <View style={styles.header}>
@@ -142,11 +142,19 @@ const PDF = ({data, graficaUrl}) => (
 
                 <View style={styles.separator} />
 
-                {/* Aquí va la gráfica */}
+                {/* Aquí va la gráfica de Consumo */}
                 {graficaUrl && (
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
                         <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo mensual:</Text>
                         <Image src={graficaUrl} style={{ width: 400, height: 200 }} />
+                    </View>
+                )}
+
+                {/* Aquí va la gráfica de Calidad del Agua */}
+                {qualityChartUrl && (
+                    <View style={{ alignItems: 'center', marginTop: 20 }}>
+                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua:</Text>
+                        <Image src={qualityChartUrl} style={{ width: 400, height: 200 }} />
                     </View>
                 )}
 
