@@ -4,7 +4,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 
-const DateReportForm = ({ onSubmit, currentHomehub, chartImage}) => {
+const DateReportForm = ({ onSubmit, currentHomehub, chartImage, qualityChartImage}) => {
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
 
@@ -41,6 +41,7 @@ const DateReportForm = ({ onSubmit, currentHomehub, chartImage}) => {
                         <PDF
                             data={currentHomehub}
                             graficaUrl={chartImage}
+                            qualityChartUrl={qualityChartImage}
                             fechaInicio={fechaInicio}
                             fechaFin={fechaFin}
                         />

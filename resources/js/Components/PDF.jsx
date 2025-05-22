@@ -204,10 +204,7 @@ const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
                         <Image src={graficaUrl} style={{ width: 400, height: 200 }} />
                     </View>
                 )}
-
-                <View style={styles.separator} />
-                
-                
+                  
                 {/* Aquí va la gráfica de Calidad del Agua */}
                 {qualityChartUrl && (
                     <View style={{ alignItems: 'center', marginTop: 20 }}>
@@ -216,6 +213,8 @@ const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
                     </View>
                 )}
 
+                <View style={styles.separator} />
+            
             </Page>
         </Document>
   );
