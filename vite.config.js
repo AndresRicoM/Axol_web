@@ -16,7 +16,7 @@ export default defineConfig({
         host: '0.0.0.0',  // Permite conexiones externas
         port: 5173,      // Define el puerto (puede ser cualquier puerto disponible)
         hmr: {
-            host: '192.168.1.101', // IP de tu adaptador Wi-Fi
+            host: '192.168.3.4', // IP de tu adaptador Wi-Fi
             // host: '192.168.1.124', // IP de tu adaptador Wi-Fi
 
         },

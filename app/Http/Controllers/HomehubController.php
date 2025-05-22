@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Homehub;
 use App\Models\User;
+use App\Traits\TankConsumptionTrait;
+use App\Traits\VolumeCalculatorTrait;
 use Illuminate\Support\Facades\Log;
 
 class HomehubController extends Controller
 {
+    use VolumeCalculatorTrait, TankConsumptionTrait;
+
     public function registerHomehub(Request $request)
     {
 
@@ -84,7 +88,7 @@ class HomehubController extends Controller
         }
 
         return $data->map(function ($homehub) {
-            // Combinar qualitySensors y tankSensors en una sola colección
+
             $qualityData = $homehub->qualitySensors->map(function ($sensor) {
                 return [
                     'type' => 'quality',
@@ -97,13 +101,8 @@ class HomehubController extends Controller
             });
 
             $tankData = $homehub->tankSensors->map(function ($sensor) {
-                $tank_volume = 0;
-                if ($sensor['diameter'] > 0) {
-                    $radius = $sensor['diameter'] / 2;
-                    $tank_volume = pi() * pow($radius, 2) * $sensor['height'];
-                } else {
-                    $tank_volume = ($sensor['width'] * $sensor['depth'] * $sensor['height']);
-                }
+                //CALCULO DEL VOLUMEN DEL TANQUE
+                $tank_volume = $this->getVolume($sensor);
 
                 $offset = $sensor['offset'];
                 $height = $sensor['height'];
@@ -111,50 +110,9 @@ class HomehubController extends Controller
                 // Obtener el último dato
                 $latestLog = $sensor->latestLog;
                 $latestDistance = $latestLog?->water_distance / 1000;
-                
-                // Obtener el mes actual
-                $currentMonth = date('m');
 
-                // Definir todos los meses posibles hasta el actual
-                $allMonths = array_map(fn($m) => str_pad($m, 2, "0", STR_PAD_LEFT), range(1, (int) $currentMonth));
-
-                // Inicializar consumo mensual con ceros para todos los meses hasta el actual
-                $monthlyConsumption = array_fill_keys($allMonths, 0);
-
-                // Agrupar datos históricos por mes
-                $logsByMonth = $sensor->logs->groupBy(function ($log) {
-                    return date('m', strtotime($log->datetime)); // Agrupar por mes
-                });
-
-                foreach ($logsByMonth as $month => $entries) {
-                    // Asegurar que solo trabajamos con meses hasta el actual
-                    if ($month > $currentMonth) {
-                        continue;
-                    }
-
-                    $previousReading = null;
-
-                    foreach ($entries as $log) {
-                        $currentReading = $log->water_distance / 1000;
-
-                        // Solo calcular consumo si hay un valor anterior
-                        if ($previousReading !== null && $currentReading <= $previousReading) {
-                            $monthlyConsumption[$month] += ($previousReading - $currentReading) / $height * $tank_volume * 1000;
-                        }
-
-                        // Actualizar el valor anterior
-                        $previousReading = $currentReading;
-                    }
-
-                    // Redondear el consumo final
-                    $monthlyConsumption[$month] = round($monthlyConsumption[$month], 0);
-                }
-
-                // Convertir claves de los meses a formato numérico ("01", "02", ..., "12")
-                $monthlyConsumption = array_combine(
-                    array_map(fn($m) => str_pad($m, 2, "0", STR_PAD_LEFT), array_keys($monthlyConsumption)),
-                    array_values($monthlyConsumption)
-                );
+                //Calcular consumo de agua mensual por sensor
+                $monthlyConsumption = $this->getMonthlyConsumption($sensor, $tank_volume);
 
                 // Cálculo de porcentaje y litros restantes
                 $percentage = 0;
@@ -182,7 +140,6 @@ class HomehubController extends Controller
                     'monthly_consumption' => $monthlyConsumption,
                 ];
             });
-
 
             // Agrupar sensores por "use"
             $groupedSensors = [];
