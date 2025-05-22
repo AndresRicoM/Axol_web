@@ -19,6 +19,8 @@ import BarChart from '@/Components/BarChart'
 import BarChartPdf from '@/Components/BarChartPdf'
 import DateReportForm from "@/Components/DateReportForm";
 
+import LineChart from '@/Components/LineChart'
+import LineChartPdf from '@/Components/LineChartPdf'
 
 
 export default function Dashboard({ auth, user, axolData }) {
@@ -86,8 +88,9 @@ export default function Dashboard({ auth, user, axolData }) {
 
     const hour = new Date().getHours();
 
-// Esto es para cargar la grafica en el pdf //
-    const [chartImage, setChartImage] = useState(null);
+// Estados para almacenar las imágenes de las gráficas para el PDF
+    const [chartImage, setChartImage] = useState(null); // Imagen de la gráfica de consumo
+    const [qualityChartImage, setQualityChartImage] = useState(null); // Imagen de la gráfica de calidad
     const monthlyConsumption = {
         "01": 120,
         "02": 140,
@@ -95,12 +98,9 @@ export default function Dashboard({ auth, user, axolData }) {
         "04": 170,
         "05": 200,
     };
-
-
-    const setImage = (image) => {
-        setChartImage(image)
-    }
     
+    // Datos de ejemplo para la gráfica de calidad del agua mensual (PPM) (HARDCODEADOS)
+    const monthlyQualityData = [180, 150, 200, 250, 300, 280, 220, 350, 400, 380, 320, 290];
 
     const getGreeting = () => {
         if (hour >= 5 && hour < 12) {
@@ -452,6 +452,38 @@ export default function Dashboard({ auth, user, axolData }) {
 
                 </div>
                     
+                >
+                    <div>
+                        {/* Componente que genera la gráfica de barras de consumo y la convierte a imagen para el PDF */}
+                        <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
+
+                        {/* Grafica de Calidad del Agua Mensual - Componente que genera la gráfica de líneas de calidad y la convierte a imagen para el PDF */}
+                        <div className="mt-8">
+                            <LineChartPdf data={monthlyQualityData} onExport={setQualityChartImage} />
+                        </div>
+
+                        {/* Botón de descarga del PDF - Solo se muestra cuando ambas imágenes de gráfica están listas */}
+                        {chartImage && qualityChartImage && (
+                            // Link para descargar el PDF, pasa ambas URLs de imagen al componente PDF
+                            <PDFDownloadLink document={<PDF data={currentHomehub} graficaUrl={chartImage} qualityChartUrl={qualityChartImage} />} fileName="Axol_Report.pdf">
+                                {({ loading }) =>
+                                    loading ? (
+                                        // Muestra "Cargando Reporte..." mientras se genera el PDF
+                                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                                            <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                                            Cargando Reporte...
+                                        </button>
+                                    ) : (
+                                        // Muestra "Descargar Reporte..." cuando el PDF está listo
+                                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
+                                            <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
+                                            Descargar Reporte...
+                                        </button>
+                                    )
+                                }
+                            </PDFDownloadLink>
+                        )}
+                    </div>
                 </Modal>
 
             </Flex>

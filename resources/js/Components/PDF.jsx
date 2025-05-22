@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDF = ({data, graficaUrl, fechaInicio, fechaFin}) => {
+const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
   const totalConsumo = data.sensors.reduce(
         (total, sensor) =>
             total +
@@ -208,6 +208,14 @@ const PDF = ({data, graficaUrl, fechaInicio, fechaFin}) => {
                 <View style={styles.separator} />
                 
                 
+                {/* Aquí va la gráfica de Calidad del Agua */}
+                {qualityChartUrl && (
+                    <View style={{ alignItems: 'center', marginTop: 20 }}>
+                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua:</Text>
+                        <Image src={qualityChartUrl} style={{ width: 400, height: 200 }} />
+                    </View>
+                )}
+
             </Page>
         </Document>
   );
