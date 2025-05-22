@@ -197,24 +197,35 @@ const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
 
                 <View style={styles.separator} />
 
-                {/* Aquí va la gráfica */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                {/* Gráfica de consumo */}
                 {graficaUrl && (
-                    <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo mensual:</Text>
-                        <Image src={graficaUrl} style={{ width: 400, height: 200 }} />
-                    </View>
-                )}
-                  
-                {/* Aquí va la gráfica de Calidad del Agua */}
-                {qualityChartUrl && (
-                    <View style={{ alignItems: 'center', marginTop: 20 }}>
-                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua:</Text>
-                        <Image src={qualityChartUrl} style={{ width: 400, height: 200 }} />
-                    </View>
+                  <View style={{ width: '45%', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo diario</Text>
+                    <Image src={graficaUrl} style={{ width: 180, height: 150 }} />
+                  </View>
                 )}
 
+                {/* Gráfica de calidad */}
+                {qualityChartUrl && (
+                  <View style={{ width: '45%', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua</Text>
+                    <Image src={qualityChartUrl} style={{ width: 180, height: 150 }} />
+                  </View>
+                )}
+
+                {/* Texto y estado de calidad del agua */}
+                <View style={{ width: '30%', alignItems: 'center' }}>
+                <Text style={{ fontSize: 12, marginBottom: 5, textAlign: 'center' }}>Estado de Calidad del Agua:</Text>
+                <Image src={Axol_logo} style={{ width: 50, height: 50, marginBottom: 5 }} />
+                <View style={{ backgroundColor: '#f44336', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8 }}>
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 10 }}>Mal</Text>
+                </View>
+                </View>
+              </View>
+
                 <View style={styles.separator} />
-            
+
             </Page>
         </Document>
   );
