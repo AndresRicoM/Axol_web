@@ -86,8 +86,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDF = ({data, graficaUrl, qualityChartUrl}) => (
-        <Document>
+const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
+  const totalConsumo = data.sensors.reduce(
+        (total, sensor) =>
+            total +
+            Object.values(sensor.storage.monthly_consumption).reduce(
+                (sum, value) => sum + value,
+                0
+            ),
+        0
+    );
+
+  const almacenamientoTotal = data.sensors.reduce(
+        (total, sensor) => total + sensor.storage.remaining_liters,
+        0
+    );
+
+  return(
+    <Document>
             <Page size="A4" style={styles.page}>
             <View style={styles.header}>
                 {/* Grupo izquierdo: 3 imágenes */}
@@ -112,19 +128,21 @@ const PDF = ({data, graficaUrl, qualityChartUrl}) => (
                     </View>
                     <View style={styles.box}>
                     <Text style={styles.label}>Fecha:</Text>
-                    <Text style={styles.value}>fecha de inicio - fecha fin</Text>
+                    <Text style={styles.value}>{fechaInicio} - {fechaFin}</Text>
                     </View>
                 </View>
 
                 {/* Fila 2 */}
                 <View style={styles.row}>
                     <View style={styles.box}>
-                    <Text style={styles.label}># de tanques:</Text>
-                    <Text style={styles.value}>tanques totales</Text>
+                      <Text style={styles.label}># de tanques:</Text>
+                      <Text style={styles.value}>{data.sensors.filter(sensor => sensor.storage).length}
+                      </Text>
                     </View>
+                    
                     <View style={styles.box}>
-                    <Text style={styles.label}>Consumo Total:</Text>
-                    <Text style={styles.value}>consumo en Litros</Text>
+                      <Text style={styles.label}>Consumo total:</Text>
+                      <Text style={styles.value}>{totalConsumo} Litros</Text>
                     </View>
                 </View>
 
@@ -136,30 +154,82 @@ const PDF = ({data, graficaUrl, qualityChartUrl}) => (
                     </View>
                     <View style={styles.box}>
                     <Text style={styles.label}>Almacenamiento Total:</Text>
-                    <Text style={styles.value}>almacenamiento en Litros</Text>
+                    <Text style={styles.value}>{almacenamientoTotal} Litros</Text>
                     </View>
                 </View>
 
                 <View style={styles.separator} />
+                {/* Apartado para las analogias */}
 
-                {/* Aquí va la gráfica de Consumo */}
+                {/* Fila 1 de analogias */}
+                <View style={styles.row}>
+                    <View style={styles.box}>
+                    <Text style={styles.label}>Agua captada: </Text>
+                    <Text style={styles.value}> X litros</Text>
+                    </View>
+                    <View style={styles.box}>
+                    <Text style={styles.label}>Equivalente a: </Text>
+                    <Text style={styles.value}> X / 20 garrafones</Text>
+                    </View>
+                </View>
+
+                {/* Fila de analogias 2 */}
+                <View style={styles.row}>
+                    <View style={styles.box}>
+                      <Text style={styles.label}> Días de consumo familiar promedio: </Text>
+                      <Text style={styles.value}> X / 1,464 días</Text>
+                    </View>
+                    
+                    <View style={styles.box}>
+                      <Text style={styles.label}> CO₂ evitado: </Text>
+                      <Text style={styles.value}> X × 0.0004 kg</Text>
+                    </View>
+                </View>
+
+                {/* Fila 3 de analogias*/}
+                <View style={styles.row}>
+                    <View style={styles.box}>
+                    <Text style={styles.label}>Equivalente a: </Text>
+                    <Text style={styles.value}>conducir X × 0.0004 / 0.192 km</Text>
+                    </View>
+                    
+                </View>
+
+                <View style={styles.separator} />
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                {/* Gráfica de consumo */}
                 {graficaUrl && (
-                    <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo mensual:</Text>
-                        <Image src={graficaUrl} style={{ width: 400, height: 200 }} />
-                    </View>
+                  <View style={{ width: '45%', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, marginBottom: 5 }}>Consumo diario</Text>
+                    <Image src={graficaUrl} style={{ width: 180, height: 150 }} />
+                  </View>
                 )}
 
-                {/* Aquí va la gráfica de Calidad del Agua */}
+                {/* Gráfica de calidad */}
                 {qualityChartUrl && (
-                    <View style={{ alignItems: 'center', marginTop: 20 }}>
-                        <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua:</Text>
-                        <Image src={qualityChartUrl} style={{ width: 400, height: 200 }} />
-                    </View>
+                  <View style={{ width: '45%', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, marginBottom: 5 }}>Calidad del Agua</Text>
+                    <Image src={qualityChartUrl} style={{ width: 180, height: 150 }} />
+                  </View>
                 )}
+
+                {/* Texto y estado de calidad del agua */}
+                <View style={{ width: '30%', alignItems: 'center' }}>
+                <Text style={{ fontSize: 12, marginBottom: 5, textAlign: 'center' }}>Estado de Calidad del Agua:</Text>
+                <Image src={Axol_logo} style={{ width: 50, height: 50, marginBottom: 5 }} />
+                <View style={{ backgroundColor: '#f44336', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8 }}>
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 10 }}>Mal</Text>
+                </View>
+                </View>
+              </View>
+
+                <View style={styles.separator} />
 
             </Page>
         </Document>
-    )
+  );
+        
+}
 
 export default PDF;

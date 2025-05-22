@@ -17,6 +17,7 @@ import PDF from "@/Components/PDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BarChart from '@/Components/BarChart'
 import BarChartPdf from '@/Components/BarChartPdf'
+import DateReportForm from "@/Components/DateReportForm";
 import LineChart from '@/Components/LineChart'
 import LineChartPdf from '@/Components/LineChartPdf'
 
@@ -64,6 +65,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const [currentLon, setCurrentLon] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0);
 
     console.log("location")
+    console.log("HOLAAAA")
     // console.log(currentHomehub.homehub.lat)
     // console.log(currentHomehub.homehub.lon)
 
@@ -85,7 +87,7 @@ export default function Dashboard({ auth, user, axolData }) {
 
     const hour = new Date().getHours();
 
-    // Estados para almacenar las imágenes de las gráficas para el PDF
+// Estados para almacenar las imágenes de las gráficas para el PDF
     const [chartImage, setChartImage] = useState(null); // Imagen de la gráfica de consumo
     const [qualityChartImage, setQualityChartImage] = useState(null); // Imagen de la gráfica de calidad
     const monthlyConsumption = {
@@ -124,6 +126,9 @@ export default function Dashboard({ auth, user, axolData }) {
     const handleOpenModal = (tank) => {
         setSelectedConsumption(tank.storage.monthly_consumption || {}); 
         setOpenAjoloteModal(true);
+    };
+
+    const handleOpenModalPDF = () => {
         setDatePdfModal(true);
     };
 
@@ -311,7 +316,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             {/* Lupa animada */}
                             <button
                                 className="transition-transform duration-200 hover:scale-150 outline-none"
-                                onClick={() => setDatePdfModal(true)}
+                                onClick={() => handleOpenModalPDF()}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <circle cx="11" cy="11" r="7" />
@@ -342,9 +347,6 @@ export default function Dashboard({ auth, user, axolData }) {
 
                     </div>
                     {/* PopUp de info */}
-
-
-
 
                 </div>
 
@@ -434,38 +436,22 @@ export default function Dashboard({ auth, user, axolData }) {
                     cancelButtonProps={{ style: { display: 'none' } }}
                     width="90%"
                     style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
-                >
-                    <div>
-                        {/* Componente que genera la gráfica de barras de consumo y la convierte a imagen para el PDF */}
-                        <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
+                >    
 
-                        {/* Grafica de Calidad del Agua Mensual - Componente que genera la gráfica de líneas de calidad y la convierte a imagen para el PDF */}
-                        <div className="mt-8">
-                            <LineChartPdf data={monthlyQualityData} onExport={setQualityChartImage} />
-                        </div>
+                <div>
+                <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+                    <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
+                    <LineChartPdf data={monthlyQualityData} onExport={setQualityChartImage} />
+                </div>
+                
+                <DateReportForm //Implementacion del componente DateReportForm
+                    currentHomehub={currentHomehub}
+                    chartImage={chartImage}
+                    qualityChartImage={qualityChartImage}
+                    onSubmit={(fechaInicio, fechaFin) => console.log(fechaInicio, fechaFin)}
+                />
 
-                        {/* Botón de descarga del PDF - Solo se muestra cuando ambas imágenes de gráfica están listas */}
-                        {chartImage && qualityChartImage && (
-                            // Link para descargar el PDF, pasa ambas URLs de imagen al componente PDF
-                            <PDFDownloadLink document={<PDF data={currentHomehub} graficaUrl={chartImage} qualityChartUrl={qualityChartImage} />} fileName="Axol_Report.pdf">
-                                {({ loading }) =>
-                                    loading ? (
-                                        // Muestra "Cargando Reporte..." mientras se genera el PDF
-                                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                                            <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                                            Cargando Reporte...
-                                        </button>
-                                    ) : (
-                                        // Muestra "Descargar Reporte..." cuando el PDF está listo
-                                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                                            <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                                            Descargar Reporte...
-                                        </button>
-                                    )
-                                }
-                            </PDFDownloadLink>
-                        )}
-                    </div>
+                </div>
                 </Modal>
 
             </Flex>
