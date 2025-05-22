@@ -17,6 +17,8 @@ import PDF from "@/Components/PDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BarChart from '@/Components/BarChart'
 import BarChartPdf from '@/Components/BarChartPdf'
+import DateReportForm from "@/Components/DateReportForm";
+
 
 
 export default function Dashboard({ auth, user, axolData }) {
@@ -62,6 +64,7 @@ export default function Dashboard({ auth, user, axolData }) {
     const [currentLon, setCurrentLon] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0);
 
     console.log("location")
+    console.log("HOLAAAA")
     // console.log(currentHomehub.homehub.lat)
     // console.log(currentHomehub.homehub.lon)
 
@@ -83,7 +86,7 @@ export default function Dashboard({ auth, user, axolData }) {
 
     const hour = new Date().getHours();
 
-    // Esto es para cargar la grafica en el pdf //
+// Esto es para cargar la grafica en el pdf //
     const [chartImage, setChartImage] = useState(null);
     const monthlyConsumption = {
         "01": 120,
@@ -92,6 +95,11 @@ export default function Dashboard({ auth, user, axolData }) {
         "04": 170,
         "05": 200,
     };
+
+
+    const setImage = (image) => {
+        setChartImage(image)
+    }
     
 
     const getGreeting = () => {
@@ -119,6 +127,9 @@ export default function Dashboard({ auth, user, axolData }) {
     const handleOpenModal = (tank) => {
         setSelectedConsumption(tank.storage.monthly_consumption || {}); 
         setOpenAjoloteModal(true);
+    };
+
+    const handleOpenModalPDF = () => {
         setDatePdfModal(true);
     };
 
@@ -306,7 +317,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             {/* Lupa animada */}
                             <button
                                 className="transition-transform duration-200 hover:scale-150 outline-none"
-                                onClick={() => setDatePdfModal(true)}
+                                onClick={() => handleOpenModalPDF()}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <circle cx="11" cy="11" r="7" />
@@ -337,9 +348,6 @@ export default function Dashboard({ auth, user, axolData }) {
 
                     </div>
                     {/* PopUp de info */}
-
-
-
 
                 </div>
 
@@ -429,28 +437,21 @@ export default function Dashboard({ auth, user, axolData }) {
                     cancelButtonProps={{ style: { display: 'none' } }}
                     width="90%"
                     style={{ top: 20 }} // Mantiene el modal dentro de la pantalla
-                >
-                    <div>
-                    <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
+                >    
 
-                    {chartImage && (
-                    <PDFDownloadLink document={<PDF data = {currentHomehub} graficaUrl={chartImage} />} fileName="Axol_Report.pdf">
-                    {({ loading }) =>
-                    loading ? (
-                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                        <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                        Cargando Reporte...
-                        </button>
-                    ) : (
-                        <button className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg">
-                        <FontAwesomeIcon icon={faFileArrowDown} className="h-4 w-4" />
-                        Descargar Reporte...
-                        </button>
-                    )
-                    }
-                    </PDFDownloadLink>
-                    )}
+                <div>
+                <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+                    <BarChartPdf monthlyConsumption={selectedConsumption} onExport={setChartImage} />
                 </div>
+                
+                <DateReportForm //Implementacion del componente DateReportForm
+                    currentHomehub={currentHomehub}
+                    chartImage={chartImage}
+                    onSubmit={(fechaInicio, fechaFin) => console.log(fechaInicio, fechaFin)}
+                />
+
+                </div>
+                    
                 </Modal>
 
             </Flex>
