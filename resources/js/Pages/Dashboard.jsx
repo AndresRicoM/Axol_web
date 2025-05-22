@@ -440,7 +440,7 @@ export default function Dashboard({ auth, user, axolData }) {
 
                 <div>
                 <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
-                    <BarChartPdf monthlyConsumption={selectedConsumption} onExport={setChartImage} />
+                    <BarChartPdf monthlyConsumption={monthlyConsumption} onExport={setChartImage} />
                     <LineChartPdf data={monthlyQualityData} onExport={setQualityChartImage} />
                 </div>
                 
