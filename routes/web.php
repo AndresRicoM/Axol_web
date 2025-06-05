@@ -7,15 +7,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Inertia\Inertia;
-use App\Http\Controllers\WaterTankController;
 use App\Http\Controllers\TankController;
-use App\Http\Controllers\QualityController;
 use Illuminate\Http\Request;
-
-use App\Models\Homehub;
-use App\Models\QualityData;
-use App\Models\TankData;
-use App\Models\WaterData;
 
 
 /*
@@ -70,7 +63,7 @@ Route::get('/dashboard', function () {
         'axolData' => $data,
         'user' => $user,
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'timezone'])->name('dashboard');
 
 // Grupo de rutas protegidas por middleware auth
 Route::middleware('auth')->group(function () {
@@ -93,4 +86,5 @@ Route::prefix('api')->middleware('web')->group(function () {
 
     Route::get('/sensors', [TankController::class, 'getSensors']);
 });
+
 require __DIR__ . '/auth.php';

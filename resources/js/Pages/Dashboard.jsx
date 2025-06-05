@@ -23,26 +23,10 @@ import LineChartPdf from '@/Components/LineChartPdf'
 
 
 export default function Dashboard({ auth, user, axolData }) {
-    // console.log("qualityData");
-    // console.log(qualityData);
-    // console.log("tankData");
-    // console.log(tankData);
-    // console.log("homehubData");
-    // console.log(homehubData);
-
-    // console.log("user")
-    // console.log(user)
-    // console.log("userId")
-    // console.log(userId)
-    // console.log("homehubData")
-    // console.log(homehubData)
-
     console.log("axolData")
     console.log(axolData)
 
-    // const [qualityData, setQualityData] = useState(axolData.qualityData);
     console.log(typeof axolData)
-    // return (<></>);
 
     // Función para determinar el color basado en el porcentaje
     const [selectedCity, setSelectedCity] = useState(null);
@@ -56,34 +40,11 @@ export default function Dashboard({ auth, user, axolData }) {
     console.log("axolData")
     console.log(axolData)
 
-    // return (
-    //     <></>
-    // )
-
     const [currentHomehub, setCurrentHomehub] = useState(axolData[0]);
     const [currentLat, setCurrentLat] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lat) : 0);
     const [currentLon, setCurrentLon] = useState(axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0);
 
     console.log("location")
-    console.log("HOLAAAA")
-    // console.log(currentHomehub.homehub.lat)
-    // console.log(currentHomehub.homehub.lon)
-
-    // const homehubList = [
-    //     { name: "CSLab" },
-    //     { name: "PabloHH" },
-    //     { name: "TonyHH" },
-    //     { name: "CUCEI1" },
-    //     { name: "CUCEI2" },
-    // ];
-
-    // const tanks = [
-    //     { name: "Tank CSLab", id: 1 },
-    //     { name: "Tank PabloHH", id: 2 },
-    //     { name: "Tank TonyHH", id: 3 },
-    //     { name: "Tank CUCEI1", id: 4 },
-    //     { name: "Tank CUCEI2", id: 5 },
-    // ];
 
     const hour = new Date().getHours();
 

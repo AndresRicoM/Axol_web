@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'ipgeolocation' => [
+        'api_key' => env('IPGEOLOCATION_API_KEY'),
+    ],
+
 ];

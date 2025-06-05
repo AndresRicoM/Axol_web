@@ -7,6 +7,7 @@ use App\Models\Homehub;
 use App\Models\User;
 use App\Traits\TankConsumptionTrait;
 use App\Traits\VolumeCalculatorTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class HomehubController extends Controller
@@ -95,7 +96,9 @@ class HomehubController extends Controller
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
                     'tds' => round($sensor->logs?->tds, 0),
-                    'datetime' => $sensor->logs?->datetime,
+                    'datetime' => $sensor->logs?->datetime
+                        ? Carbon::parse($sensor->logs->datetime)->setTimezone(date_default_timezone_get())
+                        : null,
                     'humidity' => $sensor->logs?->humidity,
                 ];
             });
@@ -136,7 +139,9 @@ class HomehubController extends Controller
                     'water_distance' => $latestLog?->water_distance,
                     'fill_percentage' => round($percentage, 0),
                     'remaining_liters' => round($remaining_liters, 0),
-                    'datetime' => $latestLog?->datetime,
+                    'datetime' => $latestLog?->datetime
+                        ? Carbon::parse($latestLog->datetime)->setTimezone(date_default_timezone_get())
+                        : null,
                     'monthly_consumption' => $monthlyConsumption,
                 ];
             });
