@@ -23,7 +23,7 @@ class SetUserTimezone
 
             // Para desarrollo local, usa IP pública fija
             if ($ip === '127.0.0.1' || $ip === '::1') {
-                $ip = '189.163.154.202'; // Cambia por tu IP pública si quieres
+                $ip = '8.8.8.8'; // Cambia por tu IP pública si quieres
             }
 
             $client = new Client(['verify' => false]);
