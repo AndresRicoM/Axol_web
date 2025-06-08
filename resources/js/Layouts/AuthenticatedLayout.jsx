@@ -16,7 +16,7 @@ export default function Authenticated({ user, header, children }) {
                     <div className="flex justify-between h-20 md:px-0 px-4">
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
-                                <Link href={auth.user ? route('welcome') : route('login')}>
+                                <Link href={auth.user ? route('community') : route('login')}>
                                     <div className='flex gap-5'>
                                         <ApplicationLogo className="block h-9 md:h-12 w-auto fill-current text-gray-800" />
                                         <img className="block h-9 md:h-12 w-auto fill-current text-gray-800" src="/assets/logosblack.png" alt="MIT City Science" />
