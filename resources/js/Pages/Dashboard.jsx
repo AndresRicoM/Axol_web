@@ -26,6 +26,8 @@ export default function Dashboard({ auth, user, axolData }) {
     console.log("axolData")
     console.log(axolData)
 
+
+
     console.log(typeof axolData)
 
     // Función para determinar el color basado en el porcentaje
