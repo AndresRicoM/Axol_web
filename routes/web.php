@@ -70,7 +70,7 @@ Route::get('/dashboard', function () {
         'axolData' => $data,
         'user' => $user,
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'timezone'])->name('dashboard');
 
 // Grupo de rutas protegidas por middleware auth
 Route::middleware('auth')->group(function () {
