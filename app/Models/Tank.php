@@ -32,7 +32,7 @@ class Tank extends Model
         'paired_with' => 'string',
         'tank_capacity' => 'float',
         'use' => 'string',
-        'tank_area' => 'integer',
+        'tank_area' => 'float',
         'max_height' => 'integer',
         'offset' => 'float',
         'diameter' => 'float',
