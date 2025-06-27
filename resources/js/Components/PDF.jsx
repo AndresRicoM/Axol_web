@@ -110,7 +110,7 @@ const PDF = ({data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl}) => {
                 <View style={styles.leftGroup}>
                     <Image src={MIT_ML} style={styles.image} />
                     <Image src={CCGDL} style={styles.image} />
-                    <Image src={NubesLogo} style={styles.image} />
+                    {/* <Image src={NubesLogo} style={styles.image} /> */}
                 </View>
 
                 {/* Imagen derecha */}

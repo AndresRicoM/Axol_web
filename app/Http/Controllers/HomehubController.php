@@ -5,14 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Homehub;
 use App\Models\User;
-use App\Traits\TankConsumptionTrait;
-use App\Traits\VolumeCalculatorTrait;
-use Carbon\Carbon;
+use App\Traits\QualityTrait;
+use App\Traits\TankTrait;
 use Illuminate\Support\Facades\Log;
 
 class HomehubController extends Controller
 {
-    use VolumeCalculatorTrait, TankConsumptionTrait;
+    use TankTrait, QualityTrait;
 
     public function registerHomehub(Request $request)
     {
@@ -77,7 +76,8 @@ class HomehubController extends Controller
         $data = $user->homehubs()
             ->with([
                 'qualitySensors:mac_add,use,paired_with',
-                'qualitySensors.logs:tds,mac_add,datetime,humidity',
+                'qualitySensors.logs:tds,mac_add,datetime',
+                'qualitySensors.latestLog:tds,mac_add,datetime,humidity',
                 'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
                 'tankSensors.logs:water_distance,mac_add,datetime',
                 'tankSensors.latestLog:water_distance,mac_add,datetime'
@@ -91,13 +91,15 @@ class HomehubController extends Controller
         return $data->map(function ($homehub) {
 
             $qualityData = $homehub->qualitySensors->map(function ($sensor) {
+                $monthlyQuality = $this->getAllQualityData($sensor);
                 return [
                     'type' => 'quality',
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'tds' => round($sensor->logs?->tds, 0),
-                    'datetime' => $sensor->logs?->datetime,
-                    'humidity' => $sensor->logs?->humidity,
+                    'tds' => round($sensor->latestLog?->tds, 0),
+                    'datetime' => $sensor->latestLog?->datetime,
+                    'humidity' => $sensor->latestLog?->humidity,
+                    'monthlyQuality' => $monthlyQuality,
                 ];
             });
 

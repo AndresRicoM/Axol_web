@@ -9,10 +9,10 @@ export default function Notification({ flag, datetime }) {
         return (
             <div className="relative inline-block">
                 <Popover className="relative">
-                    <Popover.Button className="focus:outline-none">
+                    <Popover.Button className="focus:outline-none transition-transform duration-200 hover:scale-150 outline-none">
                         <FontAwesomeIcon
                             icon={faBell}
-                            className="cursor-pointer text-blue-500 hover:text-blue-700"
+                            className="cursor-pointer text-blue-600 hover:text-blue-700"
                         />
                     </Popover.Button>
 
