@@ -56,10 +56,16 @@ class Tank extends Model
         return $this->hasOne(TankData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 
-    public function logs(): HasMany
+    public function logsYear(): HasMany
     {
         return $this->hasMany(TankData::class, 'mac_add', 'mac_add')
             ->whereYear('datetime', date('Y'))
+            ->orderBy('datetime');
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(TankData::class, 'mac_add', 'mac_add')
             ->orderBy('datetime');
     }
 }

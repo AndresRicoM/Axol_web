@@ -76,10 +76,10 @@ class HomehubController extends Controller
         $data = $user->homehubs()
             ->with([
                 'qualitySensors:mac_add,use,paired_with',
-                'qualitySensors.logs:tds,mac_add,datetime',
+                'qualitySensors.logsYear:tds,mac_add,datetime',
                 'qualitySensors.latestLog:tds,mac_add,datetime,humidity',
                 'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
-                'tankSensors.logs:water_distance,mac_add,datetime',
+                'tankSensors.logsYear:water_distance,mac_add,datetime',
                 'tankSensors.latestLog:water_distance,mac_add,datetime'
             ])
             ->get();

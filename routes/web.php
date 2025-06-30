@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReportController;
 use Inertia\Inertia;
 use App\Http\Controllers\TankController;
 use Illuminate\Http\Request;
@@ -96,5 +97,7 @@ Route::prefix('api')->middleware('web')->group(function () {
 
     Route::get('/sensors', [TankController::class, 'getSensors']);
 });
+
+Route::get('/report', [ReportController::class, 'generateReport']);
 
 require __DIR__ . '/auth.php';

@@ -587,7 +587,7 @@ export default function Dashboard({ auth, user, axolData }) {
                         </div>
 
                         <DateReportForm //Implementacion del componente DateReportForm
-                            currentHomehub={currentHomehub}
+                            currentHomehub={currentHomehub.homehub.mac_add}
                             chartImage={chartImage}
                             qualityChartImage={qualityChartImage}
                             onSubmit={(fechaInicio, fechaFin) =>

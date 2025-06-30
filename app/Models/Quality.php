@@ -42,10 +42,16 @@ class Quality extends Model
         return $this->hasOne(QualityData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 
-    public function logs(): HasMany
+    public function logsYear(): HasMany
     {
         return $this->hasMany(QualityData::class, 'mac_add', 'mac_add')
             ->whereYear('datetime', date('Y'))
+            ->orderBy('datetime');
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(QualityData::class, 'mac_add', 'mac_add')
             ->orderBy('datetime');
     }
 }
