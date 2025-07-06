@@ -92,8 +92,9 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
         });
     };
 
-    console.log("DAAATAAAAAAAAAAAAAAAAAAA");
-    console.log(reportData);
+    const today = new Date().toISOString().split("T")[0];
+    console.log("---------------------------");
+    console.log(today);
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -111,6 +112,7 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                     onChange={(e) => setFechaInicio(e.target.value)}
                     className="w-full px-3 py-2 border rounded-md mb-4"
                     required
+                    max={today}
                 />
 
                 <label className="block mb-2 font-medium">Fecha de fin:</label>
@@ -120,6 +122,7 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                     onChange={(e) => setFechaFin(e.target.value)}
                     className="w-full px-3 py-2 border rounded-md mb-6"
                     required
+                    max={today}
                 />
 
                 {error && (

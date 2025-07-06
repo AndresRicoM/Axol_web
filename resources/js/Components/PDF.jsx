@@ -120,6 +120,30 @@ const PDF = ({
         0
     );
 
+    // Función que devuelve el porcentaje de calidad según ppm
+    const getQualityPercentage = (value) => {
+        if (value <= 50) {
+            return (value / 50) * 33.33; // Buena calidad: hasta 33.33%
+        } else if (value <= 899) {
+            return 33.33 + ((value - 50) / 849) * 33.33; // Calidad regular: siguiente 33.33%
+        } else {
+            return 66.66 + ((value - 899) / 101) * 33.33; // Calidad mala: último 33.33%
+        }
+    };
+
+    // Función para obtener texto y color según ppm
+    const getQualityStatus = (ppm) => {
+        const percentage = getQualityPercentage(ppm);
+
+        if (percentage <= 33.33) {
+            return { text: "Buena", color: "#4caf50" }; // verde
+        } else if (percentage <= 66.66) {
+            return { text: "Regular", color: "#ffeb3b" }; // amarillo
+        } else {
+            return { text: "Mala", color: "#f44336" }; // rojo
+        }
+    };
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -226,7 +250,13 @@ const PDF = ({
 
                 <View style={{ marginTop: 20 }}>
                     {graficaUrls.map((consumoSrc, i) => {
-                        const calidadSrc = qualityChartUrls[i]; // Gráfica de calidad correspondiente
+                        const calidadSrc = qualityChartUrls[i];
+                        // Extraer el valor ppm (tds) del sensor de calidad correspondiente
+                        const ppm =
+                            pdfData?.quality_sensors?.[i]?.latest_log?.tds ?? 0;
+
+                        // Función para obtener estado según ppm (puedes usar la función que ya tienes)
+                        const qualityStatus = getQualityStatus(ppm);
 
                         return (
                             <View key={`pair-${i}`}>
@@ -240,7 +270,7 @@ const PDF = ({
                                     {/* Gráfica de consumo */}
                                     <View
                                         style={{
-                                            width: "45%",
+                                            width: "35%",
                                             alignItems: "center",
                                         }}
                                     >
@@ -262,7 +292,7 @@ const PDF = ({
                                     {calidadSrc && (
                                         <View
                                             style={{
-                                                width: "45%",
+                                                width: "35%",
                                                 alignItems: "center",
                                             }}
                                         >
@@ -283,9 +313,54 @@ const PDF = ({
                                             />
                                         </View>
                                     )}
+
+                                    {/* Estado dinámico */}
+                                    <View
+                                        style={{
+                                            width: "20%",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                fontSize: 12,
+                                                marginBottom: 5,
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            Estado de Calidad del Agua:
+                                        </Text>
+                                        <Image
+                                            src={Axol_logo}
+                                            style={{
+                                                width: 50,
+                                                height: 50,
+                                                marginBottom: 5,
+                                            }}
+                                        />
+                                        <View
+                                            style={{
+                                                backgroundColor:
+                                                    qualityStatus.color,
+                                                paddingVertical: 4,
+                                                paddingHorizontal: 8,
+                                                borderRadius: 8,
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    color: "white",
+                                                    fontWeight: "bold",
+                                                    fontSize: 10,
+                                                }}
+                                            >
+                                                {qualityStatus.text}
+                                            </Text>
+                                        </View>
+                                    </View>
                                 </View>
 
-                                {/* Separador entre pares */}
+                                {/* Separador */}
                                 {i < graficaUrls.length - 1 && (
                                     <View
                                         style={{
