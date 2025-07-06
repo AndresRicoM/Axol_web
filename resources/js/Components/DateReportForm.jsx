@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PDF from "@/Components/PDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
+import BarChartPdf from "./BarChartPdf"; // Asegúrate de importar tus componentes de chart
+import LineChartPdf from "./LineChartPdf";
 
-const DateReportForm = ({
-    onSubmit,
-    currentHomehub,
-    chartImage,
-    qualityChartImage,
-}) => {
+const DateReportForm = ({ onSubmit, currentHomehub }) => {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [reportData, setReportData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Función para obtener el cookie CSRF de Sanctum
+    // Estados para las imágenes base64 de los charts
+    const [chartImages, setChartImages] = useState([]); // Consumo
+    const [qualityChartImages, setQualityChartImages] = useState([]); // Calidad
+
+    // Función para obtener cookie CSRF
     const getCsrfCookie = async () => {
         await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
             credentials: "include",
@@ -28,6 +29,9 @@ const DateReportForm = ({
 
         setLoading(true);
         setError(null);
+        setReportData(null);
+        setChartImages([]);
+        setQualityChartImages([]);
 
         if (!currentHomehub) {
             setError("No hay un homehub seleccionado.");
@@ -36,7 +40,6 @@ const DateReportForm = ({
         }
 
         try {
-            // Obtener cookie CSRF antes de la petición
             await getCsrfCookie();
 
             const params = new URLSearchParams({
@@ -47,7 +50,7 @@ const DateReportForm = ({
 
             const response = await fetch(`/report?${params.toString()}`, {
                 method: "GET",
-                credentials: "include", // importante para enviar cookies de sesión y CSRF
+                credentials: "include",
                 headers: {
                     Accept: "application/json",
                 },
@@ -58,9 +61,7 @@ const DateReportForm = ({
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
-                } catch {
-                    // No es JSON, mantener mensaje genérico
-                }
+                } catch {}
                 throw new Error(errorMessage);
             }
 
@@ -75,6 +76,24 @@ const DateReportForm = ({
             setLoading(false);
         }
     };
+
+    // Funciones para agregar imágenes a los arrays
+    const handleAddChartImage = (image) => {
+        setChartImages((prev) => {
+            if (!prev.includes(image)) return [...prev, image];
+            return prev;
+        });
+    };
+
+    const handleAddQualityChartImage = (image) => {
+        setQualityChartImages((prev) => {
+            if (!prev.includes(image)) return [...prev, image];
+            return prev;
+        });
+    };
+
+    console.log("DAAATAAAAAAAAAAAAAAAAAAA");
+    console.log(reportData);
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -119,40 +138,77 @@ const DateReportForm = ({
                     </button>
                 )}
 
+                {/* Contenedor oculto para generar los charts y capturar imágenes */}
                 {reportData && (
-                    <PDFDownloadLink
-                        document={
-                            <PDF
-                                data={reportData}
-                                graficaUrl={chartImage}
-                                qualityChartUrl={qualityChartImage}
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: "-9999px",
+                            top: 0,
+                        }}
+                    >
+                        {/* Generar un BarChartPdf por cada sensor de consumo */}
+                        {reportData.data.sensors.map((sensor, i) => (
+                            <BarChartPdf
+                                key={`tanque-${i}`}
+                                monthlyConsumption={
+                                    sensor.storage.monthly_consumption
+                                }
+                                onExport={handleAddChartImage}
+                                chartId={`bar-chart-${i}`}
                                 fechaInicio={fechaInicio}
                                 fechaFin={fechaFin}
                             />
-                        }
-                        fileName="Axol_Report.pdf"
-                    >
-                        {({ loading: pdfLoading }) =>
-                            pdfLoading ? (
-                                <span className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg w-full mt-4">
-                                    <FontAwesomeIcon
-                                        icon={faFileArrowDown}
-                                        className="h-4 w-4"
-                                    />
-                                    Cargando Reporte...
-                                </span>
-                            ) : (
-                                <span className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-4 rounded-full w-full mt-4 font-bold">
-                                    <FontAwesomeIcon
-                                        icon={faFileArrowDown}
-                                        className="h-4 w-4"
-                                    />
-                                    Descargar Reporte
-                                </span>
-                            )
-                        }
-                    </PDFDownloadLink>
+                        ))}
+
+                        {reportData.data.quality_sensors.map((sensor, i) => (
+                            <LineChartPdf
+                                key={`calidad-${i}`}
+                                data={sensor.logs}
+                                onExport={handleAddQualityChartImage}
+                                chartId={`line-chart-${i}`} // id único
+                            />
+                        ))}
+                    </div>
                 )}
+
+                {/* Botón para descargar PDF solo si ya se generaron las imágenes */}
+                {reportData &&
+                    chartImages.length > 0 &&
+                    qualityChartImages.length > 0 && (
+                        <PDFDownloadLink
+                            document={
+                                <PDF
+                                    data={reportData}
+                                    graficaUrls={chartImages}
+                                    qualityChartUrls={qualityChartImages}
+                                    fechaInicio={fechaInicio}
+                                    fechaFin={fechaFin}
+                                />
+                            }
+                            fileName="Axol_Report.pdf"
+                        >
+                            {({ loading: pdfLoading }) =>
+                                pdfLoading ? (
+                                    <span className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg w-full mt-4">
+                                        <FontAwesomeIcon
+                                            icon={faFileArrowDown}
+                                            className="h-4 w-4"
+                                        />
+                                        Cargando Reporte...
+                                    </span>
+                                ) : (
+                                    <span className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-4 rounded-full w-full mt-4 font-bold">
+                                        <FontAwesomeIcon
+                                            icon={faFileArrowDown}
+                                            className="h-4 w-4"
+                                        />
+                                        Descargar Reporte
+                                    </span>
+                                )
+                            }
+                        </PDFDownloadLink>
+                    )}
             </div>
         </form>
     );

@@ -94,7 +94,13 @@ const styles = StyleSheet.create({
     },
 });
 
-const PDF = ({ data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl }) => {
+const PDF = ({
+    data,
+    fechaInicio,
+    fechaFin,
+    graficaUrls = [],
+    qualityChartUrls = [],
+}) => {
     const pdfData = data?.data || {};
     const homehub = pdfData.homehub || {};
     const sensors = Array.isArray(pdfData.sensors) ? pdfData.sensors : [];
@@ -218,76 +224,81 @@ const PDF = ({ data, graficaUrl, fechaInicio, fechaFin, qualityChartUrl }) => {
 
                 <View style={styles.separator} />
 
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginTop: 20,
-                    }}
-                >
-                    {/* Gráfica de consumo */}
-                    {graficaUrl && (
-                        <View style={{ width: "45%", alignItems: "center" }}>
-                            <Text style={{ fontSize: 12, marginBottom: 5 }}>
-                                Consumo diario
-                            </Text>
-                            <Image
-                                src={graficaUrl}
-                                style={{ width: 180, height: 150 }}
-                            />
-                        </View>
-                    )}
+                <View style={{ marginTop: 20 }}>
+                    {graficaUrls.map((consumoSrc, i) => {
+                        const calidadSrc = qualityChartUrls[i]; // Gráfica de calidad correspondiente
 
-                    {/* Gráfica de calidad */}
-                    {qualityChartUrl && (
-                        <View style={{ width: "45%", alignItems: "center" }}>
-                            <Text style={{ fontSize: 12, marginBottom: 5 }}>
-                                Calidad del Agua
-                            </Text>
-                            <Image
-                                src={qualityChartUrl}
-                                style={{ width: 180, height: 150 }}
-                            />
-                        </View>
-                    )}
+                        return (
+                            <View key={`pair-${i}`}>
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        marginBottom: 15,
+                                    }}
+                                >
+                                    {/* Gráfica de consumo */}
+                                    <View
+                                        style={{
+                                            width: "45%",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                fontSize: 12,
+                                                marginBottom: 5,
+                                            }}
+                                        >
+                                            Consumo diario {i + 1}
+                                        </Text>
+                                        <Image
+                                            src={consumoSrc}
+                                            style={{ width: 180, height: 150 }}
+                                        />
+                                    </View>
 
-                    {/* Texto y estado de calidad del agua */}
-                    <View style={{ width: "30%", alignItems: "center" }}>
-                        <Text
-                            style={{
-                                fontSize: 12,
-                                marginBottom: 5,
-                                textAlign: "center",
-                            }}
-                        >
-                            Estado de Calidad del Agua:
-                        </Text>
-                        <Image
-                            src={Axol_logo}
-                            style={{ width: 50, height: 50, marginBottom: 5 }}
-                        />
-                        <View
-                            style={{
-                                backgroundColor: "#f44336",
-                                paddingVertical: 4,
-                                paddingHorizontal: 8,
-                                borderRadius: 8,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: 10,
-                                }}
-                            >
-                                Mal
-                            </Text>
-                        </View>
-                    </View>
+                                    {/* Gráfica de calidad */}
+                                    {calidadSrc && (
+                                        <View
+                                            style={{
+                                                width: "45%",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    fontSize: 12,
+                                                    marginBottom: 5,
+                                                }}
+                                            >
+                                                Calidad del Agua {i + 1}
+                                            </Text>
+                                            <Image
+                                                src={calidadSrc}
+                                                style={{
+                                                    width: 180,
+                                                    height: 150,
+                                                }}
+                                            />
+                                        </View>
+                                    )}
+                                </View>
+
+                                {/* Separador entre pares */}
+                                {i < graficaUrls.length - 1 && (
+                                    <View
+                                        style={{
+                                            height: 1,
+                                            backgroundColor: "#000",
+                                            marginVertical: 10,
+                                        }}
+                                    />
+                                )}
+                            </View>
+                        );
+                    })}
                 </View>
-
-                <View style={styles.separator} />
             </Page>
         </Document>
     );

@@ -50,22 +50,6 @@ export default function Dashboard({ auth, user, axolData }) {
 
     const hour = new Date().getHours();
 
-    // Estados para almacenar las imágenes de las gráficas para el PDF
-    const [chartImage, setChartImage] = useState(null); // Imagen de la gráfica de consumo
-    const [qualityChartImage, setQualityChartImage] = useState(null); // Imagen de la gráfica de calidad
-    const monthlyConsumption = {
-        "01": 120,
-        "02": 140,
-        "03": 100,
-        "04": 170,
-        "05": 200,
-    };
-
-    // Datos de ejemplo para la gráfica de calidad del agua mensual (PPM) (HARDCODEADOS)
-    const monthlyQualityData = [
-        180, 150, 200, 250, 300, 280, 220, 350, 400, 380, 320, 290,
-    ];
-
     const getGreeting = () => {
         if (hour >= 5 && hour < 12) {
             return "Buenos días";
@@ -527,7 +511,7 @@ export default function Dashboard({ auth, user, axolData }) {
                     </div>
                 </Modal>
 
-                {/* // Modal para mostrar la imagen del ajolote expandido al presionar la imagen en el dashboard // */} 
+                {/* // Modal para mostrar la imagen del ajolote expandido al presionar la imagen en el dashboard // */}
                 <Modal
                     title={""}
                     open={openAjoloteModal}
@@ -569,27 +553,8 @@ export default function Dashboard({ auth, user, axolData }) {
                     }}
                 >
                     <div>
-                        <div
-                            style={{
-                                position: "absolute",
-                                left: "-9999px",
-                                top: 0,
-                            }}
-                        >
-                            <BarChartPdf
-                                monthlyConsumption={monthlyConsumption}
-                                onExport={setChartImage}
-                            />
-                            <LineChartPdf
-                                data={monthlyQualityData}
-                                onExport={setQualityChartImage}
-                            />
-                        </div>
-
                         <DateReportForm //Implementacion del componente DateReportForm
                             currentHomehub={currentHomehub.homehub.mac_add}
-                            chartImage={chartImage}
-                            qualityChartImage={qualityChartImage}
                             onSubmit={(fechaInicio, fechaFin) =>
                                 console.log(fechaInicio, fechaFin)
                             }
