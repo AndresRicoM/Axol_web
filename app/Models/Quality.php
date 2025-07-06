@@ -37,6 +37,11 @@ class Quality extends Model
         return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
     }
 
+    public function qualityData(): HasMany
+    {
+        return $this->hasMany(QualityData::class, 'mac_add', 'mac_add');
+    }
+
     public function latestLog(): HasOne
     {
         return $this->hasOne(QualityData::class, 'mac_add', 'mac_add')->latest('datetime');

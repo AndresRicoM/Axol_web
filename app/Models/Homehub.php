@@ -45,4 +45,9 @@ class Homehub extends Model
     {
         return $this->hasMany(Tank::class, 'paired_with', 'mac_add');
     }
+
+    public function weatherData(): HasMany
+    {
+        return $this->hasMany(HomehubWeather::class, 'mac_add', 'mac_add');
+    }
 }

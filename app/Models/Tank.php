@@ -51,6 +51,11 @@ class Tank extends Model
         return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
     }
 
+    public function tankData(): HasMany
+    {
+        return $this->hasMany(TankData::class, 'mac_add', 'mac_add');
+    }
+
     public function latestLog(): HasOne
     {
         return $this->hasOne(TankData::class, 'mac_add', 'mac_add')->latest('datetime');
