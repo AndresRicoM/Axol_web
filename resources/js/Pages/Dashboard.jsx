@@ -522,12 +522,12 @@ export default function Dashboard({ auth, user, axolData }) {
                         xs: "90%", // Móviles: usa 90% del ancho de la pantalla
                         sm: "80%", // Tablets pequeñas: usa 80% del ancho
                         md: "70%", // Tablets: usa 70% del ancho
-                        lg: "60%", // Laptops: usa 60% del ancho
-                        xl: "50%", // Monitores: usa 50% del ancho
-                        xxl: "40%", // Pantallas grandes: usa 40% del ancho
+                        lg: "70%", // Laptops: usa 60% del ancho
+                        xl: "60%", // Monitores: usa 50% del ancho
+                        xxl: "50%", // Pantallas grandes: usa 40% del ancho
                     }}
                 >
-                    <div className="max-h-[80vh] w-3/4 mx-auto">
+                    <div className="max-h-[80vh] w-6/7 mx-auto">
                         <BarChart monthlyConsumption={selectedConsumption} />
                     </div>
                 </Modal>

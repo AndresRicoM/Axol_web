@@ -56,10 +56,11 @@ class Tank extends Model
         return $this->hasOne(TankData::class, 'mac_add', 'mac_add')->latest('datetime');
     }
 
-    public function logsYear(): HasMany
+    public function logsLast3Years(): HasMany
     {
+        $startYear = date('Y') - 3;
         return $this->hasMany(TankData::class, 'mac_add', 'mac_add')
-            ->whereYear('datetime', date('Y'))
+            ->whereBetween('datetime', ["$startYear-01-01", date('Y-m-d')])
             ->orderBy('datetime');
     }
 
