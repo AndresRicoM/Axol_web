@@ -11,18 +11,20 @@ export default function QualityModal({ data }) {
         setOpenModal(true);
     };
 
-    console.log(data)
     return (
         <>
-            <button
-                className="transition-transform duration-200 hover:scale-150 outline-none p-1 ml-5"
-                onClick={() => handleOpenModal()}
-            >
-                <FontAwesomeIcon
-                    icon={faMagnifyingGlass}
-                    className="cursor-pointer text-blue-600 hover:text-blue-700"
-                />
-            </button>
+
+            {
+                data && (<button
+                    className="transition-transform duration-200 hover:scale-150 outline-none p-1 ml-5"
+                    onClick={() => handleOpenModal()}
+                >
+                    <FontAwesomeIcon
+                        icon={faMagnifyingGlass}
+                        className="cursor-pointer text-blue-600 hover:text-blue-700"
+                    />
+                </button>)
+            }
 
             <Modal
                 title={""}
@@ -40,7 +42,7 @@ export default function QualityModal({ data }) {
                 }}
             >
                 <div className="max-h-[80vh] w-3/4 mx-auto">
-                    <LineChart data={data}/>
+                    <LineChart data={data} />
                 </div>
             </Modal>
         </>
