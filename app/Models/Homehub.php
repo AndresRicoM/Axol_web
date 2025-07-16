@@ -10,7 +10,13 @@ class Homehub extends Model
 {
     use HasFactory;
 
-    protected $table = 'homehub_devices_practice';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.homehub');
+    }
 
     // Define las columnas que se pueden llenar masivamente
     protected $fillable = [

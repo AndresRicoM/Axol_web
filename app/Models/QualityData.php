@@ -10,7 +10,13 @@ class QualityData extends Model
 {
     use HasFactory;
 
-    protected $table = 'quality_data_practice_ui';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.quality_data');
+    }
 
     protected $fillable = [
         'mac_add',
@@ -19,13 +25,13 @@ class QualityData extends Model
         'datetime',
         'humidity',
     ];
-    
+
     protected $casts = [
         'mac_add' => 'string',
-        'tds'=> 'float',
-        'water_temp'=> 'float',
-        'datetime'=> 'datetime',
-        'humidity'=> 'float',
+        'tds' => 'float',
+        'water_temp' => 'float',
+        'datetime' => 'datetime',
+        'humidity' => 'float',
     ];
 
     protected $primaryKey = 'mac_add';

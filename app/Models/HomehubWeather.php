@@ -10,7 +10,13 @@ class HomehubWeather extends Model
     use HasFactory;
 
     // Specify the table name
-    protected $table = 'homehub_climatedatadb';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.homehub_weather');
+    }
 
     // Specify the columns that can be mass assigned
     protected $fillable = [

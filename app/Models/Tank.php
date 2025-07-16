@@ -12,7 +12,13 @@ class Tank extends Model
 {
     use HasFactory;
 
-    protected $table = 'tank_sensorsdb_practice_ui';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.tank');
+    }
 
     protected $fillable = [
         'mac_add',

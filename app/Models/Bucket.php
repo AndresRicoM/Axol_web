@@ -11,7 +11,14 @@ class Bucket extends Model
 {
     use HasFactory;
 
-    protected $table = 'bucket_sensorsdb';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.bucket');
+    }
+
 
     protected $fillable = [
         'mac_add',
@@ -36,7 +43,7 @@ class Bucket extends Model
     public function homehub(): BelongsTo
     {
         return $this->belongsTo(Homehub::class, 'paired_with', 'mac_add');
-    }   
+    }
     public function logs(): HasMany
     {
         return $this->hasMany(BucketActivations::class, 'mac_add', 'mac_add');

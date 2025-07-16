@@ -11,7 +11,7 @@ class HomehubActivity extends Model
 
     // Specify the table name
     protected $table = 'homehub_activity';
-
+    
     // Specify the columns that can be mass assigned
     protected $fillable = [
         'mac_add',

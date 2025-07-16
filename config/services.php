@@ -35,4 +35,15 @@ return [
         'api_key' => env('IPGEOLOCATION_API_KEY'),
     ],
 
+    'tables' => [
+        'users' => env('TABLE_USERS'),
+        'homehub' => env('TABLE_HOMEHUB'),
+        'homehub_weather' => env('TABLE_HOMEHUB_WEATHER'),
+        'tank' => env('TABLE_TANK'),
+        'tank_data' => env('TABLE_TANK_DATA'),
+        'quality' => env('TABLE_QUALITY'),
+        'quality_data' => env('TABLE_QUALITY_DATA'),
+        'bucket' => env('TABLE_BUCKET'),
+        'bucket_data' => env('TABLE_BUCKET_DATA'),
+    ]
 ];
