@@ -131,8 +131,8 @@ class ReportController extends Controller
                 'homehubs.tankSensors',
                 'homehubs.qualitySensors',
                 'homehubs.weatherData',
-                'homehubs.tankSensors.tankData',
-                'homehubs.qualitySensors.qualityData',
+                'homehubs.tankSensors.logs',
+                'homehubs.qualitySensors.logs',
             ])
             ->where('username', $username)
             ->first();
