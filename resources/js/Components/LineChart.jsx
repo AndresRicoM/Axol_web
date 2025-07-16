@@ -24,24 +24,6 @@ export default function LineChart({ data }) {
         d.tds,
     ]);
 
-    // Extraer meses para categorías según datos filtrados (opcional)
-    // Aquí puedes adaptar si quieres categorías dinámicas o dejar vacío
-    // Para mantener tu estilo original, usaremos meses fijos:
-    const allMonths = [
-        "Ene",
-        "Feb",
-        "Mar",
-        "Abr",
-        "May",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dic",
-    ];
-
     // Opciones originales adaptadas para eje datetime
     const options = {
         chart: {

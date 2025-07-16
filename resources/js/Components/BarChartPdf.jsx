@@ -2,48 +2,89 @@ import React, { useEffect, useRef } from "react";
 import Chart from "react-apexcharts";
 import html2canvas from "html2canvas";
 
-const colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0", "#546E7A", "#26A69A", "#D10CE8"];
-const allMonths = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+// Recibe fechas en formato 'YYYY-MM-DD' o Date
+function getMonthsRange(startDateStr, endDateStr) {
+    const allMonths = [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+    ];
 
-export default function BarChart({ monthlyConsumption, onExport }) {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+
+    // Normalizar al primer día del mes
+    let current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
+    const months = [];
+    const consumptionKeys = [];
+
+    while (current <= end) {
+        const monthIndex = current.getMonth();
+        months.push(allMonths[monthIndex]);
+        consumptionKeys.push(String(monthIndex + 1).padStart(2, "0"));
+
+        // Incrementar un mes
+        current.setMonth(current.getMonth() + 1);
+    }
+
+    return { months, consumptionKeys };
+}
+
+const colors = ["#b37f95", "#fcedf4", "#f4ddf3", "#fbecf3", "#b6bcd5"];
+
+export default function BarChartPdf({
+    monthlyConsumption,
+    onExport,
+    chartId,
+    fechaInicio,
+    fechaFin,
+}) {
     const chartRef = useRef(null);
 
-    const currentMonthIndex = new Date().getMonth();
-    const displayedMonths = allMonths.slice(0, currentMonthIndex + 1);
+    const { months: displayedMonths, consumptionKeys } = getMonthsRange(
+        fechaInicio,
+        fechaFin
+    );
 
-    const consumptionData = allMonths.map((_, index) => {
-        const monthKey = (index + 1).toString().padStart(2, "0"); 
-        return monthlyConsumption?.[monthKey] ?? 0;
-    });
+    // Construye el array de consumos para cada mes en el rango
+    const consumptionData = consumptionKeys.map(
+        (monthKey) => monthlyConsumption?.[monthKey] ?? 0
+    );
 
     const options = {
         chart: {
-            height: 350,
+            id: chartId,
             type: "bar",
+            toolbar: { show: false },
         },
         colors: colors.slice(0, displayedMonths.length),
-        plotOptions: {
-            bar: {
-                columnWidth: "65%",
-                distributed: true,
-            },
-        },
+        plotOptions: { bar: { columnWidth: "65%", distributed: true } },
         dataLabels: { enabled: false },
         legend: { show: false },
         xaxis: {
+            title: { text: "Meses" },
             categories: displayedMonths,
-            labels: {
-                style: {
-                    colors: colors.slice(0, displayedMonths.length),
-                    fontSize: "12px",
-                },
-            },
+            labels: { style: { fontSize: "12px" } },
+        },
+        yaxis: {
+            title: { text: "Litros" },
+            min: 0,
         },
     };
 
     useEffect(() => {
         if (onExport && chartRef.current) {
-            // Espera un poco a que la gráfica se renderice
             setTimeout(() => {
                 html2canvas(chartRef.current).then((canvas) => {
                     const imgData = canvas.toDataURL("image/png");
@@ -51,11 +92,16 @@ export default function BarChart({ monthlyConsumption, onExport }) {
                 });
             }, 1000);
         }
-    }, [onExport]);
+    }, [onExport, consumptionData]);
 
     return (
         <div ref={chartRef}>
-            <Chart options={options} series={[{ data: consumptionData.slice(0, displayedMonths.length) }]} type="bar" height={350} />
+            <Chart
+                options={options}
+                series={[{ data: consumptionData }]}
+                type="bar"
+                height={250}
+            />
         </div>
     );
 }
