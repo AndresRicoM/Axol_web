@@ -21,7 +21,6 @@ class TankController extends Controller
                 'paired_with' => 'required|string',
                 'tank_capacity' => 'required|numeric',
                 'use' => 'required|string',
-                'max_height' => 'required|numeric',
                 'offset' => 'nullable|numeric',
                 'diameter' => 'nullable|numeric',
                 'width' => 'nullable|numeric',
