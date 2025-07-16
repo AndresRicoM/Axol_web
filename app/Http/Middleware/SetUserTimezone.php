@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use GuzzleHttp\Client;
+
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,12 +13,14 @@ class SetUserTimezone
     /**
      * Handle an incoming request.
      *
+
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle($request, Closure $next)
     {
+
         $response = $next($request);
 
         if (!$request->hasCookie('timezone')) {
@@ -36,10 +39,12 @@ class SetUserTimezone
             $data = json_decode($apiResponse->getBody(), true);
             $timezone = $data['time_zone']['name'] ?? config('app.timezone');
 
+
             // Adjuntar la cookie directamente a la respuesta
             $response->headers->setCookie(cookie('timezone', $timezone, 60 * 24 * 30, '/', null, false, false));
         }
 
         return $response;
+
     }
 }

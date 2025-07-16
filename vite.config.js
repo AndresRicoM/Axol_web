@@ -1,24 +1,25 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.jsx'],
-            refresh: true,
-        }),
-
-        react(),
-    ],
-
-    server: {
-        host: '0.0.0.0',  // Permite conexiones externas
-        port: 5173,      // Define el puerto (puede ser cualquier puerto disponible)
-        hmr: {
-            host: '10.214.89.90', // IP de tu adaptador Wi-Fi
-            // host: '192.168.1.124', // IP de tu adaptador Wi-Fi
-
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    
+    return {
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.jsx'],
+                refresh: true,
+            }),
+            react(),
+        ],
+        server: {
+            host: env.VITE_SERVER_HOST || '0.0.0.0',
+            port: parseInt(env.VITE_SERVER_PORT) || 5173,
+            hmr: {
+                host: env.VITE_HMR_HOST || 'localhost',
+                port: parseInt(env.VITE_HMR_PORT) || 5173,
+            },
         },
-    },
+    };
 });

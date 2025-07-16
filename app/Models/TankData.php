@@ -10,18 +10,24 @@ class TankData extends Model
 {
     use HasFactory;
 
-    protected $table = 'stored_waterdb';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.tank_data');
+    }
 
     protected $fillable = [
         'mac_add',
         'water_distance',
         'datetime'
     ];
-    
+
     protected $casts = [
         'mac_add' => 'string',
-        'water_distance'=> 'float',
-        'datetime'=> 'datetime'
+        'water_distance' => 'float',
+        'datetime' => 'datetime'
 
     ];
 

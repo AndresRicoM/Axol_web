@@ -10,7 +10,13 @@ class Homehub extends Model
 {
     use HasFactory;
 
-    protected $table = 'homehub_devices_2';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.homehub');
+    }
 
     // Define las columnas que se pueden llenar masivamente
     protected $fillable = [
@@ -44,5 +50,10 @@ class Homehub extends Model
     public function tankSensors(): HasMany
     {
         return $this->hasMany(Tank::class, 'paired_with', 'mac_add');
+    }
+
+    public function weatherData(): HasMany
+    {
+        return $this->hasMany(HomehubWeather::class, 'mac_add', 'mac_add');
     }
 }

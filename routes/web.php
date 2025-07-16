@@ -6,16 +6,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReportController;
 use Inertia\Inertia;
-use App\Http\Controllers\WaterTankController;
 use App\Http\Controllers\TankController;
-use App\Http\Controllers\QualityController;
 use Illuminate\Http\Request;
-
-use App\Models\Homehub;
-use App\Models\QualityData;
-use App\Models\TankData;
-use App\Models\WaterData;
 
 
 /*
@@ -72,6 +66,16 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', 'verified', 'timezone'])->name('dashboard');
 
+//
+Route::get('/community', function () {
+    $user = Auth::user();
+
+    // Render the community view
+    return Inertia::render('Community', [
+        'user' => $user,
+    ]);
+})->middleware(['auth', 'verified', 'timezone'])->name('community');
+
 // Grupo de rutas protegidas por middleware auth
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -93,4 +97,7 @@ Route::prefix('api')->middleware('web')->group(function () {
 
     Route::get('/sensors', [TankController::class, 'getSensors']);
 });
+
+Route::get('/report', [ReportController::class, 'generateReport']);
+
 require __DIR__ . '/auth.php';

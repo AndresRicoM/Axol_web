@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Homehub;
 use App\Models\User;
+use App\Traits\QualityTrait;
+use App\Traits\TankTrait;
 use Illuminate\Support\Facades\Log;
-use App\Models\Tank;
-
-use function PHPSTORM_META\map;
 
 class HomehubController extends Controller
 {
+    use TankTrait, QualityTrait;
+
     public function registerHomehub(Request $request)
     {
 
@@ -42,7 +43,6 @@ class HomehubController extends Controller
 
             $homehub = Homehub::create($validated);
             Log::info('Homehub created successfully', ['homehub' => $homehub]);
-
         } catch (\Throwable $th) {
             Log::error('Error creating a new Homehub', ['error' => $th->getMessage()]);
 
@@ -74,10 +74,14 @@ class HomehubController extends Controller
     public function getSensors(User $user)
     {
         $data = $user->homehubs()
-            ->with(['qualitySensors:mac_add,use,paired_with', 
-                    'qualitySensors.logs:tds,mac_add,datetime,humidity', 
-                    'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
-                    'tankSensors.logs:water_distance,mac_add,datetime'])
+            ->with([
+                'qualitySensors:mac_add,use,paired_with',
+                'qualitySensors.logsYear:tds,mac_add,datetime',
+                'qualitySensors.latestLog:tds,mac_add,datetime,humidity',
+                'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
+                'tankSensors.logsLast3Years:water_distance,mac_add,datetime',
+                'tankSensors.latestLog:water_distance,mac_add,datetime'
+            ])
             ->get();
 
         if ($data->isEmpty()) {
@@ -85,36 +89,39 @@ class HomehubController extends Controller
         }
 
         return $data->map(function ($homehub) {
-            // Combinar qualitySensors y tankSensors en una sola colección
+
             $qualityData = $homehub->qualitySensors->map(function ($sensor) {
+                $monthlyQuality = $this->getAllQualityData($sensor);
                 return [
                     'type' => 'quality',
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'tds' => round($sensor->logs?->tds, 0),
-                    'datetime' => $sensor->logs?->datetime,
-                    'humidity' => $sensor->logs?->humidity,
+                    'tds' => round($sensor->latestLog?->tds, 0),
+                    'datetime' => $sensor->latestLog?->datetime,
+                    'humidity' => $sensor->latestLog?->humidity,
+                    'monthlyQuality' => $monthlyQuality,
+
                 ];
             });
 
-            $tankData = $homehub->tankSensors->map(function ($sensor){
-                $tank_volume = 0;
-                if ($sensor['diameter'] > 0) {
-                    $radius = $sensor['diameter'] / 2;
-                    $tank_volume = pi() * pow($radius, 2) * $sensor['height'];
-                } else {
-                    $tank_volume = ($sensor['width'] * $sensor['depth'] * $sensor['height']);
-                }
+            $tankData = $homehub->tankSensors->map(function ($sensor) {
+                //CALCULO DEL VOLUMEN DEL TANQUE
+                $tank_volume = $this->getVolume($sensor);
 
                 $offset = $sensor['offset'];
                 $height = $sensor['height'];
 
-                $water_distance = $sensor->logs?->water_distance !== null 
-                    ? $sensor->logs?->water_distance / 1000 
-                    : null;
+                // Obtener el último dato
+                $latestLog = $sensor->latestLog;
+                $latestDistance = $latestLog?->water_distance / 1000;
 
+                //Calcular consumo de agua mensual por sensor
+                $monthlyConsumption = $this->getMonthlyConsumption($sensor, $tank_volume);
+
+                // Cálculo de porcentaje y litros restantes
                 $percentage = 0;
                 $remaining_liters = 0;
+
 
                 if(isset($offset, $height, $water_distance) && $tank_volume > 0){
                     $a = $height + $offset - $water_distance;   
@@ -131,10 +138,11 @@ class HomehubController extends Controller
                 return [
                     'mac_add' => $sensor->mac_add,
                     'use' => $sensor->use,
-                    'water_distance' => $sensor->logs?->water_distance,
+                    'water_distance' => $latestLog?->water_distance,
                     'fill_percentage' => round($percentage, 0),
                     'remaining_liters' => round($remaining_liters, 0),
-                    'datetime' => $sensor->logs?->datetime,
+                    'datetime' => $latestLog?->datetime,
+                    'monthly_consumption' => $monthlyConsumption,
                 ];
             });
 
@@ -171,5 +179,4 @@ class HomehubController extends Controller
             ];
         });
     }
-
 }

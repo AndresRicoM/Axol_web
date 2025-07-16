@@ -13,10 +13,16 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
-    ]; 
+    ];
 
     // Cambia la tabla a tu tabla personalizada
-    protected $table = 'users';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.users');
+    }
 
     // Define las columnas que se pueden llenar masivamente
     protected $fillable = [

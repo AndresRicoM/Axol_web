@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -40,3 +41,6 @@ Route::get('/sensor/quality', [HomehubController::class, 'getHomehub']);
 Route::get('/sensor/getQuality', [QualityController::class, 'getQualityData']);
 Route::post('/sensor/quality', [QualityController::class, 'registerQuality']);
 Route::post('/sensor/qualityData', [QualityController::class, 'registerQualityData']);
+
+// Data Analysis
+Route::get('/analysis', [ReportController::class, 'getDataForAnalysis']);

@@ -1,7 +1,7 @@
 export default function DateFormat({ datetime }) {
-    if (!datetime) {
-        return <span className="dark:text-white">Fecha no disponible</span>;
-    }
+  if (!datetime) {
+    return <span className="dark:text-white">Fecha no disponible</span>;
+  }
 
     const cookieString = document.cookie;
     const timezonePrefix = "timezone=";

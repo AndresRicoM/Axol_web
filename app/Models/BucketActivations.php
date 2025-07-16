@@ -9,7 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BucketActivations extends Model
 {
     use HasFactory;
-    protected $table = 'bucket_activationsdb';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('services.tables.bucket_data');
+    }
 
     protected $fillable = [
         'datetime',
@@ -23,7 +29,7 @@ class BucketActivations extends Model
 
     public $timestamps = false;
 
-    
+
     public function bucketSensors(): BelongsTo
     {
         return $this->belongsTo(Bucket::class, 'mac_add', 'mac_add');
