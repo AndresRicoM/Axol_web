@@ -100,6 +100,7 @@ class HomehubController extends Controller
                     'datetime' => $sensor->latestLog?->datetime,
                     'humidity' => $sensor->latestLog?->humidity,
                     'monthlyQuality' => $monthlyQuality,
+
                 ];
             });
 
@@ -121,9 +122,10 @@ class HomehubController extends Controller
                 $percentage = 0;
                 $remaining_liters = 0;
 
-                if (isset($offset, $height, $latestDistance, $tank_volume)) {
-                    $a = $height + $offset - $latestDistance;
-                    $b = $a + $latestDistance - $offset;
+
+                if(isset($offset, $height, $water_distance) && $tank_volume > 0){
+                    $a = $height + $offset - $water_distance;   
+                    $b = $a + $water_distance - $offset;
 
                     if ($height != 0) {
                         $percentage = (1 - (($b - $a) / $b)) * 100;

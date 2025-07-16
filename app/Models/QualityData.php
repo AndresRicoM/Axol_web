@@ -32,6 +32,7 @@ class QualityData extends Model
         'water_temp' => 'float',
         'datetime' => 'datetime',
         'humidity' => 'float',
+
     ];
 
     protected $primaryKey = 'mac_add';

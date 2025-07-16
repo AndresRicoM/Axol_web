@@ -323,6 +323,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                                 del
                                                                                 sensor
                                                                             </span>
+
                                                                         )
                                                                     ) : (
                                                                         <span className="text-text font-semibold text-2xl">

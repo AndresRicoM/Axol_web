@@ -4,28 +4,27 @@ namespace App\Http\Middleware;
 
 use Closure;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Cookie;
+
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SetUserTimezone
 {
     /**
      * Handle an incoming request.
      *
-     * Solo guarda la zona horaria en cookie si no existe, sin cambiar la zona horaria PHP.
-     *
+
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): \Symfony\Component\HttpFoundation\Response  $next
+     * @param  \Closure  $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle($request, Closure $next)
     {
+
+        $response = $next($request);
+
         if (!$request->hasCookie('timezone')) {
             $ip = $request->ip();
-
-            // Para desarrollo local, usa IP pública fija
-            if ($ip === '127.0.0.1' || $ip === '::1') {
-                $ip = '189.163.154.202'; // Cambia por tu IP pública si quieres
-            }
 
             $client = new Client(['verify' => false]);
             $apiKey = config('services.ipgeolocation.api_key');
@@ -40,10 +39,12 @@ class SetUserTimezone
             $data = json_decode($apiResponse->getBody(), true);
             $timezone = $data['time_zone']['name'] ?? config('app.timezone');
 
-            // Solo encolar la cookie para que se agregue en la respuesta
-            Cookie::queue(cookie('timezone', $timezone, 60 * 24 * 30)); // 30 días
+
+            // Adjuntar la cookie directamente a la respuesta
+            $response->headers->setCookie(cookie('timezone', $timezone, 60 * 24 * 30, '/', null, false, false));
         }
 
-        return $next($request);
+        return $response;
+
     }
 }

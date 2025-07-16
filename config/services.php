@@ -46,4 +46,5 @@ return [
         'bucket' => env('TABLE_BUCKET'),
         'bucket_data' => env('TABLE_BUCKET_DATA'),
     ]
+
 ];

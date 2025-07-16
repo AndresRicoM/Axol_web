@@ -22,9 +22,9 @@ class TankController extends Controller
                 'tank_capacity' => 'required|numeric',
                 'use' => 'required|string',
                 'offset' => 'nullable|numeric',
+                'height' => 'required|numeric',
                 'diameter' => 'nullable|numeric',
                 'width' => 'nullable|numeric',
-                'height' => 'required|numeric',
                 'depth' => 'nullable|numeric'
             ]);
 
