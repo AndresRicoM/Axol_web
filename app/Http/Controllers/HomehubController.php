@@ -79,7 +79,7 @@ class HomehubController extends Controller
                 'qualitySensors.logsYear:tds,mac_add,datetime',
                 'qualitySensors.latestLog:tds,mac_add,datetime,humidity',
                 'tankSensors:mac_add,use,diameter,width,height,offset,paired_with,width,depth',
-                'tankSensors.logsYear:water_distance,mac_add,datetime',
+                'tankSensors.logsLast3Years:water_distance,mac_add,datetime',
                 'tankSensors.latestLog:water_distance,mac_add,datetime'
             ])
             ->get();
