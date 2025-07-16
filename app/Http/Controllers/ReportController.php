@@ -119,9 +119,6 @@ class ReportController extends Controller
             'data'    => $data,
             'message' => 'data successfully retrieved',
         ]);
-    public function getData()
-    {
-
     }
 
     public function getDataForAnalysis(Request $request)
