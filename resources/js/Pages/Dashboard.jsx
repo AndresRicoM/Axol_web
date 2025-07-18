@@ -302,7 +302,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                     {tank.quality ? (
                                                                         tank
                                                                             .quality
-                                                                            .tds ? (
+                                                                            .tds >= 0 ? (
                                                                             <WaterQualityIndicator
                                                                                 tds={
                                                                                     tank
