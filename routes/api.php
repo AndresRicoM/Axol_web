@@ -43,4 +43,4 @@ Route::post('/sensor/quality', [QualityController::class, 'registerQuality']);
 Route::post('/sensor/qualityData', [QualityController::class, 'registerQualityData']);
 
 // Data Analysis
-Route::get('/analysis', [ReportController::class, 'getDataForAnalysis']);
+Route::post('/analysis', [ReportController::class, 'getDataForAnalysis']);
