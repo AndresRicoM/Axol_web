@@ -123,9 +123,9 @@ class HomehubController extends Controller
                 $remaining_liters = 0;
 
 
-                if(isset($offset, $height, $water_distance) && $tank_volume > 0){
-                    $a = $height + $offset - $water_distance;   
-                    $b = $a + $water_distance - $offset;
+                if(isset($offset, $height, $latestDistance) && $tank_volume > 0){
+                    $a = $height + $offset - $latestDistance;   
+                    $b = $a + $latestDistance - $offset;
 
                     if ($height != 0) {
                         $percentage = (1 - (($b - $a) / $b)) * 100;

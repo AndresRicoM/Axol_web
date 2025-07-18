@@ -24,7 +24,7 @@ class SetUserTimezone
         $response = $next($request);
 
         if (!$request->hasCookie('timezone')) {
-            $ip = $request->ip();
+            $ip = "8.8.8.8";
 
             $client = new Client(['verify' => false]);
             $apiKey = config('services.ipgeolocation.api_key');
