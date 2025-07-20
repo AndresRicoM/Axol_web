@@ -105,7 +105,11 @@ class HomehubController extends Controller
             });
 
             $tankData = $homehub->tankSensors->map(function ($sensor) {
+                if (is_null($sensor)) {
+                    return null;
+                }
                 //CALCULO DEL VOLUMEN DEL TANQUE
+
                 $tank_volume = $this->getVolume($sensor);
 
                 $offset = $sensor['offset'];
@@ -122,9 +126,8 @@ class HomehubController extends Controller
                 $percentage = 0;
                 $remaining_liters = 0;
 
-
-                if(isset($offset, $height, $latestDistance) && $tank_volume > 0){
-                    $a = $height + $offset - $latestDistance;   
+                if (isset($offset, $height, $latestDistance) && $tank_volume > 0) {
+                    $a = $height + $offset - $latestDistance;
                     $b = $a + $latestDistance - $offset;
 
                     if ($height != 0) {
@@ -144,7 +147,7 @@ class HomehubController extends Controller
                     'datetime' => $latestLog?->datetime,
                     'monthly_consumption' => $monthlyConsumption,
                 ];
-            });
+            })->filter();
 
             // Agrupar sensores por "use"
             $groupedSensors = [];

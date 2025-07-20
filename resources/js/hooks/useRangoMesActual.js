@@ -2,8 +2,18 @@ import { useMemo } from "react";
 
 export default function useRangoMesActual() {
     const meses = [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
     ];
 
     return useMemo(() => {
@@ -11,11 +21,8 @@ export default function useRangoMesActual() {
         const mesActual = meses[fechaActual.getMonth()];
         const añoActual = fechaActual.getFullYear();
         const primerDia = "01";
-        const ultimoDia = new Date(añoActual, fechaActual.getMonth() + 1, 0).getDate();
-        const rangoFechas = `${primerDia} - ${ultimoDia} ${mesActual}`;
+        const actualDia = fechaActual.getDate().toString().padStart(2, "0");
+        const rangoFechas = `${primerDia} - ${actualDia} ${mesActual}`;
         return rangoFechas;
     }, []);
 }
-
-
-
