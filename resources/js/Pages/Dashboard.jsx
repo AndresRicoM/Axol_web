@@ -302,7 +302,8 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                     {tank.quality ? (
                                                                         tank
                                                                             .quality
-                                                                            .tds >= 0 ? (
+                                                                            .tds >=
+                                                                        0 ? (
                                                                             <WaterQualityIndicator
                                                                                 tds={
                                                                                     tank
@@ -323,7 +324,6 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                                 del
                                                                                 sensor
                                                                             </span>
-
                                                                         )
                                                                     ) : (
                                                                         <span className="text-text font-semibold text-2xl">
@@ -348,21 +348,24 @@ export default function Dashboard({ auth, user, axolData }) {
                                                 title={
                                                     <div className="flex justify-end items-center">
                                                         {/* Lupa animada */}
-                                                        <button
-                                                            className="transition-transform duration-200 hover:scale-150 outline-none"
-                                                            onClick={() =>
-                                                                handleOpenModal(
-                                                                    tank
-                                                                )
-                                                            }
-                                                        >
-                                                            <FontAwesomeIcon
-                                                                icon={
-                                                                    faMagnifyingGlass
+
+                                                        {tank.storage && (
+                                                            <button
+                                                                className="transition-transform duration-200 hover:scale-150 outline-none"
+                                                                onClick={() =>
+                                                                    handleOpenModal(
+                                                                        tank
+                                                                    )
                                                                 }
-                                                                className="cursor-pointer text-blue-600 hover:text-blue-700"
-                                                            />
-                                                        </button>
+                                                            >
+                                                                <FontAwesomeIcon
+                                                                    icon={
+                                                                        faMagnifyingGlass
+                                                                    }
+                                                                    className="cursor-pointer text-blue-600 hover:text-blue-700"
+                                                                />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 }
                                                 className="relative min-w-[320px] min-h-[370px] flex items-center justify-center"
@@ -390,11 +393,17 @@ export default function Dashboard({ auth, user, axolData }) {
                                                     </div>
 
                                                     <span className="text-4xl font-extrabold mt-2 mb-2">
-                                                        {Object.values(
-                                                            tank.storage
-                                                                .monthly_consumption
-                                                        ).pop()}{" "}
-                                                        litros
+                                                        {tank.storage ? (
+                                                            Object.values(
+                                                                tank.storage
+                                                                    .monthly_consumption
+                                                            ).pop() + " litros"
+                                                        ) : (
+                                                            <span className="text-text font-semibold text-lg">
+                                                                No hay sensor
+                                                                registrado
+                                                            </span>
+                                                        )}
                                                     </span>
                                                 </div>
                                             </ChartCard>
