@@ -4,12 +4,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
+    const isProduction = mode === 'production'
     
     return {
         plugins: [
             laravel({
                 input: ['resources/css/app.css', 'resources/js/app.jsx'],
-                refresh: true,
+                refresh: !isProduction,
             }),
             react(),
         ],
