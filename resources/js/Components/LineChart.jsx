@@ -1,36 +1,45 @@
 import React, { useState, useMemo } from "react";
 import Chart from "react-apexcharts";
-import { DatePicker } from "antd";
 
-const { RangePicker } = DatePicker;
+const rangeOptions = [
+    { label: "YTD", value: "YTD" },
+    { label: "3 meses", value: 3 },
+    { label: "6 meses", value: 6 },
+    { label: "1 año", value: 12 },
+    { label: "2 años", value: 24 },
+    { label: "3 años", value: 36 },
+];
 
 export default function LineChart({ data }) {
-    const [dateRange, setDateRange] = useState([null, null]);
+    const [selectedRange, setSelectedRange] = useState("YTD");
 
-    // Filtrar datos según rango seleccionado
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    let startDate;
+    const endDate = today;
+
+    if (selectedRange === "YTD") {
+        startDate = new Date(currentYear, 0, 1);
+    } else {
+        const monthsBack = selectedRange;
+        startDate = new Date(currentYear, currentMonth - monthsBack + 1, 1);
+    }
+
     const filteredData = useMemo(() => {
-        if (!dateRange[0] || !dateRange[1]) return data;
-
-        const [start, end] = dateRange;
         return data.filter((d) => {
             const dt = new Date(d.datetime);
-            return dt >= start && dt <= end;
+            return dt >= startDate && dt <= endDate;
         });
-    }, [data, dateRange]);
+    }, [data, startDate, endDate]);
 
-    // Mapear los datos filtrados a formato [timestamp, valor]
     const seriesData = filteredData.map((d) => [
         new Date(d.datetime).getTime(),
         d.tds,
     ]);
 
-    // Opciones originales adaptadas para eje datetime
     const options = {
-        chart: {
-            height: 350,
-            type: "line",
-            toolbar: { show: false },
-        },
+        chart: { height: 350, type: "line", toolbar: { show: false } },
         colors: ["#4fd1c5"],
         dataLabels: { enabled: false },
         legend: { show: false },
@@ -71,26 +80,27 @@ export default function LineChart({ data }) {
 
     return (
         <div>
+            <div className="flex justify-center gap-2 mb-4">
+                {rangeOptions.map((option) => (
+                    <button
+                        key={option.value}
+                        onClick={() => setSelectedRange(option.value)}
+                        className={`px-4 py-2 rounded-t ${
+                            selectedRange === option.value
+                                ? "bg-blue-600 text-white font-bold"
+                                : "bg-gray-200 text-gray-700"
+                        }`}
+                    >
+                        {option.label}
+                    </button>
+                ))}
+            </div>
             <Chart
                 options={options}
                 series={[{ name: "PPM", data: seriesData }]}
                 type="line"
                 height={350}
             />
-
-            {/* Selector rango fechas */}
-            <div className="mb-4 flex justify-center max-w-md mx-auto">
-                <RangePicker
-                    onChange={(dates) =>
-                        setDateRange(
-                            dates
-                                ? [dates[0].toDate(), dates[1].toDate()]
-                                : [null, null]
-                        )
-                    }
-                    allowClear
-                />
-            </div>
         </div>
     );
 }
