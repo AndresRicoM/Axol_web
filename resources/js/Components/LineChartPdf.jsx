@@ -32,13 +32,14 @@ const LineChartPdf = ({ data = [], onExport, chartId }) => {
             title: { text: "TDS (ppm)" },
             min: 0,
         },
+        stroke: {
+            curve: "straight",
+            width: 1,
+        },
         tooltip: {
             x: {
                 format: "dd MMM yyyy HH:mm",
             },
-        },
-        markers: {
-            size: 4,
         },
     };
 

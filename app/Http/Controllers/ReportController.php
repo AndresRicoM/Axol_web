@@ -15,7 +15,7 @@ class ReportController extends Controller
     public function generateReport(Request $request)
     {
         $request->validate([
-            'mac_add'    => 'required|exists:homehub_devices_practice,mac_add',
+            'mac_add'    => 'required|exists:homehub_devices_2,mac_add',
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
         ]);
@@ -52,8 +52,9 @@ class ReportController extends Controller
         foreach ($query->tankSensors as $tank) {
             $tankVolume = $this->getVolume($tank->toArray());
             $monthlyConsumption = $this->getMonthlyConsumption($tank, $tankVolume);
+            $capturedWater = $this->getCapturedWater($tank, $tankVolume);
 
-            // Calcular remaining_liters usando tu fórmula
+            // Calcular litros restantes
             $remaining_liters = 0;
             $lastLog = $tank->latestLog;
             $latestDistance = $lastLog?->water_distance / 1000;
@@ -76,6 +77,7 @@ class ReportController extends Controller
                 'storage'  => [
                     'monthly_consumption' => $monthlyConsumption,
                     'remaining_liters'    => $remaining_liters,
+                    'captured_water'      => $capturedWater,
                 ],
             ];
         }

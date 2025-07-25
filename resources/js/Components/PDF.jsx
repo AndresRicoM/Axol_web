@@ -6,12 +6,14 @@ import {
     Text,
     View,
     StyleSheet,
-    PDFViewer,
 } from "@react-pdf/renderer";
 import CCGDL from "./assets_pdf/CCGDL.png";
 import MIT_ML from "./assets_pdf/MIT_ML.png";
 import NubesLogo from "./assets_pdf/NubesLogo.png";
 import Axol_logo from "./assets_pdf/Axol_pdf.png";
+import TITO_FELIZ from "./assets_pdf/TITO_FELIZ_FULLCOLOR.png";
+import TITO_NEUTRAL from "./assets_pdf/TITO_NEUTRAL_FULLCOLOR.png";
+import TITO_TRISTE from "./assets_pdf/TITO_TRISTE_FULLCOLOR.png";
 
 const styles = StyleSheet.create({
     page: {
@@ -115,6 +117,11 @@ const PDF = ({
         0
     );
 
+    const totalCaptado = sensors.reduce(
+        (total, sensor) => total + sensor.storage.captured_water,
+        0
+    );
+
     const almacenamientoTotal = sensors.reduce(
         (total, sensor) => total + sensor.storage.remaining_liters,
         0
@@ -131,6 +138,13 @@ const PDF = ({
         }
     };
 
+    const getQualityIcon = (ppm) => {
+        const percentage = getQualityPercentage(ppm);
+        if (percentage <= 33.33) return TITO_FELIZ;
+        if (percentage <= 66.66) return TITO_NEUTRAL;
+        return TITO_TRISTE;
+    };
+
     // Función para obtener texto y color según ppm
     const getQualityStatus = (ppm) => {
         const percentage = getQualityPercentage(ppm);
@@ -143,6 +157,21 @@ const PDF = ({
             return { text: "Mala", color: "#f44336" }; // rojo
         }
     };
+
+    // Analogías
+    const aguaCaptada = totalCaptado || 0;
+    const litrosPorGarrafo = 20; // Asumiendo que un garrafón tiene 20 litros
+    const numGarrafones =
+        aguaCaptada && litrosPorGarrafo
+            ? (aguaCaptada / litrosPorGarrafo).toFixed(1)
+            : 0;
+
+    const diasConsumoFamiliar =
+        aguaCaptada && 1464 ? (aguaCaptada / 1464).toFixed(1) : 0;
+    const co2Evitado = aguaCaptada ? (aguaCaptada * 0.0004).toFixed(2) : 0;
+    const kmEquivalente = aguaCaptada
+        ? ((aguaCaptada * 0.0004) / 0.192).toFixed(2)
+        : 0;
 
     return (
         <Document>
@@ -195,7 +224,7 @@ const PDF = ({
                 <View style={styles.row}>
                     <View style={styles.box}>
                         <Text style={styles.label}>Captura Total:</Text>
-                        <Text style={styles.value}>captura en Litros</Text>
+                        <Text style={styles.value}>{aguaCaptada}</Text>
                     </View>
                     <View style={styles.box}>
                         <Text style={styles.label}>Almacenamiento Total:</Text>
@@ -208,40 +237,39 @@ const PDF = ({
                 <View style={styles.separator} />
                 {/* Apartado para las analogias */}
 
-                {/* Fila 1 de analogias */}
                 <View style={styles.row}>
                     <View style={styles.box}>
                         <Text style={styles.label}>Agua captada: </Text>
-                        <Text style={styles.value}> X litros</Text>
+                        <Text style={styles.value}>{aguaCaptada} litros</Text>
                     </View>
                     <View style={styles.box}>
                         <Text style={styles.label}>Equivalente a: </Text>
-                        <Text style={styles.value}> X / 20 garrafones</Text>
+                        <Text style={styles.value}>
+                            {numGarrafones} garrafones
+                        </Text>
                     </View>
                 </View>
 
-                {/* Fila de analogias 2 */}
                 <View style={styles.row}>
                     <View style={styles.box}>
                         <Text style={styles.label}>
-                            {" "}
-                            Días de consumo familiar promedio:{" "}
+                            Días de consumo familiar promedio:
                         </Text>
-                        <Text style={styles.value}> X / 1,464 días</Text>
+                        <Text style={styles.value}>
+                            {diasConsumoFamiliar} días
+                        </Text>
                     </View>
-
                     <View style={styles.box}>
-                        <Text style={styles.label}> CO₂ evitado: </Text>
-                        <Text style={styles.value}> X × 0.0004 kg</Text>
+                        <Text style={styles.label}>CO₂ evitado: </Text>
+                        <Text style={styles.value}>{co2Evitado} kg</Text>
                     </View>
                 </View>
 
-                {/* Fila 3 de analogias*/}
                 <View style={styles.row}>
                     <View style={styles.box}>
                         <Text style={styles.label}>Equivalente a: </Text>
                         <Text style={styles.value}>
-                            conducir X × 0.0004 / 0.192 km
+                            conducir {kmEquivalente} km
                         </Text>
                     </View>
                 </View>
@@ -249,17 +277,27 @@ const PDF = ({
                 <View style={styles.separator} />
 
                 <View style={{ marginTop: 20 }}>
-                    {graficaUrls.map((consumoSrc, i) => {
+                    {Array.from({
+                        length: Math.max(
+                            graficaUrls.length,
+                            qualityChartUrls.length
+                        ),
+                    }).map((_, i) => {
+                        const consumoSrc = graficaUrls[i];
                         const calidadSrc = qualityChartUrls[i];
-                        // Extraer el valor ppm (tds) del sensor de calidad correspondiente
                         const ppm =
-                            pdfData?.quality_sensors?.[i]?.latest_log?.tds ?? 0;
+                            pdfData?.quality_sensors?.[i]?.latest_log?.tds;
+                        const existeConsumo = Boolean(consumoSrc);
+                        const existeCalidad = Boolean(calidadSrc);
+                        if (!existeConsumo && !existeCalidad) return null;
 
-                        // Función para obtener estado según ppm (puedes usar la función que ya tienes)
-                        const qualityStatus = getQualityStatus(ppm);
+                        const qualityStatus =
+                            ppm !== undefined ? getQualityStatus(ppm) : null;
+                        const qualityIcon =
+                            ppm !== undefined ? getQualityIcon(ppm) : null;
 
                         return (
-                            <View key={`pair-${i}`}>
+                            <View key={i}>
                                 <View
                                     style={{
                                         flexDirection: "row",
@@ -267,41 +305,34 @@ const PDF = ({
                                         marginBottom: 15,
                                     }}
                                 >
-                                    {/* Gráfica de consumo */}
-                                    <View
-                                        style={{
-                                            width: "35%",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                fontSize: 12,
-                                                marginBottom: 5,
-                                            }}
-                                        >
-                                            Consumo diario {i + 1}
-                                        </Text>
-                                        <Image
-                                            src={consumoSrc}
-                                            style={{ width: 180, height: 150 }}
-                                        />
-                                    </View>
-
-                                    {/* Gráfica de calidad */}
-                                    {calidadSrc && (
+                                    {/* Consumo */}
+                                    {existeConsumo && (
                                         <View
                                             style={{
                                                 width: "35%",
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Text
+                                            <Text>Consumo diario {i + 1}</Text>
+                                            <Image
+                                                src={consumoSrc}
                                                 style={{
-                                                    fontSize: 12,
-                                                    marginBottom: 5,
+                                                    width: 180,
+                                                    height: 150,
                                                 }}
-                                            >
+                                            />
+                                        </View>
+                                    )}
+
+                                    {/* Calidad */}
+                                    {existeCalidad && (
+                                        <View
+                                            style={{
+                                                width: "35%",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <Text>
                                                 Calidad del Agua {i + 1}
                                             </Text>
                                             <Image
@@ -314,54 +345,60 @@ const PDF = ({
                                         </View>
                                     )}
 
-                                    {/* Estado dinámico */}
+                                    {/* Estado de calidad: imagen + texto colorido */}
                                     <View
                                         style={{
                                             width: "20%",
                                             alignItems: "center",
                                         }}
                                     >
-                                        <Text
-                                            style={{
-                                                fontSize: 12,
-                                                marginBottom: 5,
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            Estado de Calidad del Agua:
-                                        </Text>
-                                        <Image
-                                            src={Axol_logo}
-                                            style={{
-                                                width: 50,
-                                                height: 50,
-                                                marginBottom: 5,
-                                            }}
-                                        />
-                                        <View
-                                            style={{
-                                                backgroundColor:
-                                                    qualityStatus.color,
-                                                paddingVertical: 4,
-                                                paddingHorizontal: 8,
-                                                borderRadius: 8,
-                                            }}
-                                        >
-                                            <Text
+                                        <Text>Calidad del Agua:</Text>
+
+                                        {/* Imagen */}
+                                        {qualityIcon && (
+                                            <Image
+                                                src={qualityIcon}
                                                 style={{
-                                                    color: "white",
-                                                    fontWeight: "bold",
-                                                    fontSize: 10,
+                                                    width: 50,
+                                                    height: 50,
+                                                    marginBottom: 5,
+                                                }}
+                                            />
+                                        )}
+
+                                        {/* Texto y color (siempre visible) */}
+                                        {qualityStatus && (
+                                            <View
+                                                style={{
+                                                    backgroundColor:
+                                                        qualityStatus.color,
+                                                    paddingVertical: 4,
+                                                    paddingHorizontal: 8,
+                                                    borderRadius: 8,
                                                 }}
                                             >
-                                                {qualityStatus.text}
-                                            </Text>
-                                        </View>
+                                                <Text
+                                                    style={{
+                                                        color: "white",
+                                                        fontWeight: "bold",
+                                                        fontSize: 10,
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {qualityStatus.text}
+                                                </Text>
+                                            </View>
+                                        )}
                                     </View>
                                 </View>
 
                                 {/* Separador */}
-                                {i < graficaUrls.length - 1 && (
+                                {i <
+                                    Math.max(
+                                        graficaUrls.length,
+                                        qualityChartUrls.length
+                                    ) -
+                                        1 && (
                                     <View
                                         style={{
                                             height: 1,

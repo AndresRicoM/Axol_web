@@ -413,7 +413,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             ))}
                         </div>
 
-                        {/* <div className="flex justify-center w-full -mt-2 -mb-2">
+                        <div className="flex justify-center w-full -mt-2 -mb-2">
                             <div className="flex justify-end items-center">
                                 <button
                                     className="transition-transform duration-200 hover:scale-150 outline-none"
@@ -437,7 +437,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                     </svg>
                                 </button>
                             </div>
-                        </div> */}
+                        </div>
 
                         {/* Map */}
                         <MapContainer

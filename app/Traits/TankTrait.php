@@ -35,8 +35,9 @@ trait TankTrait
             $previousReading = null;
             foreach ($entries as $log) {
                 $currentReading = $log->water_distance / 1000;
-                if ($previousReading !== null && $currentReading <= $previousReading) {
-                    $monthlyConsumption[$month] += ($previousReading - $currentReading) / $sensor['height'] * $tankVolume * 1000;
+                if ($previousReading !== null && $currentReading > $previousReading) {
+                    //distancia aumentó => nivel bajó => consumo de agua
+                    $monthlyConsumption[$month] += ($currentReading - $previousReading) / $sensor['height'] * $tankVolume * 1000;
                 }
                 $previousReading = $currentReading;
             }
@@ -46,6 +47,23 @@ trait TankTrait
         return $monthlyConsumption;
     }
 
+    public function getCapturedWater($sensor, float $tankVolume): float
+    {
+        $logs = $sensor->logs;
+
+        $capturedWater = 0;
+
+        $previousReading = null;
+        foreach ($logs as $log) {
+            $currentReading = $log->water_distance / 1000;
+            if ($previousReading !== null && $currentReading < $previousReading) {
+                // distancia disminuyó => nivel subió => captación de agua
+                $capturedWater += ($previousReading - $currentReading) / $sensor['height'] * $tankVolume * 1000;
+            }
+            $previousReading = $currentReading;
+        }
+        return round($capturedWater, 0);
+    }
 
     public function getVolume($tank): float
     {
