@@ -33,6 +33,8 @@ const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
         setReportData(null);
         setChartImages([]);
         setQualityChartImages([]);
+        setConsumoChartImage(null);
+        setChartsReady(false);
 
         if (!currentHomehub) {
             setError("No hay un homehub seleccionado.");
@@ -67,6 +69,8 @@ const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
             }
 
             const data = await response.json();
+            console.log("Datos del reporte:", data);
+            console.log("Estructura de sensors:", data.data.sensors);
             setReportData(data);
 
             if (onSubmit) onSubmit(data);
@@ -94,10 +98,30 @@ const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
     };
 
     const [consumoChartImage, setConsumoChartImage] = useState(null);
+    const [chartsReady, setChartsReady] = useState(false);
 
     const handleSetConsumoChartImage = (image) => {
         setConsumoChartImage(image);
     };
+
+    // Función para verificar si todas las gráficas están listas
+    const checkIfChartsReady = (reportData, chartImages, qualityChartImages, consumoChart) => {
+        if (!reportData || !consumoChart) return false;
+        
+        const expectedStorageCharts = reportData.data.sensors.filter(s => s.storage).length;
+        const expectedQualityCharts = reportData.data.sensors.filter(s => s.quality).length;
+        
+        return chartImages.length >= expectedStorageCharts && 
+               qualityChartImages.length >= expectedQualityCharts;
+    };
+
+    // Effect para verificar cuando todas las gráficas están listas
+    useEffect(() => {
+        if (reportData) {
+            const ready = checkIfChartsReady(reportData, chartImages, qualityChartImages, consumoChartImage);
+            setChartsReady(ready);
+        }
+    }, [reportData, chartImages, qualityChartImages, consumoChartImage]);
 
     const today = new Date().toISOString().split("T")[0];
 
@@ -164,37 +188,43 @@ const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
                         />
 
                         {/* Generar un BarChartPdf por cada sensor de consumo */}
-                        {reportData.data.sensors.map((sensor, i) => (
-                            <BarChartPdf
-                                key={`tanque-${i}`}
-                                monthlyConsumption={
-                                    sensor.storage.range_consumption
-                                }
-                                onExport={handleAddChartImage}
-                                chartId={`bar-chart-${i}`}
-                                fechaInicio={fechaInicio}
-                                fechaFin={fechaFin}
-                            />
-                        ))}
+                        {reportData.data.sensors.map((sensorGroup, i) => {
+                            console.log(`Sensor ${i}:`, sensorGroup);
+                            if (sensorGroup.storage) {
+                                console.log(`Datos de storage para sensor ${i}:`, sensorGroup.storage);
+                            }
+                            return sensorGroup.storage ? (
+                                <BarChartPdf
+                                    key={`tanque-${i}`}
+                                    monthlyConsumption={
+                                        sensorGroup.storage.range_consumption
+                                    }
+                                    onExport={handleAddChartImage}
+                                    chartId={`bar-chart-${i}`}
+                                    fechaInicio={fechaInicio}
+                                    fechaFin={fechaFin}
+                                />
+                            ) : null;
+                        })}
 
-                        {reportData.data.quality_sensors.map((sensor, i) => (
-                            <LineChartPdf
-                                key={`calidad-${i}`}
-                                data={sensor.logs}
-                                onExport={handleAddQualityChartImage}
-                                chartId={`line-chart-${i}`} // id único
-                                fechaInicio={fechaInicio}
-                                fechaFin={fechaFin}
-                            />
-                        ))}
+                        {reportData.data.sensors.map((sensorGroup, i) => 
+                            sensorGroup.quality ? (
+                                <LineChartPdf
+                                    key={`calidad-${i}`}
+                                    data={sensorGroup.quality.logs}
+                                    onExport={handleAddQualityChartImage}
+                                    chartId={`line-chart-${i}`} // id único
+                                    fechaInicio={fechaInicio}
+                                    fechaFin={fechaFin}
+                                />
+                            ) : null
+                        )}
                     </div>
                 )}
 
                 {/* Botón para descargar PDF solo si ya se generaron las imágenes */}
-                {reportData &&
-                    chartImages.length > 0 &&
-                    qualityChartImages.length > 0 && (
-                        <PDFDownloadLink
+                {reportData && chartsReady ? (
+                    <PDFDownloadLink
                             document={
                                 <PDF
                                     data={reportData}
@@ -228,7 +258,12 @@ const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
                                 )
                             }
                         </PDFDownloadLink>
-                    )}
+                ) : reportData && !chartsReady ? (
+                    <div className="bg-gray-200 text-gray-600 flex items-center justify-center gap-2 shadow-sm h-[50px] px-4 rounded-full w-full mt-4 font-bold">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                        Generando gráficas...
+                    </div>
+                ) : null}
             </div>
         </form>
     );

@@ -94,6 +94,22 @@ const styles = StyleSheet.create({
         height: 200,
         marginTop: 20,
     },
+    coverageIndicator: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        marginBottom: 3,
+        alignSelf: "center",
+    },
+    coverageContainer: {
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: 0,
+    },
+    coverageText: {
+        fontSize: 10,
+        fontWeight: "bold",
+    },
 });
 
 const PDF = ({
@@ -110,22 +126,36 @@ const PDF = ({
     const sensors = Array.isArray(pdfData.sensors) ? pdfData.sensors : [];
 
     const totalConsumo = sensors.reduce(
-        (total, sensor) =>
-            total +
-            Object.values(sensor.storage.range_consumption || {}).reduce(
-                (sum, value) => sum + value,
-                0
-            ),
+        (total, sensorGroup) => {
+            if (sensorGroup.storage) {
+                return total +
+                    Object.values(sensorGroup.storage.range_consumption || {}).reduce(
+                        (sum, value) => sum + value,
+                        0
+                    );
+            }
+            return total;
+        },
         0
     );
 
     const totalCaptado = sensors.reduce(
-        (total, sensor) => total + sensor.storage.captured_water,
+        (total, sensorGroup) => {
+            if (sensorGroup.storage) {
+                return total + (sensorGroup.storage.captured_water || 0);
+            }
+            return total;
+        },
         0
     );
 
     const almacenamientoTotal = sensors.reduce(
-        (total, sensor) => total + sensor.storage.remaining_liters,
+        (total, sensorGroup) => {
+            if (sensorGroup.storage) {
+                return total + (sensorGroup.storage.remaining_liters || 0);
+            }
+            return total;
+        },
         0
     );
 
@@ -157,6 +187,19 @@ const PDF = ({
             return { text: "Regular", color: "#ffeb3b" }; // amarillo
         } else {
             return { text: "Mala", color: "#f44336" }; // rojo
+        }
+    };
+
+    // Función para obtener color según porcentaje de cobertura
+    const getCoverageColor = (percentage) => {
+        if (percentage >= 75) {
+            return "#4caf50"; // Verde (75-100%)
+        } else if (percentage >= 50) {
+            return "#ffeb3b"; // Amarillo (50-74%)
+        } else if (percentage >= 25) {
+            return "#ff9800"; // Naranja (25-49%)
+        } else {
+            return "#f44336"; // Rojo (0-24%)
         }
     };
 
@@ -217,7 +260,7 @@ const PDF = ({
                     <View style={[styles.box]}>
                         <Text style={styles.label}># de tanques:</Text>
                         <Text style={styles.value}>
-                            {sensors.filter((sensor) => sensor.storage).length}
+                            {sensors.filter((sensorGroup) => sensorGroup.storage).length}
                         </Text>
                     </View>
 
@@ -308,11 +351,10 @@ const PDF = ({
                             qualityChartUrls.length
                         ),
                     }).map((_, i) => {
-                        coberturaQuality = sensors
                         const consumoSrc = graficaUrls[i];
                         const calidadSrc = qualityChartUrls[i];
-                        const ppm =
-                            pdfData?.quality_sensors?.[i]?.latest_log?.tds;
+                        const sensorGroup = sensors[i];
+                        const ppm = sensorGroup?.quality?.latest_log?.tds;
                         const existeConsumo = Boolean(consumoSrc);
                         const existeCalidad = Boolean(calidadSrc);
                         if (!existeConsumo && !existeCalidad) return null;
@@ -324,6 +366,17 @@ const PDF = ({
 
                         return (
                             <View key={i}>
+                                {/* Título del grupo de sensores por uso */}
+                                <Text style={{ 
+                                    fontSize: 14, 
+                                    fontWeight: "bold", 
+                                    textAlign: "center", 
+                                    marginBottom: 10,
+                                    textTransform: "capitalize"
+                                }}>
+                                    {sensorGroup?.storage?.use || sensorGroup?.quality?.use || `Sensor ${i + 1}`}
+                                </Text>
+
                                 <View
                                     style={{
                                         flexDirection: "row",
@@ -339,14 +392,38 @@ const PDF = ({
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Text>Consumo diario {i + 1}</Text>
-                                            <Image
-                                                src={consumoSrc}
-                                                style={{
-                                                    width: 180,
-                                                    height: 150,
-                                                }}
-                                            />
+                                            {/* Contenedor de gráfica + semáforo */}
+                                            <View style={{
+                                                flexDirection: "row",
+                                                alignItems: "flex-start",
+                                                justifyContent: "center",
+                                            }}>
+                                                <Image
+                                                    src={consumoSrc}
+                                                    style={{
+                                                        width: 180,
+                                                        height: 150,
+                                                    }}
+                                                />
+                                                
+                                                {/* Indicador de cobertura para consumo */}
+                                                {sensorGroup?.storage?.data_coverage && (
+                                                    <View style={[styles.coverageContainer, { marginLeft: 10, marginTop: 0 }]}>
+                                                        <Text style={[styles.coverageText, { fontSize: 8, marginBottom: 2 }]}>
+                                                            CD:
+                                                        </Text>
+                                                        <View 
+                                                            style={[
+                                                                styles.coverageIndicator,
+                                                                { backgroundColor: getCoverageColor(sensorGroup.storage.data_coverage.percentage) }
+                                                            ]} 
+                                                        />
+                                                        <Text style={styles.coverageText}>
+                                                            {sensorGroup.storage.data_coverage.percentage}%
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
                                     )}
 
@@ -358,16 +435,38 @@ const PDF = ({
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Text style={{ marginBottom: 5 }}>
-                                                Calidad del Agua {i + 1}
-                                            </Text>
-                                            <Image
-                                                src={calidadSrc}
-                                                style={{
-                                                    width: 180,
-                                                    height: 150,
-                                                }}
-                                            />
+                                            {/* Contenedor de gráfica + semáforo */}
+                                            <View style={{
+                                                flexDirection: "row",
+                                                alignItems: "flex-start",
+                                                justifyContent: "center",
+                                            }}>
+                                                <Image
+                                                    src={calidadSrc}
+                                                    style={{
+                                                        width: 180,
+                                                        height: 150,
+                                                    }}
+                                                />
+
+                                                {/* Indicador de cobertura para calidad */}
+                                                {sensorGroup?.quality?.data_coverage && (
+                                                    <View style={[styles.coverageContainer, { marginLeft: 10, marginTop: 0 }]}>
+                                                        <Text style={[styles.coverageText, { fontSize: 8, marginBottom: 2 }]}>
+                                                            CD:
+                                                        </Text>
+                                                        <View 
+                                                            style={[
+                                                                styles.coverageIndicator,
+                                                                { backgroundColor: getCoverageColor(sensorGroup.quality.data_coverage.percentage) }
+                                                            ]} 
+                                                        />
+                                                        <Text style={styles.coverageText}>
+                                                            {sensorGroup.quality.data_coverage.percentage}%
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
                                     )}
 
