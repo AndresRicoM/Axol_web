@@ -102,6 +102,8 @@ const PDF = ({
     fechaFin,
     graficaUrls = [],
     qualityChartUrls = [],
+    totalConsumoChart,
+    usuario,
 }) => {
     const pdfData = data?.data || {};
     const homehub = pdfData.homehub || {};
@@ -110,7 +112,7 @@ const PDF = ({
     const totalConsumo = sensors.reduce(
         (total, sensor) =>
             total +
-            Object.values(sensor.storage.monthly_consumption).reduce(
+            Object.values(sensor.storage.range_consumption || {}).reduce(
                 (sum, value) => sum + value,
                 0
             ),
@@ -190,6 +192,10 @@ const PDF = ({
 
                 <View style={styles.separator} />
 
+                <View style={styles.title}>
+                    <Text style={styles.title}>Reporte sistema Axol {usuario}</Text>
+                </View>
+
                 {/* Datos de los tanques y consumo, captura, etc*/}
                 {/* Fila 1 */}
                 <View style={styles.row}>
@@ -207,14 +213,15 @@ const PDF = ({
 
                 {/* Fila 2 */}
                 <View style={styles.row}>
-                    <View style={styles.box}>
+                    {/* Cajas de texto con ancho fijo o flex fijo */}
+                    <View style={[styles.box]}>
                         <Text style={styles.label}># de tanques:</Text>
                         <Text style={styles.value}>
                             {sensors.filter((sensor) => sensor.storage).length}
                         </Text>
                     </View>
 
-                    <View style={styles.box}>
+                    <View style={[styles.box]}>
                         <Text style={styles.label}>Consumo total:</Text>
                         <Text style={styles.value}>{totalConsumo} Litros</Text>
                     </View>
@@ -233,6 +240,24 @@ const PDF = ({
                         </Text>
                     </View>
                 </View>
+
+                <View style={styles.separator} />
+                <View>
+                    <Text>Consumo general de agua</Text>
+                </View>
+                <View
+                    style={{
+                        width: "50%",
+                        flexDirection: "row",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        marginTop: 20,
+                    }}
+                >
+                    <Image src={totalConsumoChart} />
+                </View>
+
+                {/* Información de calidad */}
 
                 <View style={styles.separator} />
                 {/* Apartado para las analogias */}
@@ -276,13 +301,14 @@ const PDF = ({
 
                 <View style={styles.separator} />
 
-                <View style={{ marginTop: 20 }}>
+                <View>
                     {Array.from({
                         length: Math.max(
                             graficaUrls.length,
                             qualityChartUrls.length
                         ),
                     }).map((_, i) => {
+                        coberturaQuality = sensors
                         const consumoSrc = graficaUrls[i];
                         const calidadSrc = qualityChartUrls[i];
                         const ppm =
@@ -332,7 +358,7 @@ const PDF = ({
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <Text>
+                                            <Text style={{ marginBottom: 5 }}>
                                                 Calidad del Agua {i + 1}
                                             </Text>
                                             <Image
@@ -352,14 +378,16 @@ const PDF = ({
                                             alignItems: "center",
                                         }}
                                     >
-                                        <Text>Calidad del Agua:</Text>
+                                        <Text style={{ marginBottom: 5 }}>
+                                            Calidad del Agua:
+                                        </Text>
 
                                         {/* Imagen */}
                                         {qualityIcon && (
                                             <Image
                                                 src={qualityIcon}
                                                 style={{
-                                                    width: 50,
+                                                    width: 70,
                                                     height: 50,
                                                     marginBottom: 5,
                                                 }}

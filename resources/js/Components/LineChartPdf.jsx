@@ -1,16 +1,46 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import Chart from "react-apexcharts";
 import html2canvas from "html2canvas";
 
-const LineChartPdf = ({ data = [], onExport, chartId }) => {
+function getMonthsDiff(startDate, endDate) {
+    return (
+        (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+        (endDate.getMonth() - startDate.getMonth()) +
+        (endDate.getDate() - startDate.getDate()) / 31
+    );
+}
+
+const LineChartPdf = ({
+    data = [],
+    onExport,
+    chartId,
+    fechaInicio,
+    fechaFin,
+}) => {
     const chartRef = useRef(null);
 
+    const startDate = new Date(fechaInicio);
+    const endDate = new Date(fechaFin);
+    const diffMonths = getMonthsDiff(startDate, endDate);
+
+    // Decide formato de etiquetas segun rango
+    const xaxisLabelFormat = useMemo(() => {
+        if (diffMonths <= 3) {
+            return "dd MMM yyyy"; // formato día-mes-año
+        } else if (diffMonths <= 12) {
+            return "MMM yyyy"; // solo mes y año
+        } else {
+            return "yyyy"; // solo año
+        }
+    }, [diffMonths]);
+
+    // Mapea datos tal cual llegan, suponiendo data con {datetime, tds}
     const series = [
         {
             name: "TDS (ppm)",
             data: data.map(({ datetime, tds }) => ({
                 x: new Date(datetime).getTime(),
-                y: tds,
+                y: Math.round(tds),
             })),
         },
     ];
@@ -25,7 +55,10 @@ const LineChartPdf = ({ data = [], onExport, chartId }) => {
         },
         xaxis: {
             type: "datetime",
-            labels: { datetimeUTC: false },
+            labels: {
+                datetimeUTC: false,
+                format: xaxisLabelFormat, // se adapta según el rango
+            },
             title: { text: "Fecha" },
         },
         yaxis: {
@@ -34,22 +67,20 @@ const LineChartPdf = ({ data = [], onExport, chartId }) => {
         },
         stroke: {
             curve: "straight",
-            width: 1,
+            width: 2,
         },
         tooltip: {
             x: {
-                format: "dd MMM yyyy HH:mm",
+                format: "dd MMM yyyy HH:mm", // tooltip con hora y fecha siempre
             },
         },
     };
 
-    // Exportar imagen cuando el chart esté listo
     useEffect(() => {
         if (onExport && chartRef.current) {
-            // Dar tiempo para que el chart se renderice completamente
             setTimeout(() => {
                 html2canvas(chartRef.current, {
-                    scale: 2, // Mayor calidad
+                    scale: 5,
                     logging: false,
                     useCORS: true,
                 })
@@ -62,7 +93,7 @@ const LineChartPdf = ({ data = [], onExport, chartId }) => {
                     });
             }, 800);
         }
-    }, [data, onExport]);
+    }, [onExport, data]);
 
     return (
         <div ref={chartRef}>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Homehub;
-use App\Models\Tank;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\TankTrait;
@@ -51,7 +50,10 @@ class ReportController extends Controller
         $tankSensors = [];
         foreach ($query->tankSensors as $tank) {
             $tankVolume = $this->getVolume($tank->toArray());
-            $monthlyConsumption = $this->getMonthlyConsumption($tank, $tankVolume);
+
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+            $consumptionByRange = $this->getConsumptionByRange($tank, $tankVolume, $startDate, $endDate);
             $capturedWater = $this->getCapturedWater($tank, $tankVolume);
 
             // Calcular litros restantes
@@ -75,7 +77,7 @@ class ReportController extends Controller
                     ];
                 })->values(),
                 'storage'  => [
-                    'monthly_consumption' => $monthlyConsumption,
+                    'range_consumption' => $consumptionByRange,
                     'remaining_liters'    => $remaining_liters,
                     'captured_water'      => $capturedWater,
                 ],

@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 import BarChartPdf from "./BarChartPdf"; // Asegúrate de importar tus componentes de chart
 import LineChartPdf from "./LineChartPdf";
+import BarChartPdfGeneral from "./BarChartPdfGeneral";
 
-const DateReportForm = ({ onSubmit, currentHomehub }) => {
+const DateReportForm = ({ onSubmit, currentHomehub, username }) => {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [reportData, setReportData] = useState(null);
@@ -92,9 +93,13 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
         });
     };
 
+    const [consumoChartImage, setConsumoChartImage] = useState(null);
+
+    const handleSetConsumoChartImage = (image) => {
+        setConsumoChartImage(image);
+    };
+
     const today = new Date().toISOString().split("T")[0];
-    console.log("---------------------------");
-    console.log(today);
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -150,12 +155,20 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                             top: 0,
                         }}
                     >
+                        <BarChartPdfGeneral
+                            sensors={reportData.data.sensors}
+                            fechaInicio={fechaInicio}
+                            fechaFin={fechaFin}
+                            chartId="general-consumo"
+                            onExport={handleSetConsumoChartImage} // Aquí le pasas la función para guardar la imagen
+                        />
+
                         {/* Generar un BarChartPdf por cada sensor de consumo */}
                         {reportData.data.sensors.map((sensor, i) => (
                             <BarChartPdf
                                 key={`tanque-${i}`}
                                 monthlyConsumption={
-                                    sensor.storage.monthly_consumption
+                                    sensor.storage.range_consumption
                                 }
                                 onExport={handleAddChartImage}
                                 chartId={`bar-chart-${i}`}
@@ -170,6 +183,8 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                                 data={sensor.logs}
                                 onExport={handleAddQualityChartImage}
                                 chartId={`line-chart-${i}`} // id único
+                                fechaInicio={fechaInicio}
+                                fechaFin={fechaFin}
                             />
                         ))}
                     </div>
@@ -187,6 +202,8 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                                     qualityChartUrls={qualityChartImages}
                                     fechaInicio={fechaInicio}
                                     fechaFin={fechaFin}
+                                    totalConsumoChart={consumoChartImage}
+                                    usuario={username}
                                 />
                             }
                             fileName="Axol_Report.pdf"

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import Chart from "react-apexcharts";
 import html2canvas from "html2canvas";
 
-// Nombres abreviados de meses en español
 const allMonths = [
     "Ene",
     "Feb",
@@ -31,7 +30,6 @@ function getMonthsDiff(startDate, endDate) {
 function getWeekIsoString(date) {
     const temp = new Date(date.getTime());
     temp.setHours(0, 0, 0, 0);
-    // Ajustamos al jueves de esa semana para cálculo ISO
     temp.setDate(temp.getDate() + 3 - ((temp.getDay() + 6) % 7));
     const week1 = new Date(temp.getFullYear(), 0, 4);
     const weekNumber =
@@ -116,10 +114,36 @@ function getRangeByDateRange(startDateStr, endDateStr) {
     }
 }
 
+/**
+ * Suma el consumo de todos los sensores en un objeto acumulador por clave periodo
+ * @param {Array} sensors - arreglo de sensores con la estructura { storage: { range_consumption: {...} } }
+ * @returns {Object} objeto con claves periodo y valores sumados
+ */
+function sumRangeConsumptionBySensors(sensors) {
+    const totalConsumption = {};
+
+    sensors.forEach((sensor) => {
+        const rangeConsumption = sensor.storage?.range_consumption;
+        if (rangeConsumption) {
+            Object.entries(rangeConsumption).forEach(([period, value]) => {
+                if (!totalConsumption[period]) {
+                    totalConsumption[period] = 0;
+                }
+                totalConsumption[period] += value;
+            });
+        }
+    });
+
+    return totalConsumption;
+}
+
 const colors = ["#b37f95", "#fcedf4", "#f4ddf3", "#fbecf3", "#b6bcd5"];
 
-export default function BarChartPdf({
-    monthlyConsumption,
+/**
+ * Componente para mostrar gráfica de barras con consumo general sumando todos los sensores
+ */
+export default function BarChartPdfGeneral({
+    sensors = [],
     onExport,
     chartId,
     fechaInicio,
@@ -127,13 +151,16 @@ export default function BarChartPdf({
 }) {
     const chartRef = useRef(null);
 
-    // Obtener etiquetas y claves según el rango fechas seleccionado
+    // Sumar consumo general
+    const rangeConsumption = sumRangeConsumptionBySensors(sensors);
+
+    // Obtener etiquetas y claves según rango fechas (semanal, mensual, anual)
     const { months: displayedCategories, consumptionKeys } =
         getRangeByDateRange(fechaInicio, fechaFin);
 
-    // Mapear datos según claves generadas, usando 0 por defecto si no existe dato
+    // Mapeo de datos: asigna consumo sumado por clave o 0 si no existe
     const consumptionData = consumptionKeys.map(
-        (key) => monthlyConsumption?.[key] ?? 0
+        (key) => rangeConsumption[key] ?? 0
     );
 
     const options = {
@@ -152,7 +179,7 @@ export default function BarChartPdf({
             labels: { style: { fontSize: "12px" } },
         },
         yaxis: {
-            title: { text: "Litros" },
+            title: { text: "Consumo total (Litros)" },
             min: 0,
         },
     };
