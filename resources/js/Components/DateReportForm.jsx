@@ -98,8 +98,8 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="bg-gray-100 p-8 rounded-lg w-[400px] mx-auto shadow">
-                <h2 className="text-2xl font-bold mb-6 text-center">
+            <div className="bg-gray-100 p-4 sm:p-8 rounded-lg w-full max-w-[400px] mx-auto shadow">
+                <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center">
                     Ingresa la fecha que deseas consultar
                 </h2>
 
@@ -135,7 +135,7 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-4 rounded-full w-full mt-4 font-bold"
+                        className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-2 sm:px-4 rounded-full w-full mt-4 font-bold text-sm sm:text-base"
                     >
                         {loading ? "Generando reporte..." : "Generar Reporte"}
                     </button>
@@ -193,7 +193,7 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                         >
                             {({ loading: pdfLoading }) =>
                                 pdfLoading ? (
-                                    <span className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-4 rounded-lg w-full mt-4">
+                                    <span className="bg-white hover:bg-gray-50 text-gray-800 flex items-center gap-2 shadow-sm h-[50px] px-2 sm:px-4 rounded-lg w-full mt-4 text-sm sm:text-base">
                                         <FontAwesomeIcon
                                             icon={faFileArrowDown}
                                             className="h-4 w-4"
@@ -201,7 +201,7 @@ const DateReportForm = ({ onSubmit, currentHomehub }) => {
                                         Cargando Reporte...
                                     </span>
                                 ) : (
-                                    <span className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-4 rounded-full w-full mt-4 font-bold">
+                                    <span className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2 shadow-sm h-[50px] px-2 sm:px-4 rounded-full w-full mt-4 font-bold text-sm sm:text-base">
                                         <FontAwesomeIcon
                                             icon={faFileArrowDown}
                                             className="h-4 w-4"

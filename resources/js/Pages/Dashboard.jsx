@@ -26,8 +26,6 @@ export default function Dashboard({ auth, user, axolData }) {
     console.log("axolData");
     console.log(axolData);
 
-    console.log(typeof axolData);
-
     // Función para determinar el color basado en el porcentaje
     const [openResponsive, setOpenResponsive] = useState(false);
     const [openAjoloteModal, setOpenAjoloteModal] = useState(false);
@@ -413,7 +411,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             ))}
                         </div>
 
-                        {/* <div className="flex justify-center w-full -mt-2 -mb-2">
+                        <div className="flex justify-center w-full -mt-2 -mb-2">
                             <div className="flex justify-end items-center">
                                 <button
                                     className="transition-transform duration-200 hover:scale-150 outline-none"
@@ -437,7 +435,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                     </svg>
                                 </button>
                             </div>
-                        </div> */}
+                        </div>
 
                         {/* Map */}
                         <MapContainer
@@ -567,6 +565,7 @@ export default function Dashboard({ auth, user, axolData }) {
                             onSubmit={(fechaInicio, fechaFin) =>
                                 console.log(fechaInicio, fechaFin)
                             }
+                            username={user.username}
                         />
                     </div>
                 </Modal>

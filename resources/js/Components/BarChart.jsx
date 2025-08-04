@@ -83,12 +83,12 @@ export default function BarChart({ monthlyConsumption }) {
 
     return (
         <div className="mx-auto">
-            <div className="flex justify-center gap-2 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:justify-center gap-2 mb-6 px-2">
                 {rangeOptions.map((option) => (
                     <button
                         key={option.value}
                         onClick={() => setSelectedRange(option.value)}
-                        className={`px-4 py-2 rounded-t ${
+                        className={`px-2 py-2 text-sm rounded-t ${
                             selectedRange === option.value
                                 ? "bg-blue-600 text-white font-bold"
                                 : "bg-gray-200 text-gray-700"
