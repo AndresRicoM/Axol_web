@@ -45,6 +45,7 @@ return [
         'quality_data' => env('TABLE_QUALITY_DATA'),
         'bucket' => env('TABLE_BUCKET'),
         'bucket_data' => env('TABLE_BUCKET_DATA'),
+        'debug_data' => env('TABLE_DEBUG_DATA'),
     ]
 
 ];

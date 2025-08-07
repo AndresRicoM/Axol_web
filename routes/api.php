@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DebugDataController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,3 +45,6 @@ Route::post('/sensor/qualityData', [QualityController::class, 'registerQualityDa
 
 // Data Analysis
 Route::post('/analysis', [ReportController::class, 'getDataForAnalysis']);
+
+// Debug data
+Route::post('/debug/sensor', [DebugDataController::class, 'registerDebugData']);
