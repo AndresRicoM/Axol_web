@@ -32,7 +32,7 @@ class SetUserTimezone
             $apiResponse = $client->get('https://api.ipgeolocation.io/v2/timezone', [
                 'query' => [
                     'apiKey' => $apiKey,
-                    'ip' => $ip,
+                    'ip' => "8.8.8.8",
                 ],
             ]);
 
