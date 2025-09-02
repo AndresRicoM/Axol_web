@@ -70,6 +70,7 @@ Route::get('/dashboard', function () {
 Route::get('/community', function () {
     $user = Auth::user();
 
+
     // Render the community view
     return Inertia::render('Community', [
         'user' => $user,
