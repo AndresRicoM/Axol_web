@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommunityViewController;
 use App\Http\Controllers\ReportController;
 use Inertia\Inertia;
 use App\Http\Controllers\TankController;
@@ -67,15 +68,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'timezone'])->name('dashboard');
 
 //
-Route::get('/community', function () {
-    $user = Auth::user();
+Route::get('/community', [CommunityViewController::class, 'index'])
+      ->middleware(['auth', 'verified', 'timezone'])
+      ->name('community');
 
-
-    // Render the community view
-    return Inertia::render('Community', [
-        'user' => $user,
-    ]);
-})->middleware(['auth', 'verified', 'timezone'])->name('community');
 
 // Grupo de rutas protegidas por middleware auth
 Route::middleware('auth')->group(function () {
