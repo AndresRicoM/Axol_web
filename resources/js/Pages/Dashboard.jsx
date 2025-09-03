@@ -8,6 +8,7 @@ import {
     faGamepad,
     faCircleExclamation,
     faMagnifyingGlass,
+    faEdit
 } from "@fortawesome/free-solid-svg-icons";
 import RadialChart from "@/Components/RadialChart";
 import { Flex, Modal } from "antd";
@@ -21,6 +22,8 @@ import BarChartPdf from "@/Components/BarChartPdf";
 import DateReportForm from "@/Components/DateReportForm";
 import LineChartPdf from "@/Components/LineChartPdf";
 import QualityModal from "@/Components/QualityModal";
+import { useEffect } from "react";
+import InputTextLabel from "@/Components/InputTextLabel";
 
 export default function Dashboard({ auth, user, axolData }) {
     console.log("axolData");
@@ -32,19 +35,30 @@ export default function Dashboard({ auth, user, axolData }) {
     const [openResponsive, setOpenResponsive] = useState(false);
     const [openAjoloteModal, setOpenAjoloteModal] = useState(false);
     const [openDatePdfModal, setDatePdfModal] = useState(false);
+    const [openEditModal, setEditModal] = useState(false);
     const [selectedConsumption, setSelectedConsumption] = useState({});
     const [homehubList, setHomehubList] = useState(axolData);
+
+    const [editName, setEditName] = useState("");
+    const [editTankName, setEditTankName] = useState("");
+    const [editHeight, setEditHeight] = useState(0);
+    const [editOffset, setEditOffset] = useState(0);
+    const [editDiameter, setEditDiameter] = useState(0);
 
     console.log("axolData");
     console.log(axolData);
 
     const [currentHomehub, setCurrentHomehub] = useState(axolData[0]);
+    const [currentEditSelection, setCurrentEditSelection] = useState(axolData[0]);
+
     const [currentLat, setCurrentLat] = useState(
         axolData.length > 0 ? parseFloat(currentHomehub.homehub.lat) : 0
     );
     const [currentLon, setCurrentLon] = useState(
         axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0
     );
+
+
 
     console.log("location");
 
@@ -71,6 +85,12 @@ export default function Dashboard({ auth, user, axolData }) {
         setCurrentHomehub(homehubList[value]);
     };
 
+    const handleChangeEditHomehub = (homehub) => {
+        console.log(homehub)
+        setEditName(homehub.homehub.name)
+        setCurrentEditSelection(homehub)
+    }
+
     const handleOpenModal = (tank) => {
         setSelectedConsumption(tank.storage.monthly_consumption || {});
         setOpenAjoloteModal(true);
@@ -80,7 +100,14 @@ export default function Dashboard({ auth, user, axolData }) {
         setDatePdfModal(true);
     };
 
+    const handleOpenModalEdit = () => {
+        setEditModal(true);
+    };
+
     const rangoFechas = useRangoMesActual();
+    useEffect(() => {
+        setEditName(currentEditSelection.homehub.name);
+    }, [currentEditSelection]);
 
     if (axolData.length === 0) {
         return (
@@ -113,31 +140,48 @@ export default function Dashboard({ auth, user, axolData }) {
                             <span className="text-text md:text-5xl text-2xl font-semibold">
                                 {getGreeting()}, {user.username}.
                             </span>
-                            <Select
-                                placeholder={
-                                    <span className="text-text">
-                                        Selecciona tu homehub
-                                    </span>
-                                }
-                                style={{
-                                    width: 280,
-                                    height: 50,
-                                }}
-                                onChange={(value) => handleChange(value)}
-                                defaultValue={0}
-                            >
-                                {homehubList.map((homehub, i) => (
-                                    <Select.Option key={i} value={i}>
-                                        <FontAwesomeIcon
-                                            icon={faGamepad}
-                                            className="text-text"
-                                        />{" "}
+                            <div className="flex items-center gap-2">
+                                <Select
+                                    placeholder={
                                         <span className="text-text">
-                                            {homehub.homehub?.name}
+                                            Selecciona tu homehub
                                         </span>
-                                    </Select.Option>
-                                ))}
-                            </Select>
+                                    }
+                                    style={{
+                                        width: 280,
+                                        height: 50,
+                                    }}
+                                    onChange={(value) => handleChange(value)}
+                                    defaultValue={0}
+                                >
+                                    {homehubList.map((homehub, i) => (
+                                        <Select.Option key={i} value={i}>
+                                            <FontAwesomeIcon
+                                                icon={faGamepad}
+                                                className="text-text"
+                                            />{" "}
+                                            <span className="text-text">
+                                                {homehub.homehub?.name}
+                                            </span>
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+
+                                <button
+                                    className="cursor-auto"
+                                    title="Editar datos"
+                                    onClick={() => handleOpenModalEdit()}
+                                >
+                                    <FontAwesomeIcon
+                                        style={{ color: '#371828' }}
+                                        size="lg"
+                                        icon={
+                                            faEdit
+                                        }
+                                    />
+                                </button>
+                            </div>
+
                         </div>
 
                         {/* aqui va el map que quite */}
@@ -189,18 +233,18 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 {tank.storage ? (
                                                                     tank.storage
                                                                         .water_distance >=
-                                                                    0 ? (
+                                                                        0 ? (
                                                                         <>
                                                                             <RadialChart
                                                                                 waterPercentage={
                                                                                     tank
                                                                                         .storage
                                                                                         ?.fill_percentage >
-                                                                                    100
+                                                                                        100
                                                                                         ? 100
                                                                                         : tank
-                                                                                              .storage
-                                                                                              ?.fill_percentage
+                                                                                            .storage
+                                                                                            ?.fill_percentage
                                                                                 }
                                                                                 className="h-20 w-20"
                                                                             />
@@ -303,7 +347,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                         tank
                                                                             .quality
                                                                             .tds >=
-                                                                        0 ? (
+                                                                            0 ? (
                                                                             <WaterQualityIndicator
                                                                                 tds={
                                                                                     tank
@@ -568,6 +612,87 @@ export default function Dashboard({ auth, user, axolData }) {
                                 console.log(fechaInicio, fechaFin)
                             }
                         />
+                    </div>
+                </Modal>
+
+                {/* Modal para la edición de los datos del usuario */}
+                <Modal
+                    title={
+                        <div className="text-left w-full text-2xl font-bold">
+                            <span className="text-text">Modificar datos</span>
+                        </div>
+                    }
+                    open={openEditModal}
+                    onOk={() => setEditModal(false)}
+                    onCancel={() => setEditModal(false)}
+                    cancelButtonProps={{ style: { display: "none" } }}
+                    width={{
+                        xs: "90%",
+                        sm: "80%",
+                        md: "70%",
+                        lg: "60%",
+                        xl: "50%",
+                        xxl: "40%",
+                    }}
+                    style={{ maxHeight: 'calc(100vh - 150px)', overflowY: 'auto' }} // Adjust height as needed
+
+                >
+                    <div className="flex flex-col text-text">
+                        <div className="flex justify-center">
+                            <span className="font-semibold text-lg">
+                                Selecciona un homehub
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col gap-10">
+                            {/* Lista de homehubs */}
+                            <div className="flex justify-around w-full">
+                                {homehubList.map((homehub, i) => (
+                                    <button
+                                        key={i}
+                                        className="bg-white p-4 text-center shadow-md cursor-default flex items-center gap-2"
+                                        onClick={() => handleChangeEditHomehub(homehub)}
+                                    >
+                                        <FontAwesomeIcon icon={faGamepad} size="lg" />
+                                        <span className="font-semibold">{homehub.homehub?.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Datos de la red de sensores */}
+                            <div className="flex flex-col gap-5">
+                                {console.log("currentEditSelection")}
+                                {console.log(currentEditSelection)}
+
+                                <InputTextLabel
+                                    name={'homehubName'}
+                                    value={editName}
+                                    setValue={setEditName}
+                                    text={'Nombre del Homehub'}
+                                />
+
+                                <div className="flex flex-col gap-5">
+                                    {/* Checando los sensores de calidad y tanque */}
+                                    {currentEditSelection.sensors.map((tank) => {
+                                        let tankName = tank?.quality?.use || tank?.storage?.use;
+
+                                        return (
+                                            <div className="flex flex-col gap-3">
+                                                <span className="font-bold text-xl">Tanque {tankName}</span>
+
+                                                <InputTextLabel
+                                                    name={'homehubName'}
+                                                    value={editName}
+                                                    setValue={setEditName}
+                                                    text={'Nombre del tanque'}
+                                                />
+                                            </div>
+                                        )
+
+                                    })}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </Modal>
             </Flex>
