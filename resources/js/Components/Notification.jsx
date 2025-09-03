@@ -32,11 +32,13 @@ export default function Notification({ type, sensor }) {
     const humidityMessage = () => {
         return (
             <p>
-                La humedad del sensor es mayor a 100, revisa el sensor.
+                El sensor puede tener filtraciones de agua. Favor de revisarlo.
                 <br />
                 <br />
                 Último dato de humedad: {sensor?.humidity}
-                
+                <div className="flex justify-center">
+                    <img className="w-2/3" src='assets/tito buceo.png' />
+                </div>
             </p>
         );
     }
