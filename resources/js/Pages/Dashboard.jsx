@@ -60,13 +60,6 @@ export default function Dashboard({ auth, user, axolData }) {
         }
     };
 
-    const elapsedTime = (dateLog) => {
-        if (!dateLog) {
-            return false; // Devuelve false si dateLog es null o undefined
-        }
-        return Date.now() - new Date(dateLog) > 3 * 86400000;
-    };
-
     const handleChange = (value) => {
         setCurrentHomehub(homehubList[value]);
     };
@@ -142,9 +135,9 @@ export default function Dashboard({ auth, user, axolData }) {
 
                         {/* aqui va el map que quite */}
                         <div className="flex flex-col gap-7">
-                            {currentHomehub.sensors.map((tank) => (
+                            {currentHomehub.sensors.map((tank, i) => (
                                 <div
-                                    key={tank.mac_add}
+                                    key={i}
                                     className="flex flex-col gap-3 "
                                 >
                                     {tank.storage ? (
@@ -170,16 +163,8 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                     almacenada
                                                                 </span>
                                                                 <Notification
-                                                                    flag={elapsedTime(
-                                                                        tank
-                                                                            .storage
-                                                                            ?.datetime
-                                                                    )}
-                                                                    datetime={
-                                                                        tank
-                                                                            .storage
-                                                                            ?.datetime
-                                                                    }
+                                                                    type='outdated'
+                                                                    sensor={tank.storage}
                                                                 />
                                                             </div>
                                                         }
@@ -189,18 +174,18 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                 {tank.storage ? (
                                                                     tank.storage
                                                                         .water_distance >=
-                                                                    0 ? (
+                                                                        0 ? (
                                                                         <>
                                                                             <RadialChart
                                                                                 waterPercentage={
                                                                                     tank
                                                                                         .storage
                                                                                         ?.fill_percentage >
-                                                                                    100
+                                                                                        100
                                                                                         ? 100
                                                                                         : tank
-                                                                                              .storage
-                                                                                              ?.fill_percentage
+                                                                                            .storage
+                                                                                            ?.fill_percentage
                                                                                 }
                                                                                 className="h-20 w-20"
                                                                             />
@@ -256,18 +241,15 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                     Calidad del
                                                                     agua
                                                                 </span>
-                                                                <div>
+                                                                <div className="flex gap-3 items-center" >
                                                                     <Notification
-                                                                        flag={elapsedTime(
-                                                                            tank
-                                                                                .quality
-                                                                                ?.datetime
-                                                                        )}
-                                                                        datetime={
-                                                                            tank
-                                                                                .quality
-                                                                                ?.datetime
-                                                                        }
+                                                                        type='outdated'
+                                                                        sensor={tank.quality}
+                                                                    />
+
+                                                                    <Notification
+                                                                        type='humidity'
+                                                                        sensor={tank.quality}
                                                                     />
 
                                                                     <QualityModal
@@ -303,7 +285,7 @@ export default function Dashboard({ auth, user, axolData }) {
                                                                         tank
                                                                             .quality
                                                                             .tds >=
-                                                                        0 ? (
+                                                                            0 ? (
                                                                             <WaterQualityIndicator
                                                                                 tds={
                                                                                     tank

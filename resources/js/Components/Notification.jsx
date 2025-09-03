@@ -3,9 +3,66 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { Popover } from "@headlessui/react";
 import DateFormat from "./DateFormat";
+import { useEffect } from "react";
 
-export default function Notification({ flag, datetime }) {
-       if (flag) {
+export default function Notification({ type, sensor }) {
+    const [alertMessage, setAlertMessage] = useState(null);
+
+    const isOutdated = (dateLog) => {
+        if (!dateLog) {
+            return false; // Devuelve false si dateLog es null o undefined
+        }
+        return Date.now() - new Date(dateLog) > 3 * 86400000;
+    };
+
+    const outdatedMessage = () => {
+        return (
+            <p>
+                Los datos registrados no son recientes, revisa
+                el homehub.
+                <br />
+                <br />
+                Último dato recibido:
+                <br />
+                <DateFormat datetime={sensor.datetime} />
+            </p>
+        );
+    }
+
+    const humidityMessage = () => {
+        return (
+            <p>
+                La humedad del sensor es mayor a 100, revisa el sensor.
+                <br />
+                <br />
+                Último dato de humedad: {sensor?.humidity}
+                
+            </p>
+        );
+    }
+
+    useEffect(() => {
+        switch (type) {
+            case "outdated":
+                if (isOutdated(sensor?.datetime)) {
+                    const message = outdatedMessage();
+                    setAlertMessage(message);
+                }
+
+                break
+
+            case "humidity":
+                if (sensor?.humidity > 100) {
+                    const message = humidityMessage();
+                    setAlertMessage(message);
+                }
+
+                break;
+        }
+    }, [])
+
+
+    if (alertMessage) {
         return (
             <div className="relative inline-block">
                 <Popover className="relative">
@@ -23,15 +80,8 @@ export default function Notification({ flag, datetime }) {
                             </h3>
                         </div>
                         <div className="px-3 py-2">
-                            <p>
-                                Los datos registrados no son recientes, revisa
-                                el homehub. 
-                                <br />
-                                <br />
-                                Ultimo dato recibido: 
-                                <br />
-                                <DateFormat datetime={datetime} />
-                            </p>
+                            {/* Mensaje de alerta */}
+                            {alertMessage}
                         </div>
                         <div className="absolute w-3 h-3 bg-white border-gray-200 rotate-45 -top-1 right-3 dark:bg-gray-700"></div>
                     </Popover.Panel>

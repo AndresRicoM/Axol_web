@@ -16,7 +16,7 @@ export default function QualityModal({ data }) {
 
             {
                 data && (<button
-                    className="transition-transform duration-200 hover:scale-150 outline-none p-1 ml-5"
+                    className="transition-transform duration-200 hover:scale-150 outline-none"
                     onClick={() => handleOpenModal()}
                 >
                     <FontAwesomeIcon
