@@ -114,6 +114,7 @@ class HomehubController extends Controller
 
                 $offset = $sensor['offset'];
                 $height = $sensor['height'];
+                $diameter = $sensor['diameter'];
 
                 // Obtener el último dato
                 $latestLog = $sensor->latestLog;
@@ -146,6 +147,11 @@ class HomehubController extends Controller
                     'remaining_liters' => round($remaining_liters, 0),
                     'datetime' => $latestLog?->datetime,
                     'monthly_consumption' => $monthlyConsumption,
+
+                    // atributos del sensor
+                    'height' => $height,
+                    'offset' => $offset,
+                    'diameter' => $diameter
                 ];
             })->filter();
 

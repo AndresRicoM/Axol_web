@@ -58,6 +58,9 @@ export default function Dashboard({ auth, user, axolData }) {
         axolData.length > 0 ? parseFloat(currentHomehub.homehub.lon) : 0
     );
 
+    const [tankHeights, setTankHeights] = useState(
+        currentEditSelection.sensors.map(tank => tank?.storage?.height ?? "")
+    );
 
 
     console.log("location");
@@ -105,8 +108,10 @@ export default function Dashboard({ auth, user, axolData }) {
     };
 
     const rangoFechas = useRangoMesActual();
+
     useEffect(() => {
         setEditName(currentEditSelection.homehub.name);
+
     }, [currentEditSelection]);
 
     if (axolData.length === 0) {
@@ -618,7 +623,7 @@ export default function Dashboard({ auth, user, axolData }) {
                 {/* Modal para la edición de los datos del usuario */}
                 <Modal
                     title={
-                        <div className="text-left w-full text-2xl font-bold">
+                        <div className="text-left w-full text-2xl font-bold bg-[#F2F0FB]">
                             <span className="text-text">Modificar datos</span>
                         </div>
                     }
@@ -634,23 +639,41 @@ export default function Dashboard({ auth, user, axolData }) {
                         xl: "50%",
                         xxl: "40%",
                     }}
-                    style={{ maxHeight: 'calc(100vh - 150px)', overflowY: 'auto' }} // Adjust height as needed
+                    style={{
+                        maxHeight: 'calc(100vh - 150px)',
+                        overflowY: 'auto',
+                    }}
+
+                    styles={{
+                        content: { backgroundColor: '#F2F0FB' },
+                    }}
+
+                    okText='Guardar'
+
+                    okButtonProps={{
+                        style: {
+                            backgroundColor: 'white',
+                            color: '#3B192A',
+                            fontWeight: 'bold'
+                        },
+                        size: 'large' // Or its size
+                    }}
 
                 >
-                    <div className="flex flex-col text-text">
+                    <div className="flex flex-col text-text gap-5   ">
                         <div className="flex justify-center">
-                            <span className="font-semibold text-lg">
-                                Selecciona un homehub
+                            <span className="font-bold text-xl mt-5">
+                                Selecciona un Homehub
                             </span>
                         </div>
 
-                        <div className="flex flex-col gap-10">
+                        <div className="flex flex-col gap-10 ">
                             {/* Lista de homehubs */}
                             <div className="flex justify-around w-full">
                                 {homehubList.map((homehub, i) => (
                                     <button
                                         key={i}
-                                        className="bg-white p-4 text-center shadow-md cursor-default flex items-center gap-2"
+                                        className={`${currentEditSelection == homehub ? 'bg-[#F2F0FB]' : 'bg-white'} p-4 text-center shadow-md cursor-default flex items-center gap-2 rounded-md`}
                                         onClick={() => handleChangeEditHomehub(homehub)}
                                     >
                                         <FontAwesomeIcon icon={faGamepad} size="lg" />
@@ -673,22 +696,53 @@ export default function Dashboard({ auth, user, axolData }) {
 
                                 <div className="flex flex-col gap-5">
                                     {/* Checando los sensores de calidad y tanque */}
-                                    {currentEditSelection.sensors.map((tank) => {
-                                        let tankName = tank?.quality?.use || tank?.storage?.use;
+                                    {currentEditSelection.sensors.map((tank, idx) => {
+                                        const tankName = tank?.quality?.use || tank?.storage?.use;
+                                        <span className="font-bold text-xl">Tanque {tankName}</span>
+                                        console.log(tank)
+                                        let tankHeight = tank?.storage?.height ?? "";
 
                                         return (
-                                            <div className="flex flex-col gap-3">
+                                            <div className="flex flex-col gap-3" key={idx}>
                                                 <span className="font-bold text-xl">Tanque {tankName}</span>
+                                                <div className="flex flex-col md:flex-row gap-4">
+                                                    <InputTextLabel
+                                                        name={`tank-${idx}-height`}
+                                                        value={tankName}
+                                                        // setValue={changeHeight}
+                                                        text={'Nombre'}
+                                                    />
 
-                                                <InputTextLabel
-                                                    name={'homehubName'}
-                                                    value={editName}
-                                                    setValue={setEditName}
-                                                    text={'Nombre del tanque'}
-                                                />
+                                                    {/* Sólo si hay sensor de tanque (storage) registrado */}
+                                                    {tank.storage && (
+                                                        <>
+                                                            <InputTextLabel
+                                                                name={`tank-${idx}-name`}
+                                                                value={tankHeights[idx]}
+                                                                // setValue={changeHeight}
+                                                                text={'Altura'}
+                                                            />
+
+                                                            <InputTextLabel
+                                                                name={`tank-${idx}-offset`}
+                                                                value={tankHeights[idx]}
+                                                                // setValue={changeHeight}
+                                                                text={'Offset'}
+                                                            />
+
+                                                            <InputTextLabel
+                                                                name={`tank-${idx}-diameter`}
+                                                                value={tankHeights[idx]}
+                                                                // setValue={changeHeight}
+                                                                text={'Diámetro'}
+                                                            />
+                                                        </>
+                                                    )}
+
+                                                </div>
+
                                             </div>
-                                        )
-
+                                        );
                                     })}
                                 </div>
                             </div>
