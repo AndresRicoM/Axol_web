@@ -3,12 +3,12 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Popover } from "@headlessui/react";
 import Bubble from "./Bubble";
 
-export default function BubbleModal({ name }) {
+export default function BubbleModal({ name, tds, size }) {
     return (
         <div className="relative inline-block">
             <Popover className="relative">
                 <Popover.Button className="focus:outline-none outline-none">
-                    <Bubble name={name}></Bubble>
+                    <Bubble name={name} tds={tds} size={size}></Bubble>
                 </Popover.Button>
 
                 <Popover.Panel className="absolute z-10 -right-12 top-9 mr-2 w-44 text-sm transition-opacity duration-300 rounded-lg shadow-xs opacity-100 xl:w-64">

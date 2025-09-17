@@ -1,18 +1,41 @@
-function Bubble({ name = "Tanque" }) {
+function Bubble({ name = "Tanque", tds = 0, size = 100 }) {
+    // Función para obtener la calidad y color
+    const getQualityLevel = (value) => {
+        if (value <= 50) return { text: "Buena", color: "#00E396" };
+        if (value <= 900) return { text: "Regular", color: "#FEB019" };
+        return { text: "Mala", color: "#FF4560" };
+    };
+
+    const quality = getQualityLevel(tds);
+
+    // Clase para el color de la burbuja
+    const color = (quality) => {
+        if (quality === "Mala") return "bg-[#FF4560] text-white";
+        if (quality === "Regular") return "bg-[#FEB019] text-black";
+        return "bg-[#00E396] text-black"; // Buena
+    };
     return (
-        <div className="relative w-40 h-auto flex flex-col items-center">
-            <div className="relative w-40 h-40 flex items-center justify-center">
-                <div className="absolute rounded-full w-36 h-36 bg-[rgb(144,225,203)] shadow-lg"></div>
+        <div className="flex flex-col items-center" style={{ width: size }}>
+            <div
+                className="relative flex items-center justify-center"
+                style={{ width: size, height: size }}
+            >
+                <div
+                    className={`absolute rounded-full shadow-lg ${color(
+                        quality.text
+                    )}`}
+                    style={{ width: size * 0.9, height: size * 0.9 }}
+                ></div>
                 <svg
                     className="absolute"
                     style={{
-                        right: "15px",
-                        top: "27px",
+                        right: size * 0.18 + "px",
+                        top: size * 0.13 + "px",
                         transform: "rotate(-28deg)",
                         zIndex: 10,
                     }}
-                    width="37"
-                    height="70"
+                    width={size * 0.28}
+                    height={size * 0.38}
                     viewBox="0 0 44 82"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +64,10 @@ function Bubble({ name = "Tanque" }) {
                             height="112"
                             filterUnits="userSpaceOnUse"
                         >
-                            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                            <feGaussianBlur
+                                stdDeviation="4"
+                                result="coloredBlur"
+                            />
                             <feMerge>
                                 <feMergeNode in="coloredBlur" />
                                 <feMergeNode in="SourceGraphic" />
@@ -51,8 +77,20 @@ function Bubble({ name = "Tanque" }) {
                 </svg>
             </div>
             {/* Nombre del tanque debajo del bubble */}
-            <div className="text-center w-full" style={{ marginTop: '5px' }}>
-                <span className="text-lg font-semibold text-gray-700">
+            <div
+                className="text-center w-full"
+                style={{
+                    marginTop: "5px",
+                    fontSize: size < 60 ? "0.75rem" : "1.125rem", // Reduce fuente si la burbuja es pequeña
+                    maxWidth: size * 1.1, // Limita el ancho del texto
+                    lineHeight: 1.1,
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                }}
+            >
+                <span className="font-semibold text-gray-700 break-words">
                     {name}
                 </span>
             </div>

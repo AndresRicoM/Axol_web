@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function WaterQualityIndicator({ tds }) {
     const getQualityLevel = (value) => {
@@ -22,14 +22,20 @@ export default function WaterQualityIndicator({ tds }) {
     return (
         <div className="flex flex-col gap-4 p-4 pt-20">
             <div className="flex items-center gap-4">
-                <span className="text-xl font-bold" style={{ color: quality.color }}>{tds} PPM</span>
+                <span
+                    className="text-xl font-bold"
+                    style={{ color: quality.color }}
+                >
+                    {tds} PPM
+                </span>
             </div>
 
             {/* Barra de calidad */}
             <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
                 <div className="absolute top-0 left-0 h-full w-full flex">
                     <div className="h-full bg-[#00E396] flex-1" /> {/* Buena */}
-                    <div className="h-full bg-[#FEB019] flex-1" /> {/* Regular */}
+                    <div className="h-full bg-[#FEB019] flex-1" />{" "}
+                    {/* Regular */}
                     <div className="h-full bg-[#FF4560] flex-1" /> {/* Mala */}
                 </div>
                 {/* Indicador de nivel actual */}
@@ -37,7 +43,7 @@ export default function WaterQualityIndicator({ tds }) {
                     className="absolute top-0 h-full w-2 bg-white border-2 border-gray-800 rounded-full"
                     style={{
                         left: `${calculateLeftPosition(tds)}%`,
-                        transform: 'translateX(-50%)'
+                        transform: "translateX(-50%)",
                     }}
                 />
             </div>
@@ -50,4 +56,4 @@ export default function WaterQualityIndicator({ tds }) {
             </div>
         </div>
     );
-} 
+}

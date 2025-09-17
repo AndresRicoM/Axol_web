@@ -41,9 +41,27 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
     const bubbleData = datosComunidad.map((item, index) => ({
         id: item.mac_add || index, // Id unico para la key
         name: item.use || "Sin nombre", // Mostrar el nombre del homehub
+        tds: item.tds || 0,
+        litros: Number(item.tank_capacity) || 1,
     }));
 
+    const litrosArray = bubbleData.map((b) => b.litros);
+    const bubbleSizes = getBubbleSizes(litrosArray);
+
+    console.log(bubbleData);
     console.log(datosComunidad);
+
+    function getBubbleSizes(litrosArray, minPixel = 60, maxPixel = 160) {
+        const logs = litrosArray.map((l) => Math.log10(l > 0 ? l : 1)); // Evita log(0)
+        const minLog = Math.min(...logs);
+        const maxLog = Math.max(...logs);
+        return logs.map((log) =>
+            maxLog === minLog
+                ? (maxPixel + minPixel) / 2
+                : ((log - minLog) / (maxLog - minLog)) * (maxPixel - minPixel) +
+                  minPixel
+        );
+    }
 
     return (
         <>
@@ -53,9 +71,9 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
                     style={{ marginTop: "35px", marginBottom: "35px" }}
                 >
                     {/* Componente Principal - Centro */}
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
                         <Rive
-                            src="/assets/TITO_ALLBODY.riv"
+                            src="/assets/TITO_FELIZ_ALLBODY.riv"
                             style={{ width: 300, height: 300 }}
                             autoplay
                         />
@@ -65,12 +83,18 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
                     {bubbleData.slice(0, 10).map((bubble, index) => (
                         <div
                             key={bubble.id}
-                            className={calculateBubblePosition(
-                                index,
-                                bubbleData.length
-                            )}
+                            className={
+                                calculateBubblePosition(
+                                    index,
+                                    bubbleData.length
+                                ) + " z-10"
+                            }
                         >
-                            <BubbleModal name={bubble.name} />
+                            <BubbleModal
+                                name={bubble.name}
+                                tds={bubble.tds}
+                                size={bubbleSizes[index]}
+                            />
                         </div>
                     ))}
                 </div>

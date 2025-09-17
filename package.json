@@ -25,6 +25,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.7.2",
         "@fortawesome/react-fontawesome": "^0.2.2",
         "@react-pdf/renderer": "^4.3.0",
+        "@rive-app/react-canvas": "^4.23.3",
         "antd": "^5.23.3",
         "apexcharts": "^4.3.0",
         "html2canvas": "^1.4.1",
