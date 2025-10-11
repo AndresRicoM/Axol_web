@@ -1,7 +1,10 @@
 function Bubble({ name = "Tanque" }) {
+    wIdth: 150;
+    height: 150;
     return (
+
         <div className="relative w-40 h-auto flex flex-col items-center">
-            <div className="relative w-40 h-40 flex items-center justify-center">
+            <div className="relative w-32 h-32 flex items-center justify-center">
                 <div className="absolute rounded-full w-36 h-36 bg-[rgb(144,225,203)] shadow-lg"></div>
                 <svg
                     className="absolute"
