@@ -1,8 +1,23 @@
+import React, { useEffect, useState } from "react";
 import BubbleModal from "@/Components/BubbleModal";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Rive from "rive-react";
 
 export default function Community({ auth, datosComunidad, tanques = [] }) {
+    const [riveKey, setRiveKey] = useState(0);
+    useEffect(() => {
+        const handleVisibility = () => {
+            if (document.visibilityState === "visible") {
+                setRiveKey((k) => k + 1); // Fuerza remount del Rive
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibility);
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibility);
+        };
+    }, []);
+
     const calculateBubblePosition = (index, totalBubbles) => {
         if (index <= 2) {
             // 3 burbujas arriba
@@ -42,14 +57,18 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
         id: item.mac_add || index, // Id unico para la key
         name: item.use || "Sin nombre", // Mostrar el nombre del homehub
         tds: item.tds || 0,
-        litros: Number(item.tank_capacity) || 1,
+        litros: item.tank_capacity
+            ? Number(item.tank_capacity)
+            : item.tds
+            ? 1000
+            : null,
     }));
 
     const litrosArray = bubbleData.map((b) => b.litros);
     const bubbleSizes = getBubbleSizes(litrosArray);
 
     console.log(bubbleData);
-    console.log(datosComunidad);
+    console.log("datos: ", datosComunidad);
 
     function getBubbleSizes(litrosArray, minPixel = 60, maxPixel = 160) {
         const logs = litrosArray.map((l) => Math.log10(l > 0 ? l : 1)); // Evita log(0)
@@ -73,6 +92,7 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
                     {/* Componente Principal - Centro */}
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                         <Rive
+                            key={riveKey}
                             src="/assets/TITO_FELIZ_ALLBODY.riv"
                             style={{ width: 300, height: 300 }}
                             autoplay

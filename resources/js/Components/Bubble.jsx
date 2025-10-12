@@ -14,6 +14,7 @@ function Bubble({ name = "Tanque", tds = 0, size = 100 }) {
         if (quality === "Regular") return "bg-[#FEB019] text-black";
         return "bg-[#00E396] text-black"; // Buena
     };
+
     return (
         <div className="flex flex-col items-center" style={{ width: size }}>
             <div
@@ -75,14 +76,28 @@ function Bubble({ name = "Tanque", tds = 0, size = 100 }) {
                         </filter>
                     </defs>
                 </svg>
+                {/* TDS en el centro de la burbuja */}
+                <span
+                    className="absolute text-white font-bold"
+                    style={{
+                        fontSize: size < 60 ? "0.7rem" : "1.1rem",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        pointerEvents: "none",
+                        textShadow: "0 1px 4px #0008",
+                    }}
+                >
+                    {tds ? `${tds} PPM` : ""}
+                </span>
             </div>
-            {/* Nombre del tanque debajo del bubble */}
+            {/* Nombre debajo */}
             <div
                 className="text-center w-full"
                 style={{
-                    marginTop: "5px",
-                    fontSize: size < 60 ? "0.75rem" : "1.125rem", // Reduce fuente si la burbuja es pequeña
-                    maxWidth: size * 1.1, // Limita el ancho del texto
+                    marginTop: "12px",
+                    fontSize: size < 60 ? "0.75rem" : "1.125rem",
+                    maxWidth: size * 1.1,
                     lineHeight: 1.1,
                     wordBreak: "break-word",
                     whiteSpace: "normal",
@@ -90,7 +105,7 @@ function Bubble({ name = "Tanque", tds = 0, size = 100 }) {
                     marginRight: "auto",
                 }}
             >
-                <span className="font-semibold text-gray-700 break-words">
+                <span className="text-base font-semibold text-gray-700 break-words">
                     {name}
                 </span>
             </div>
