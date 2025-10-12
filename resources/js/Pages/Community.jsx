@@ -4,53 +4,49 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Rive from "rive-react";
 
 export default function Community({ auth, datosComunidad, tanques = [] }) {
-    const [riveKey, setRiveKey] = useState(0);
-    useEffect(() => {
-        const handleVisibility = () => {
-            if (document.visibilityState === "visible") {
-                setRiveKey((k) => k + 1); // Fuerza remount del Rive
-            }
+    const calculateRadialPosition = (index, totalBubbles) => {
+        // Configuración del posicionamiento radial
+        const BUBBLE_DIAMETER = 160; // Diámetro de la burbuja en px (w-40 = 160px)
+        const RIVE_SAFE_RADIUS = 300; // Radio de la zona segura del componente Rive (aumentado considerablemente)
+        const MIN_RADIUS = RIVE_SAFE_RADIUS + BUBBLE_DIAMETER / 2 + 60; // Radio mínimo mucho mayor + margen amplio
+        const MAX_RADIUS = MIN_RADIUS + 100; // Radio máximo con buena variación
+        const CONTAINER_CENTER_X = 50; // Centro del contenedor en porcentaje
+        const CONTAINER_CENTER_Y = 50; // Centro del contenedor en porcentaje
+
+        // Calcular ángulo base dividiendo 360° entre el número de burbujas
+        const baseAngle = (360 / totalBubbles) * index;
+
+        // Añadir variación aleatoria al ángulo (±12°) para naturalidad
+        const angleVariation = (Math.random() - 0.5) * 24;
+        const finalAngle = baseAngle + angleVariation;
+
+        // Radio aleatorio entre MIN_RADIUS y MAX_RADIUS
+        const radius = MIN_RADIUS + Math.random() * (MAX_RADIUS - MIN_RADIUS);
+
+        // Convertir coordenadas polares a cartesianas
+        const angleInRadians = (finalAngle * Math.PI) / 180;
+        const deltaX = radius * Math.cos(angleInRadians);
+        const deltaY = radius * Math.sin(angleInRadians);
+
+        // Convertir píxeles a porcentajes - ajustado para el radio mayor
+        const xPercent = CONTAINER_CENTER_X + deltaX / 20; // Factor ajustado para radio mayor
+        const yPercent = CONTAINER_CENTER_Y + deltaY / 15; // Factor ajustado para radio mayor
+
+        // Límites para mantener burbujas en área visible pero con más espacio
+        const clampedX = Math.max(8, Math.min(92, xPercent)); // Márgenes más amplios 8% - 92%
+        const clampedY = Math.max(10, Math.min(90, yPercent)); // Márgenes más amplios 10% - 90%
+
+        // Retornar estilo inline para posición precisa y coordenadas para el popover
+        return {
+            style: {
+                position: "absolute",
+                left: `${clampedX}%`,
+                top: `${clampedY}%`,
+                transform: "translate(-50%, -50%)",
+                zIndex: 10,
+            },
+            position: { x: clampedX, y: clampedY },
         };
-
-        document.addEventListener("visibilitychange", handleVisibility);
-        return () => {
-            document.removeEventListener("visibilitychange", handleVisibility);
-        };
-    }, []);
-
-    const calculateBubblePosition = (index, totalBubbles) => {
-        if (index <= 2) {
-            // 3 burbujas arriba
-            if (index === 0) return "absolute top-5 left-1/4 -translate-x-1/2";
-            if (index === 1) return "absolute top-5 left-1/2 -translate-x-1/2";
-            if (index === 2) return "absolute top-5 right-1/4 translate-x-1/2";
-        } else if (index <= 4) {
-            // 2 burbujas izquierda
-            const leftIndex = index - 3;
-            if (leftIndex === 0)
-                return "absolute top-1/3 left-16 -translate-y-1/2";
-            if (leftIndex === 1)
-                return "absolute bottom-1/3 left-16 translate-y-1/2";
-        } else if (index <= 7) {
-            // 3 burbujas abajo
-            const bottomIndex = index - 5;
-            if (bottomIndex === 0)
-                return "absolute bottom-5 left-1/4 -translate-x-1/2";
-            if (bottomIndex === 1)
-                return "absolute bottom-5 left-1/2 -translate-x-1/2";
-            if (bottomIndex === 2)
-                return "absolute bottom-5 right-1/4 translate-x-1/2";
-        } else if (index <= 9) {
-            // 2 burbujas derecha
-            const rightIndex = index - 8;
-            if (rightIndex === 0)
-                return "absolute top-1/3 right-16 -translate-y-1/2";
-            if (rightIndex === 1)
-                return "absolute bottom-1/3 right-16 translate-y-1/2";
-        }
-
-        // Posición de fallback si hay más de 10 burbujas
-        return "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
     };
 
     const bubbleData = datosComunidad.map((item, index) => ({
@@ -62,7 +58,73 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
             : item.tds
             ? 1000
             : null,
+        level: item.water_level_percentage || null, // Nivel del tanque
+        currentWater: item.current_water || null, // Volumen actual de agua
     }));
+
+    // Función para calcular el estado de salud del tanque
+    const calculateTankHealth = (tds, currentWater, waterLevel) => {
+        if (!tds || !currentWater || !waterLevel) return null;
+
+        // Aplicar la fórmula: (1 - tds/currentWater) * water_level_percentage
+        const healthScore = (1 - tds / currentWater) * waterLevel;
+        return Math.max(0, Math.min(100, healthScore)); // Limitar entre 0 y 100
+    };
+
+    // Calcular el estado promedio de todos los tanques
+    const calculateCommunityHealth = () => {
+        const validTanks = bubbleData.filter(
+            (tank) => tank.tds && tank.currentWater && tank.level
+        );
+
+        if (validTanks.length === 0)
+            return { averageHealth: 50, titoState: "normal" };
+
+        const totalHealth = validTanks.reduce((sum, tank) => {
+            const health = calculateTankHealth(
+                tank.tds,
+                tank.currentWater,
+                tank.level
+            );
+            return sum + (health || 0);
+        }, 0);
+
+        const averageHealth = totalHealth / validTanks.length;
+
+        // Determinar el estado de TITO basado en el promedio
+        let titoState = "normal";
+        if (averageHealth < 30) {
+            titoState = "triste"; // Muy bajo
+        } else if (averageHealth < 60) {
+            titoState = "enfermo"; // Medio-bajo
+        } else {
+            titoState = "normal"; // Normal-alto
+        }
+
+        return { averageHealth, titoState, totalTanks: validTanks.length };
+    };
+
+    const { averageHealth, titoState, totalTanks } = calculateCommunityHealth();
+
+    // Seleccionar el archivo Rive apropiado
+    const getRiveFile = (state) => {
+        switch (state) {
+            case "triste":
+                return "/assets/TITO_TRISTE_ALLBODY.riv";
+            case "enfermo":
+                return "/assets/TITO_ENFERMO_ALLBODY.riv";
+            case "normal":
+            default:
+                return "/assets/TITO_ALLBODY.riv";
+        }
+    };
+
+    console.log(datosComunidad);
+    console.log(
+        `Estado de la comunidad: ${titoState}, Salud promedio: ${averageHealth.toFixed(
+            1
+        )}%, Tanques: ${totalTanks}`
+    );
 
     const litrosArray = bubbleData.map((b) => b.litros);
     const bubbleSizes = getBubbleSizes(litrosArray);
@@ -89,34 +151,33 @@ export default function Community({ auth, datosComunidad, tanques = [] }) {
                     className="relative min-h-screen w-full py-20 px-20"
                     style={{ marginTop: "35px", marginBottom: "35px" }}
                 >
-                    {/* Componente Principal - Centro */}
-                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                    {/* Componente Principal - Centro con estado dinámico */}
+                    <div className="absolute inset-0 flex items-center justify-center">
                         <Rive
-                            key={riveKey}
-                            src="/assets/TITO_FELIZ_ALLBODY.riv"
+                            src={getRiveFile(titoState)}
                             style={{ width: 300, height: 300 }}
                             autoplay
                         />
                     </div>
 
-                    {/* Burbujas dinámicas distribuidas: 3 arriba, 2 lados, 3 abajo */}
-                    {bubbleData.slice(0, 10).map((bubble, index) => (
-                        <div
-                            key={bubble.id}
-                            className={
-                                calculateBubblePosition(
-                                    index,
-                                    bubbleData.length
-                                ) + " z-10"
-                            }
-                        >
-                            <BubbleModal
-                                name={bubble.name}
-                                tds={bubble.tds}
-                                size={bubbleSizes[index]}
-                            />
-                        </div>
-                    ))}
+                    {/* Burbujas dinámicas con posicionamiento radial */}
+                    {bubbleData.map((bubble, index) => {
+                        const { style, position } = calculateRadialPosition(
+                            index,
+                            bubbleData.length
+                        );
+                        return (
+                            <div key={bubble.id} style={style}>
+                                <BubbleModal
+                                    name={bubble.name}
+                                    tds={bubble.tds}
+                                    level={bubble.level}
+                                    position={position}
+                                    size={bubbleSizes[index]}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             </AuthenticatedLayout>
         </>
